@@ -3,18 +3,22 @@
 
     <q-page-scroller position="top" :scroll-offset="100" :offset="[18, 18]" style="z-index: 110;">
        <div class="text-white bg-red q-py-sm q-px-sm text-center text-caption" style="border-radius: 5px;"  >
-        Poeira Cósmica: {{ cosmicDustCount | formatNumber }}
+          Poeira Cósmica: {{ cosmicDustCount | formatNumber }}
       </div>
     </q-page-scroller>
 
-    <div class="fit justify-center flex q-gutter-y-sm">
-      <q-btn color="blue" label="opções" :class="isMobileOptions" class="q-mr-md" @click="toggleDialog" />
-      <q-btn color="warning" label="conquistas" :class="isMobileOptions" class="q-mr-md" @click="achievementsCheck" />
-    </div>
+     <q-tabs v-model="toolbar" active-color="white" no-caps dense class="bg-blue text-white shadow-2 fit" style="border-radius: 5px;" >
+        <q-tab name="space" label="space" ripple>
+          <img src="../assets/ufo.png" alt="" style="width: 30px;">
+        </q-tab>
+        <q-tab name="options" label="Opções" icon="img:https://image.flaticon.com/icons/png/128/4665/4665249.png" />
+        <q-tab name="achivements" label="Conquistas" icon="img:https://img-premium.flaticon.com/png/512/1734/1734158.png?token=exp=1621052389~hmac=938a35b31581276c78299840ffc93856" />
+     </q-tabs>
 
     <!-- CONQUISTAS -->
-    <q-dialog v-model="achievements" maximized>
-      <q-card class="achive font">
+    <q-tab-panels v-model="toolbar" animated style="background-color:rgba(0, 0, 0, 0.1);">
+          <q-tab-panel name="achivements">
+      <div class="achive font">
         <q-card-actions class="col">
           <div class="col text-right text-white">
             <q-btn icon="close" flat dense v-close-popup size="25px"/>
@@ -32,12 +36,14 @@
             </q-item-section>
           </q-list>
         </q-card-section>
-      </q-card>
-    </q-dialog>
+      </div>
+      </q-tab-panel>
+    </q-tab-panels>
 
     <!-- MENU DE OPÇÕES -->
-    <q-dialog v-model="dialog">
-      <q-card style="min-width: 100px;" class="flex justify-center pixel-borders--1 font">
+      <q-tab-panels v-model="toolbar" animated style="background-color:rgba(0, 0, 0, 0.1);">
+          <q-tab-panel name="options">
+      <div style="min-width: 100px;" class="flex justify-center pixel-borders--1 font">
         <q-card-section class="column q-gutter-y-md">
           <!-- TODO criar um modal com uma msg e uma img dizendo que o jogo será resetado e sem tem certeza disso -->
           <div>
@@ -51,8 +57,9 @@
           </div>
          <!-- TODO criar controle de volume -->
         </q-card-section>
-      </q-card>
-    </q-dialog>
+      </div>
+          </q-tab-panel>
+      </q-tab-panels>
 
     <!-- QUADRO DE UPDATE -->
     <q-dialog v-model="game.info" :maximized="isMobileMaximized">
@@ -489,7 +496,7 @@ export default {
       oldVersion: '1.2.4',
       contact: false,
       upgradeDialog: false,
-      dialog: false,
+      toolbar: 'space',
       setName: false,
       cosmicDustCount: 0,
       upgradesList: [],
@@ -651,7 +658,7 @@ export default {
             id: 3,
             type: 'item',
             label: 'Processador',
-            img: 'https://img-premium.flaticon.com/png/512/1425/1425684.png?token=exp=1621051022~hmac=a4a5745f69d7218db2f552fc23259408',
+            img: '684.png?token=exp=1621051022~hmac=a4a5745f69d7218db2f552fc23259408',
             description: 'Material usado aumentar a capacidade de equipamentos eletrônicos.',
             price: 1150,
             value: 5,
@@ -814,6 +821,7 @@ export default {
         this.game.achievementsList.aerogelAmount.conquest = true
         this.achievementSong()
         this.achievementNotify(this.game.achievementsList.aerogelAmount.label)
+        this.$gtag.event('event', 'unlock_achievement', { event_label: 'aerogelAmount', event_category: 'achivement' })
       }
     },
 
@@ -843,6 +851,7 @@ export default {
   },
 
   methods: {
+
     gameItemsFilter () {
       const filter = 'type'
       const result = Object.keys(this.game.items).reduce((acc, val) =>
