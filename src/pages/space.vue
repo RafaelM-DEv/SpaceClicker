@@ -634,6 +634,7 @@ export default {
         this.game.achievementsList.aerogelAmount.conquest = true
         this.achievementSong()
         this.achievementNotify(this.game.achievementsList.aerogelAmount.label)
+        this.$gtag.event('event', 'unlock_achievement', { event_label: 'aerogelAmount', event_category: 'achivement' })
       }
     },
 
