@@ -634,7 +634,7 @@ export default {
         this.game.achievementsList.aerogelAmount.conquest = true
         this.achievementSong()
         this.achievementNotify(this.game.achievementsList.aerogelAmount.label)
-        this.$gtag.event('event', 'unlock_achievement', { event_label: 'aerogelAmount', event_category: 'achivement' })
+        this.$gtag.event('achievement', { event_category: 'achivement', event_label: 'amount', value: newValue })
       }
     },
 
@@ -920,6 +920,7 @@ export default {
 
     getDust () {
       this.game.cosmicDust += this.game.click
+      this.$gtag.event('click', { event_category: 'click', event_label: 'GetDust', value: this.game.cosmicDust })
     },
 
     getDustperSecond () {
