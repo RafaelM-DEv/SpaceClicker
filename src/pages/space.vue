@@ -56,7 +56,7 @@
 
     <!-- QUADRO DE UPDATE -->
     <q-dialog v-model="game.info" :maximized="isMobileMaximized">
-      <q-card style="min-width: 100px;" class="flex justify-center  pixel-borders--1">
+      <q-card style="min-width: 100px;" class="flex justify-center pixel-borders--1">
         <q-card-section class="column q-gutter-y-sm">
           <q-icon name="img:https://i.pinimg.com/originals/45/1a/27/451a27df78f84c8f671ec1e502a4fe97.gif" class="flex self-center robot"/>
           <!-- <div class="devDialog font pixel-borders--1">
@@ -111,28 +111,137 @@
           <!-- TODO Criar lista com botão dropdown para exibir os itens -->
           <!-- EQUIPAMENTOS -->
         <div class="q-mt-md flex justify-center text-uppercase text-caption">
-          Equipamentos
+          <q-tabs v-model="equipamentBay" active-color="white" no-caps dense class="bg-warning text-white shadow-2 fit"  style="border-radius: 5px;" >
+            <q-tab name="inventory" label="Equipamentos" icon="img:https://image.flaticon.com/icons/png/128/4665/4665249.png" />
+            <q-tab name="missions" label="Missões" icon="img:https://img-premium.flaticon.com/png/512/1734/1734158.png?token=exp=1621052389~hmac=938a35b31581276c78299840ffc93856" />
+            <!-- <q-tab name="armamentos" label="Armamentos">
+              <img src="../assets/moon.png" alt="" style="width: 30px;">
+            </q-tab> -->
+          </q-tabs>
         </div>
 
-        <!-- DRONE -->
-        <div v-if="game.installDrone" class="q-ml-sm q-mt-lg justify-between flex">
-          <q-btn icon="img:https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg" :class="game.droneFunction.colorDrone" :label="game.droneFunction.labelDrone" size="12px" :disable="game.droneFunction.droneSend" @click="drone()"/>
-          <q-btn outline :label="game.droneFunction.droneTimer" size="12px"/>
-        </div>
-        <div v-if="game.installDrone" class="q-mt-sm q-ml-sm" style="font-size: 8px;">
-          <div class="flex justify-between">
-            <div>Capacidade de Coleta do drone</div>
-            <div>{{ game.items.drone.launchValue }}/s</div>
-          </div>
-          <div class="flex justify-between">
-            <div>Tempo de lançamento</div>
-            <div>{{ game.items.drone.batery }}s</div>
-          </div>
-          <div class="flex justify-between">
-            <div>Tempo de recarga</div>
-            <div>{{ game.items.drone.bateryRecover }}s</div>
-          </div>
-        </div>
+        <q-tab-panels v-model="equipamentBay" animated style="background-color:rgba(0, 0, 0, 0.1);">
+          <q-tab-panel name="inventory">
+            <!-- DRONE -->
+            <div v-if="!game.installDrone" class="text-black q-px-sm q-mt-lg q-mx-sm" style="border-radius: 5px; font-size: 10px; background-color: white;">Compre algum equipamento para ser usado aqui!</div>
+            <div v-if="game.installDrone" class="q-ml-sm q-mt-lg justify-between flex">
+              <q-btn icon="img:https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg" :class="game.droneFunction.colorDrone" :label="game.droneFunction.labelDrone" size="12px" :disable="game.droneFunction.droneSend" @click="drone()"/>
+              <q-btn outline :label="game.droneFunction.droneTimer" size="12px"/>
+            </div>
+            <div v-if="game.installDrone" class="q-mt-sm q-ml-sm" style="font-size: 8px;">
+              <div class="flex justify-between">
+                <div>Capacidade de Coleta do drone</div>
+                <div>{{ game.items.drone.launchValue }}/s</div>
+              </div>
+              <div class="flex justify-between">
+                <div>Tempo de lançamento</div>
+                <div>{{ game.items.drone.timeLaunch }}s</div>
+              </div>
+              <div class="flex justify-between">
+                <div>Tempo de recarga</div>
+                <div>{{ game.items.drone.bateryRecover }}s</div>
+              </div>
+            </div>
+          </q-tab-panel>
+          <q-tab-panel name="missions"  style="font-size: 8px;" >
+            <div class="text-white">
+              <q-img src="https://i.pinimg.com/originals/19/d2/28/19d228e7cbd160555af5d92e3154b381.gif" style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
+                <div class="absolute-bottom text-caption text-center">
+                  #4 - Pizza Espacial
+                </div>
+                </q-img>
+
+              <div class="text-caption">
+
+                <p>Missão de exploração da lua</p>
+              </div>
+              <div class="text-justify">
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum obcaecati ut non iusto ea consectetur deleniti reprehenderit ducimus. Suscipit, explicabo. Dolore consectetur omnis fugiat minima possimus quisquam sint eveniet cumque!
+              </div>
+               <div class="flex justify-between q-mt-sm">
+                <div>Rendimento</div>
+                <div>500/s</div>
+              </div>
+              <div class="flex justify-between q-mt-sm">
+                <div>Custo</div>
+                <div>5.000 <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/></div>
+              </div>
+              <q-separator class="q-mt-md" color="warning" size="1px" />
+            </div>
+
+            <div class="text-white">
+              <q-img src="https://i.imgur.com/9oO33CL.gif?noredirect" style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
+                <div class="absolute-bottom text-caption text-center">
+                  #4 - Pizza Espacial
+                </div>
+                </q-img>
+
+              <div class="text-caption">
+
+                <p>Comércio interstelar</p>
+              </div>
+              <div class="text-justify">
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum obcaecati ut non iusto ea consectetur deleniti reprehenderit ducimus. Suscipit, explicabo. Dolore consectetur omnis fugiat minima possimus quisquam sint eveniet cumque!
+              </div>
+               <div class="flex justify-between q-mt-sm">
+                <div>Rendimento</div>
+                <div>500/s</div>
+              </div>
+              <div class="flex justify-between q-mt-sm">
+                <div>Custo</div>
+                <div>5.000 <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/></div>
+              </div>
+              <q-separator class="q-mt-md" color="warning" size="1px" />
+             </div>
+
+             <div class="text-white">
+              <q-img src="https://i.pinimg.com/originals/d8/ef/df/d8efdf8c2e2b4b2c8b4eb8b3fa79b5c9.gif" style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
+              <div class="absolute-bottom text-caption text-center">
+                  #4 - Pizza Espacial
+                </div>
+                </q-img>
+              <div class="text-caption">
+
+                <p>Pizza Espacial</p>
+              </div>
+              <div class="text-justify">
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum obcaecati ut non iusto ea consectetur deleniti reprehenderit ducimus. Suscipit, explicabo. Dolore consectetur omnis fugiat minima possimus quisquam sint eveniet cumque!
+              </div>
+               <div class="flex justify-between q-mt-sm">
+                <div>Rendimento</div>
+                <div>500/s</div>
+              </div>
+              <div class="flex justify-between q-mt-sm">
+                <div>Custo</div>
+                <div>5.000 <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/></div>
+              </div>
+              <q-separator class="q-mt-md" color="warning" size="1px" />
+             </div>
+
+                <div class="text-white">
+              <q-img src="https://i.pinimg.com/originals/12/3f/56/123f56c7ee8793e6b31ee9f591478aac.gif"  style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
+                <div class="absolute-bottom text-caption text-center">
+                  #4 - Avaliação de dados
+                </div>
+              </q-img>
+              <div class="text-caption">
+                <p>Avaliação de dados</p>
+              </div>
+              <div class="text-justify">
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum obcaecati ut non iusto ea consectetur deleniti reprehenderit ducimus. Suscipit, explicabo. Dolore consectetur omnis fugiat minima possimus quisquam sint eveniet cumque!
+              </div>
+               <div class="flex justify-between q-mt-sm">
+                <div>Rendimento</div>
+                <div>500/s</div>
+              </div>
+              <div class="flex justify-between q-mt-sm">
+                <div>Custo</div>
+                <div>5.000 <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/></div>
+              </div>
+              <q-separator class="q-mt-md" color="warning" size="1px" />
+             </div>
+          </q-tab-panel>
+        </q-tab-panels>
 
         <q-separator class="q-mt-md" color="blue" size="4px" />
 
@@ -207,8 +316,12 @@
       <!-- ITENS -->
       <div :class="isMobile">
         <q-separator v-if="game.openShop !== 0" color="green" size="4px" />
-        <div v-if="game.openShop !== 0" class="q-mt-md q-mb-sm flex justify-center text-uppercase text-caption">
-          itens
+        <div v-if="game.openShop !== 0" class="q-mt-xs q-mb-xs flex justify-center text-uppercase">
+          Loja
+          <q-tabs v-model="shop" active-color="white" no-caps dense class="bg-green text-white shadow-2 fit"  style="border-radius: 5px;" >
+            <q-tab name="itens" icon="img:https://image.flaticon.com/icons/png/128/4665/4665249.png" label="Gadgets"/>
+            <q-tab name="equipamentos" icon="img:https://img-premium.flaticon.com/png/512/4646/4646987.png?token=exp=1621028990~hmac=7600facc94288540fbde3b9e6b35a422" label="Equipamentos"/>
+          </q-tabs>
         </div>
         <div v-if="game.openShop === 0" class="flex fit">
           <q-btn label="Comprar Melhorias - 50" size="10px" color="positive" class="fit" @click="open">
@@ -329,6 +442,9 @@ export default {
   },
   data () {
     return {
+      equipamentBay: 'inventory',
+      shop: 'itens',
+      asteroidDialog: false,
       volume: 1,
       iconAudio: 'volume_up',
       achievements: false,
