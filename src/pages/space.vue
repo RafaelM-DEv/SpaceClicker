@@ -243,29 +243,8 @@
           </q-tab-panel>
         </q-tab-panels>
 
-        <q-separator class="q-mt-md" color="blue" size="4px" />
+        <!-- <q-separator class="q-mt-md" color="blue" size="4px" /> -->
 
-        <div class="q-mt-md q-mb-md flex justify-center text-uppercase text-caption">
-          Itens instalados
-        </div>
-        <div>
-          <q-list v-for="(item, index) in game.itemsBuyed " :key="index">
-            <q-item>
-              <q-item-section>
-                <div class="flex justify-between starship__items">
-                  <div class="flex q-mt-xs text-capitalize" style="font-size: 13px;">
-                    <div>
-                      {{ item.label }} +{{ game.items[item.label].ups }}
-                    </div>
-                  </div>
-                  <div>
-                    <q-btn label="upgrade" color="blue" @click="upgrade(item)" size="10px"/>
-                  </div>
-                </div>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </div>
       </div>
 
       <!-- LISTA DE UPGRADES -->
@@ -312,9 +291,9 @@
 
         </q-card>
       </q-dialog>
-
+      <!-- TODO criar uma tab para items e equipamentos -->
       <!-- ITENS -->
-      <div :class="isMobile">
+      <div :class="isMobile" >
         <q-separator v-if="game.openShop !== 0" color="green" size="4px" />
         <div v-if="game.openShop !== 0" class="q-mt-xs q-mb-xs flex justify-center text-uppercase">
           Loja
@@ -323,37 +302,72 @@
             <q-tab name="equipamentos" icon="img:https://img-premium.flaticon.com/png/512/4646/4646987.png?token=exp=1621028990~hmac=7600facc94288540fbde3b9e6b35a422" label="Equipamentos"/>
           </q-tabs>
         </div>
+
+        <q-tab-panels  v-if="game.openShop > 0" v-model="shop" animated style="background-color: black;">
+          <q-tab-panel name="itens">
+            <q-list v-if="game.openShop > 0" bordered class="starship__item-list text-white" style="font-size: 8px;">
+              <q-item v-for="(item, key) in gameItems" :key="key" class="starship__items">
+                <q-item-section class="row">
+                  <div v-if="game.openShop <= item.unlocked" class="fit dimmed not-avaliable"/>
+                  <div class="flex justify-between">
+                    <div class="row">
+                      <img :src="item.img">
+                    <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
+                    </div>
+                    <div class="column text-right">
+                      <div>
+                        Preço: {{ item.price | formatNumber }}
+                        <q-img src="../assets/cosmic.png" style="width: 14px" class="q-mb-xs"/>
+                      </div>
+                      <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
+                      <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
+                    </div>
+                  </div>
+                  <div class="self-end q-mb-xs">Compradas: {{ item.amount | formatNumber }} unidades</div>
+                  <div class="q-px-md starship__item-description">{{ item.description }}</div>
+                  <q-btn label="comprar" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
+                  <q-btn label="upgrade" size="13px" push color="blue" :disable="game.cosmicDust < item.price || item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
+                <q-separator color="black" size="1px" class="q-mt-md" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-tab-panel>
+          <q-tab-panel name="equipamentos">
+            <q-list v-if="game.openShop > 0" bordered class="starship__item-list text-white" style="font-size: 8px;">
+              <q-item v-for="(item, key) in gameEquipaments" :key="key" class="starship__items">
+                <q-item-section class="row">
+                  <div v-if="game.openShop <= item.unlocked" class="fit dimmed not-avaliable"/>
+                  <div class="flex justify-between">
+                    <div class="row">
+                      <img :src="item.img">
+                    <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
+                    </div>
+                    <div class="column text-right">
+                      <div>
+                        Preço: {{ item.price | formatNumber }}
+                        <q-img src="../assets/cosmic.png" style="width: 14px" class="q-mb-xs"/>
+                      </div>
+                      <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
+                      <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
+                    </div>
+                  </div>
+                  <div class="self-end q-mb-xs">Compradas: {{ item.amount | formatNumber }} unidades</div>
+                  <div class="q-px-md starship__item-description">{{ item.description }}</div>
+                  <q-btn label="comprar" size="15px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
+                  <q-btn label="upgrade" size="13px" push color="blue" :disable="game.cosmicDust < item.price || item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
+                <q-separator color="black" size="1px" class="q-mt-md" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-tab-panel>
+        </q-tab-panels>
+
         <div v-if="game.openShop === 0" class="flex fit">
-          <q-btn label="Comprar Melhorias - 50" size="10px" color="positive" class="fit" @click="open">
+          <q-btn label="Comprar Melhorias - 50" size="10px" color="positive" class="fit" flat  @click="open">
               <q-avatar class="q-ml-sm q-mb-xs self-center" size="20px"><img src="../assets/cosmic.png"></q-avatar>
           </q-btn>
         </div>
 
-        <q-list v-if="game.openShop > 0" bordered class="starship__item-list text-white" style="font-size: 8px;">
-          <q-item v-for="(item, key) in game.items" :key="key" class="starship__items">
-            <q-item-section class="row">
-              <div v-if="game.openShop <= item.unlocked" class="fit dimmed not-avaliable"/>
-              <div class="flex justify-between">
-                <div class="row">
-                  <img :src="item.img">
-                <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
-                </div>
-                <div class="column text-right">
-                  <div>
-                    Preço: {{ item.price | formatNumber }}
-                    <q-img src="../assets/cosmic.png" style="width: 14px" class="q-mb-xs"/>
-                  </div>
-                  <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
-                  <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
-                </div>
-              </div>
-              <div class="self-end q-mb-xs">Compradas: {{ item.amount | formatNumber }} unidades</div>
-              <div class="q-px-md starship__item-description">{{ item.description }}</div>
-              <q-btn label="comprar" size="15px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
-            <q-separator color="black" size="1px" class="q-mt-md" />
-            </q-item-section>
-          </q-item>
-        </q-list>
       </div>
     </div>
 
@@ -402,7 +416,7 @@
       </q-card>
     </q-dialog>
 
-    <div class="flex justify-center fit q-mt-md bg-grey-7 starshipDesktop">
+    <div class="flex justify-center fit q-mt-md bg-grey-7 fit q-px-sm">
       <div class="text-black text-center" style="font-size: 8px;">
         Rafael Martins - <a target="_blank" style="text-decoration: none; color: yellow" href="https://github.com/RafaelM-DEv">https://github.com/RafaelM-DEv</a>
         Version {{ version }}
@@ -417,11 +431,34 @@
     </template>
 
     <template class="text-center q-mt-sm">
-      <audio ref="music" id="bg-audio" autoplay loop>
+      <audio ref="music" id="bg-audio"  loop>
         <source src="http://soundimage.org/wp-content/uploads/2016/03/Escape_Looping.mp3">
       </audio>
     </template>
 
+    <!-- TODO interceptar asteroids com drone , pode conter inimigos! -->
+    <!-- TODO equipamentos para melhorar drone, modelos de drone e equipamentos -->
+    <!-- TODO criar menu do comandante, um tab que muda as missões -->
+    <!-- TODO quadro de quests com níveis -->
+    <!-- escanear area atras de obnjetos e criaturas -->
+    <!-- explorar planetas, lua etc -->
+
+    <!-- ASTEROID -->
+     <q-dialog v-model="asteroidDialog" maximized>
+      <q-card class="achive font">
+        <q-card-actions class="col">
+          <div class="col text-right text-white">
+            <q-btn icon="close" flat dense v-close-popup size="25px"/>
+          </div>
+        </q-card-actions>
+        <div class="col text-center text-white text-h6">asteroid</div>
+        <q-card-section class="flex justify-center">
+          <div>
+            Tests
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -448,8 +485,8 @@ export default {
       volume: 1,
       iconAudio: 'volume_up',
       achievements: false,
-      version: '1.2.4',
-      oldVersion: '1.2.3',
+      version: '1.2.5',
+      oldVersion: '1.2.4',
       contact: false,
       upgradeDialog: false,
       dialog: false,
@@ -468,7 +505,7 @@ export default {
         click: 1,
         openShop: 0,
         starCompanyName: 'Nome da Companhia',
-        cosmicDust: 0,
+        cosmicDust: 10000,
         cosmicDustPerSecond: 0,
         itemsBuyed: [],
         achievementsList: {
@@ -526,7 +563,7 @@ export default {
             img: 'https://www.flaticon.com/br/premium-icon/icons/svg/3936/3936056.svg',
             price: 200,
             value: 0.5,
-            description: 'Aumenta eficiência da Garra.'
+            description: 'Aumenta a eficiência da Garra.'
           },
           {
             idu: 2,
@@ -535,16 +572,16 @@ export default {
             img: 'https://www.flaticon.com/premium-icon/icons/svg/3049/3049596.svg',
             price: 1200,
             value: 2,
-            description: 'Aumenta o eficiência do aerogel em +2'
+            description: 'Aumenta a eficiência do aerogel em +2'
           },
           {
             idu: 3,
-            uplink: 'batery',
-            label: 'Bateria Pro',
+            uplink: 'processor',
+            label: 'Processador Pro',
             img: 'https://www.flaticon.com/premium-icon/icons/svg/3804/3804975.svg',
             price: 3000,
             value: 3,
-            description: 'Aumenta o eficiência da bateria em +3'
+            description: 'Aumenta a eficiência da bateria em +3'
           },
           {
             idu: 4,
@@ -553,7 +590,7 @@ export default {
             img: 'https://www.flaticon.com/premium-icon/icons/svg/3270/3270577.svg',
             price: 5000,
             value: 5,
-            description: 'Aumenta o eficiência do scanner em +5'
+            description: 'Aumenta a eficiência do scanner em +5'
           },
           {
             idu: 5,
@@ -562,7 +599,7 @@ export default {
             img: 'https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg',
             price: 7000,
             value: 5,
-            description: 'Aumenta o eficiência do drone em +5'
+            description: 'Aumenta a eficiência do drone em +5'
           },
           {
             idu: 5,
@@ -571,11 +608,11 @@ export default {
             img: 'https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg',
             price: 8000,
             value: 5,
-            description: 'Aumenta o a capacidade de coleta do drone lançado em +5'
+            description: 'Aumenta a capacidade de coleta do drone lançado em +5'
           },
           {
-            idu: 5,
-            uplink: 'drone',
+            idu: 6,
+            uplink: 'station',
             label: 'Bateria de Drone',
             img: 'https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg',
             price: 10000,
@@ -586,6 +623,7 @@ export default {
         items: {
           garra: {
             id: 1,
+            type: 'item',
             label: 'garra',
             img: 'https://www.flaticon.com/br/premium-icon/icons/svg/3936/3936056.svg',
             description: 'Ferramenta para ajudar na coleta de detritos.',
@@ -598,6 +636,7 @@ export default {
           },
           aerogel: {
             id: 2,
+            type: 'item',
             label: 'aerogel',
             img: 'https://www.flaticon.com/premium-icon/icons/svg/3049/3049596.svg',
             description: 'Material usado para ajudar na coleta de poeira cosmica.',
@@ -608,11 +647,12 @@ export default {
             ups: 0,
             totalEfficiency: 0
           },
-          batery: {
+          processor: {
             id: 3,
-            label: 'batery',
-            img: 'https://www.flaticon.com/premium-icon/icons/svg/2333/2333603.svg',
-            description: 'Material usado para alimentar equipamentos eletrônicos.',
+            type: 'item',
+            label: 'Processador',
+            img: 'https://img-premium.flaticon.com/png/512/1425/1425684.png?token=exp=1621051022~hmac=a4a5745f69d7218db2f552fc23259408',
+            description: 'Material usado aumentar a capacidade de equipamentos eletrônicos.',
             price: 1150,
             value: 5,
             amount: 0,
@@ -622,6 +662,7 @@ export default {
           },
           scanner: {
             id: 4,
+            type: 'item',
             label: 'scanner',
             img: 'https://www.flaticon.com/premium-icon/icons/svg/3270/3270577.svg',
             description: 'Material usado para scanear asteroids.',
@@ -634,12 +675,13 @@ export default {
           },
           drone: {
             id: 5,
+            type: 'equipament',
             label: 'drone',
             img: 'https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg',
             description: 'Equipamento / Drone pode ser lançado para coletar poeira cósmica.',
             price: 2000,
             value: 10,
-            batery: 10,
+            timeLaunch: 10,
             bateryRecover: 30,
             launchValue: 10, // capacidade de coleta
             amount: 0,
@@ -647,6 +689,19 @@ export default {
             ups: 0,
             totalEfficiency: 0,
             status: 'Pronto'
+          },
+          station: {
+            id: 6,
+            type: 'item',
+            label: 'station',
+            img: 'https://img-premium.flaticon.com/png/512/4639/4639296.png?token=exp=1621040481~hmac=710587e7fd504f92d282482a812339e8',
+            description: 'Usado para lançar um drone e recarregar sua bateria',
+            price: 1300,
+            value: 8,
+            amount: 0,
+            unlocked: 10,
+            ups: 0,
+            totalEfficiency: 0
           }
         }
       }
@@ -674,6 +729,15 @@ export default {
   },
 
   computed: {
+    gameItems () {
+      const items = this.gameItemsFilter()
+      return items
+    },
+
+    gameEquipaments () {
+      const items = this.gameEquipamentsFilter()
+      return items
+    },
 
     animatedNumber () {
       return this.game.cosmicDust.toFixed(0)
@@ -776,10 +840,25 @@ export default {
         this.achievementNotify(this.game.achievementsList.droneAchiev.label)
       }
     }
-
   },
 
   methods: {
+    gameItemsFilter () {
+      const filter = 'type'
+      const result = Object.keys(this.game.items).reduce((acc, val) =>
+        (this.game.items[val][filter] === 'equipament' ? acc : { ...acc, [val]: this.game.items[val] }), {})
+      console.log(result)
+      return result
+    },
+
+    gameEquipamentsFilter () {
+      const filter = 'type'
+      const result = Object.keys(this.game.items).reduce((acc, val) =>
+        (this.game.items[val][filter] === 'item' ? acc : { ...acc, [val]: this.game.items[val] }), {})
+      console.log(result)
+      return result
+    },
+
     contactCard () {
       this.contact = true
       this.$refs.buyItem.play()
@@ -837,7 +916,7 @@ export default {
       this.game.droneFunction.colorDrone = 'bg-blue'
       this.game.droneFunction.droneSend = true
       this.game.cosmicDustPerSecond += this.game.items.drone.launchValue
-      this.game.droneFunction.droneTimer = this.game.items.drone.batery // tempo lançado
+      this.game.droneFunction.droneTimer = this.game.items.drone.timeLaunch // tempo lançado
       this.game.items.drone.status = 'working'
       const som = new Audio('http://soundimage.org/wp-content/uploads/2016/04/PowerUp28.mp3')
       som.play()
@@ -898,7 +977,8 @@ export default {
         icon: 'img:https://www.flaticon.com/premium-icon/icons/svg/4680/4680441.svg',
         color: 'blue'
       })
-      this.game.items[model.uplink].ups += 1
+      console.log(this.game.items[model.uplink].ups += 1)
+    //   this.game.items[model.uplink].ups += 1
     },
 
     buyUpgrade (model) {
@@ -970,10 +1050,22 @@ export default {
               model.price += model.price * 0.2
             }
             if (model.label === 'Bateria de Drone') {
-              this.game.items.drone.batery += model.value
+              this.game.items.drone.timeLaunch += model.value
               this.game.items.drone.bateryRecover += 1
               model.price += model.price * 0.2
             }
+            this.addInstallCountItem(model)
+          }
+          break
+        case 6:
+          console.log(model)
+          if (this.game.cosmicDust >= model.price) {
+            this.game.cosmicDust -= model.price
+
+            this.game.items[model.uplink].value += model.value
+
+            model.price += model.price * 0.2
+
             this.addInstallCountItem(model)
           }
           break
@@ -1080,6 +1172,17 @@ export default {
   width: 100px;
 }
 
+.fontSizeText {
+  font-size: 8px;
+  &__title {
+    font-size: 11px;
+  }
+
+  &__tabs {
+    font-size: 10px;
+  }
+}
+
 .contact {
   width: 300px;
 }
@@ -1100,8 +1203,9 @@ export default {
 }
 
 .page {
-  background-image: url(https://images6.alphacoders.com/885/thumb-1920-885542.png);
-  background-size: cover;
+  background-image: url(https://i.pinimg.com/564x/b1/bd/c1/b1bdc1ae539dcbd1a7c33cef3e5f2d9a.jpg);
+  background-size: unset;
+  // background-repeat: space;
   background-color: #2A4158;
   display: flex;
   justify-content: center;
@@ -1112,6 +1216,7 @@ export default {
 .starshipDesktop {
   background-image: url('https://gifimage.net/wp-content/uploads/2018/11/pixel-gif-stars-1.gif');
   width: 400px;
+  min-height: 755px;
   background-color: #556779;
   border-radius: 6px;
   border-width: 3px;
@@ -1178,6 +1283,22 @@ export default {
   right: 0px;
   padding: 0 0 20px 0;
 }
-// upgrades
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+
+  background: rgb(7, 4, 184);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(255, 217, 0);
+}
 
 </style>
