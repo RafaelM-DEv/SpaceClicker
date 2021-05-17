@@ -446,8 +446,8 @@
     </template>
 
     <template class="text-center q-mt-sm">
-      <audio ref="music" id="bg-audio"  loop>
-        <source src="http://soundimage.org/wp-content/uploads/2016/03/Escape_Looping.mp3">
+      <audio ref="music" id="bg-audio" autoplay loop>
+        <source src="../assets/Checking.mp3">
       </audio>
     </template>
 
