@@ -8,42 +8,35 @@
     </q-page-scroller>
 
      <q-tabs v-model="toolbar" active-color="white" no-caps dense class="bg-blue text-white shadow-2 fit" style="border-radius: 5px;" >
-        <q-tab name="space" label="space" ripple>
-          <img src="../assets/ufo.png" alt="" style="width: 30px;">
-        </q-tab>
-        <q-tab name="options" label="Opções" icon="img:https://image.flaticon.com/icons/png/128/4665/4665249.png" />
-        <q-tab name="achivements" label="Conquistas" icon="img:https://img-premium.flaticon.com/png/512/1734/1734158.png?token=exp=1621052389~hmac=938a35b31581276c78299840ffc93856" />
+        <q-tab name="space" label="space" ripple><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab>
+        <q-tab name="options" label="Opções"><img src="../assets/options.png" style="width: 30px;"></q-tab>
+        <q-tab name="achivements" label="Conquistas"><img src="../assets/badge.png" style="width: 30px;"></q-tab>
      </q-tabs>
 
     <!-- CONQUISTAS -->
-    <q-tab-panels v-model="toolbar" animated style="background-color:rgba(0, 0, 0, 0.1);">
+    <q-tab-panels v-model="toolbar" animated  transition-prev="fade" transition-next="fade" style="background-color:rgba(0, 0, 0, 0.1);">
           <q-tab-panel name="achivements">
-      <div class="achive font">
-        <q-card-actions class="col">
-          <div class="col text-right text-white">
-            <q-btn icon="close" flat dense v-close-popup size="25px"/>
-          </div>
-        </q-card-actions>
+      <div class="achive font fit">
         <div class="col text-center text-white text-h6">Conquistas</div>
-        <q-card-section class="flex justify-center">
+        <div class="flex justify-center">
           <q-list v-for="(item, index) in game.achievementsList" :key="index" class="starship__item-list text-white starship__item-list--achiv" >
-            <q-item-section>
+            <div>
               <q-icon v-if="!item.conquest" name="img:https://www.flaticon.com/premium-icon/icons/svg/1321/1321744.svg" size="80px" />
               <div v-if="item.conquest" class="starship__item-list--achiv">
                 <div class="q-ml-sm q-py-sm text-capitalize text-center">{{ item.label }}</div>
                 <div class="q-px-sm starship__item-description starship__item-description--achivDescrip">{{ item.description }}</div>
               </div>
-            </q-item-section>
+            </div>
           </q-list>
-        </q-card-section>
+        </div>
       </div>
       </q-tab-panel>
     </q-tab-panels>
 
     <!-- MENU DE OPÇÕES -->
-      <q-tab-panels v-model="toolbar" animated style="background-color:rgba(0, 0, 0, 0.1);">
-          <q-tab-panel name="options">
-      <div style="min-width: 100px;" class="flex justify-center pixel-borders--1 font">
+      <q-tab-panels v-model="toolbar" animated  transition-prev="fade" transition-next="fade" style="background-color:rgba(0, 0, 0, 0.1);">
+       <q-tab-panel name="options" >
+      <div style="min-width: 100px;" class="flex justify-center  font">
         <q-card-section class="column q-gutter-y-md">
           <!-- TODO criar um modal com uma msg e uma img dizendo que o jogo será resetado e sem tem certeza disso -->
           <div>
@@ -92,6 +85,8 @@
     </q-dialog>
 
     <!-- STARDUST -->
+    <q-tab-panels v-model="toolbar" animated transition-prev="fade" transition-next="fade" style="background-color:rgba(0, 0, 0, 0.1);">
+          <q-tab-panel name="space">
     <div class="flex justify-center">
       <div :class="isMobile">
         <q-separator color="red" size="4px" />
@@ -99,9 +94,16 @@
           <q-btn outline flat size="15px" :label="game.starCompanyName" @click="starCompany"/>
         </div>
         <div class="column items-center q-mb-md">
+          <div class="flex q-gutter-x-lg">
+
           <div style="font-size: 12px;">
-            Poeira Cósmica: {{ cosmicDustCount | formatNumber}}
+            {{ cosmicDustCount | formatNumber}}
             <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/>
+          </div>
+          <div style="font-size: 12px;">
+            20
+            <q-img src="../assets/gem.png" style="width: 18px" class="q-mb-xs"/>
+          </div>
           </div>
           <div style="font-size: 10px;">Por segundo: {{ game.cosmicDustPerSecond.toFixed(1) }}/s</div>
           <div class="q-mt-sm" style="font-size: 9px;">Ganho por click: {{ game.click }}</div>
@@ -154,25 +156,29 @@
             <div class="text-white">
               <q-img src="https://i.pinimg.com/originals/19/d2/28/19d228e7cbd160555af5d92e3154b381.gif" style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
                 <div class="absolute-bottom text-caption text-center">
-                  #4 - Pizza Espacial
+                  #1 - Mineração na lua
                 </div>
                 </q-img>
 
               <div class="text-caption">
 
-                <p>Missão de exploração da lua</p>
+                <p>Missão de criação de uma mineração na lua</p>
               </div>
-              <div class="text-justify">
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum obcaecati ut non iusto ea consectetur deleniti reprehenderit ducimus. Suscipit, explicabo. Dolore consectetur omnis fugiat minima possimus quisquam sint eveniet cumque!
+              <div class="text-center text-black"  style="border-radius: 5px; font-size: 10px; background-color: white;">
+               Existem diversos minérios na Lua, mas dentro deles há um muito raro chamado Unobitânio.
+               Crie uma base e comece a minerar para encontrá-los
               </div>
                <div class="flex justify-between q-mt-sm">
+                 <!-- TODO colocar contador igual do drone -->
                 <div>Rendimento</div>
-                <div>500/s</div>
+                <div>50/min <q-img src="../assets/gem.png" style="width: 18px" class="q-mb-xs"/></div>
+                <!-- TODO colocar icone o unobtanium -->
               </div>
               <div class="flex justify-between q-mt-sm">
                 <div>Custo</div>
-                <div>5.000 <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/></div>
+                <div>150.000 <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/></div>
               </div>
+               <q-btn label="Iniciar" size="13px" push color="warning" class="q-mt-md fit" />
               <q-separator class="q-mt-md" color="warning" size="1px" />
             </div>
 
@@ -187,7 +193,7 @@
 
                 <p>Comércio interstelar</p>
               </div>
-              <div class="text-justify">
+              <div class="text-justify" >
                 Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum obcaecati ut non iusto ea consectetur deleniti reprehenderit ducimus. Suscipit, explicabo. Dolore consectetur omnis fugiat minima possimus quisquam sint eveniet cumque!
               </div>
                <div class="flex justify-between q-mt-sm">
@@ -305,8 +311,8 @@
         <div v-if="game.openShop !== 0" class="q-mt-xs q-mb-xs flex justify-center text-uppercase">
           Loja
           <q-tabs v-model="shop" active-color="white" no-caps dense class="bg-green text-white shadow-2 fit"  style="border-radius: 5px;" >
-            <q-tab name="itens" icon="img:https://image.flaticon.com/icons/png/128/4665/4665249.png" label="Gadgets"/>
-            <q-tab name="equipamentos" icon="img:https://img-premium.flaticon.com/png/512/4646/4646987.png?token=exp=1621028990~hmac=7600facc94288540fbde3b9e6b35a422" label="Equipamentos"/>
+            <q-tab name="itens" label="Gadgets"><img src="" alt=""><img src="../assets/gadget.png" style="width: 30px;"></q-tab>
+            <q-tab name="equipamentos" label="Equipamentos"><img src="../assets/telescope.png" style="width: 30px;"></q-tab>
           </q-tabs>
         </div>
 
@@ -318,7 +324,7 @@
                   <div v-if="game.openShop <= item.unlocked" class="fit dimmed not-avaliable"/>
                   <div class="flex justify-between">
                     <div class="row">
-                      <img :src="item.img">
+                       <q-img :src="require(`../assets/${item.img}`)" style="width: 40px; height: 40px;" />
                     <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
                     </div>
                     <div class="column text-right">
@@ -346,7 +352,7 @@
                   <div v-if="game.openShop <= item.unlocked" class="fit dimmed not-avaliable"/>
                   <div class="flex justify-between">
                     <div class="row">
-                      <img :src="item.img">
+                      <q-img :src="require(`../assets/${item.img}`)" style="width: 40px; height: 40px;" />
                     <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
                     </div>
                     <div class="column text-right">
@@ -377,6 +383,8 @@
 
       </div>
     </div>
+          </q-tab-panel>
+    </q-tab-panels>
 
     <!-- NOME DA COMPANHIA -->
     <q-dialog v-model="setName">
@@ -619,7 +627,7 @@ export default {
           },
           {
             idu: 6,
-            uplink: 'station',
+            uplink: 'estação',
             label: 'Bateria de Drone',
             img: 'https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg',
             price: 10000,
@@ -632,7 +640,7 @@ export default {
             id: 1,
             type: 'item',
             label: 'garra',
-            img: 'https://www.flaticon.com/br/premium-icon/icons/svg/3936/3936056.svg',
+            img: 'garra.png',
             description: 'Ferramenta para ajudar na coleta de detritos.',
             price: 50,
             value: 0.5,
@@ -645,7 +653,7 @@ export default {
             id: 2,
             type: 'item',
             label: 'aerogel',
-            img: 'https://www.flaticon.com/premium-icon/icons/svg/3049/3049596.svg',
+            img: 'nanocristal.png',
             description: 'Material usado para ajudar na coleta de poeira cosmica.',
             price: 75,
             value: 2,
@@ -658,7 +666,7 @@ export default {
             id: 3,
             type: 'item',
             label: 'Processador',
-            img: '684.png?token=exp=1621051022~hmac=a4a5745f69d7218db2f552fc23259408',
+            img: 'cpu.png',
             description: 'Material usado aumentar a capacidade de equipamentos eletrônicos.',
             price: 1150,
             value: 5,
@@ -671,7 +679,7 @@ export default {
             id: 4,
             type: 'item',
             label: 'scanner',
-            img: 'https://www.flaticon.com/premium-icon/icons/svg/3270/3270577.svg',
+            img: 'scanner.png',
             description: 'Material usado para scanear asteroids.',
             price: 1300,
             value: 8,
@@ -684,7 +692,7 @@ export default {
             id: 5,
             type: 'equipament',
             label: 'drone',
-            img: 'https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg',
+            img: 'drone.png',
             description: 'Equipamento / Drone pode ser lançado para coletar poeira cósmica.',
             price: 2000,
             value: 10,
@@ -700,8 +708,8 @@ export default {
           station: {
             id: 6,
             type: 'item',
-            label: 'station',
-            img: 'https://img-premium.flaticon.com/png/512/4639/4639296.png?token=exp=1621040481~hmac=710587e7fd504f92d282482a812339e8',
+            label: 'estação',
+            img: 'station.png',
             description: 'Usado para lançar um drone e recarregar sua bateria',
             price: 1300,
             value: 8,
