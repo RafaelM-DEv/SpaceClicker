@@ -634,7 +634,6 @@ export default {
         this.game.achievementsList.aerogelAmount.conquest = true
         this.achievementSong()
         this.achievementNotify(this.game.achievementsList.aerogelAmount.label)
-        this.$gtag.event('achievement', { event_category: 'achivement', event_label: 'amount', value: newValue })
       }
     },
 
@@ -705,6 +704,7 @@ export default {
     },
 
     achievementNotify (text) {
+      this.$gtag.event('achievement', { event_category: 'achivement', event_label: 'amount', value: 1 })
       this.$q.notify({
         message: `Conquista<br><strong>${text}</strong>`,
         multiLine: true,
@@ -920,7 +920,7 @@ export default {
 
     getDust () {
       this.game.cosmicDust += this.game.click
-      this.$gtag.event('click', { event_category: 'click', event_label: 'GetDust', value: this.game.cosmicDust })
+      this.$gtag.event('click', { event_category: 'click', event_label: 'GetDust', value: 1 })
     },
 
     getDustperSecond () {
