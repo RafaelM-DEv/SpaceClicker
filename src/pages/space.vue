@@ -908,6 +908,7 @@ export default {
     },
 
     achievementNotify (text) {
+      this.$gtag.event('achievement', { event_category: 'achivement', event_label: 'amount', value: 1 })
       this.$q.notify({
         message: `Conquista<br><strong>${text}</strong>`,
         multiLine: true,
@@ -1136,6 +1137,7 @@ export default {
 
     getDust () {
       this.game.cosmicDust += this.game.click
+      this.$gtag.event('click', { event_category: 'click', event_label: 'GetDust', value: 1 })
     },
 
     getDustperSecond () {
