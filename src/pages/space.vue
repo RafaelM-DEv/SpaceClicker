@@ -15,44 +15,44 @@
 
     <!-- CONQUISTAS -->
     <q-tab-panels v-model="toolbar" animated  transition-prev="fade" transition-next="fade" style="background-color:rgba(0, 0, 0, 0.1);">
-          <q-tab-panel name="achivements">
-      <div class="achive font fit">
-        <div class="col text-center text-white text-h6">Conquistas</div>
-        <div class="flex justify-center">
-          <q-list v-for="(item, index) in game.achievementsList" :key="index" class="starship__item-list text-white starship__item-list--achiv" >
-            <div>
-              <q-icon v-if="!item.conquest" name="img:https://www.flaticon.com/premium-icon/icons/svg/1321/1321744.svg" size="80px" />
-              <div v-if="item.conquest" class="starship__item-list--achiv">
-                <div class="q-ml-sm q-py-sm text-capitalize text-center">{{ item.label }}</div>
-                <div class="q-px-sm starship__item-description starship__item-description--achivDescrip">{{ item.description }}</div>
+      <q-tab-panel name="achivements">
+        <div class="achive font fit">
+          <div class="col text-center text-white text-h6">Conquistas</div>
+          <div class="flex justify-center">
+            <q-list v-for="(item, index) in game.achievementsList" :key="index" class="starship__item-list text-white starship__item-list--achiv" >
+              <div>
+                <q-icon v-if="!item.conquest" name="img:https://www.flaticon.com/premium-icon/icons/svg/1321/1321744.svg" size="80px" />
+                <div v-if="item.conquest" class="starship__item-list--achiv">
+                  <div class="q-ml-sm q-py-sm text-capitalize text-center">{{ item.label }}</div>
+                  <div class="q-px-sm starship__item-description starship__item-description--achivDescrip">{{ item.description }}</div>
+                </div>
               </div>
-            </div>
-          </q-list>
+            </q-list>
+          </div>
         </div>
-      </div>
       </q-tab-panel>
     </q-tab-panels>
 
     <!-- MENU DE OPÇÕES -->
-      <q-tab-panels v-model="toolbar" animated  transition-prev="fade" transition-next="fade" style="background-color:rgba(0, 0, 0, 0.1);">
-       <q-tab-panel name="options" >
-      <div style="min-width: 100px;" class="flex justify-center  font">
-        <q-card-section class="column q-gutter-y-md">
-          <!-- TODO criar um modal com uma msg e uma img dizendo que o jogo será resetado e sem tem certeza disso -->
-          <div>
-            <q-btn label="Reset" @click="resetGame" style="min-width: 200px;" color="negative" />
-          </div>
-          <div>
-            <q-btn label="contato" class="bg-blue text-white" style="min-width: 200px;" @click="contactCard"/>
-          </div>
-          <div>
-            <q-btn class="bg-orange-6 fit" color="white" label="Música" :icon="iconAudio" @click="audioToggle"/>
-          </div>
-         <!-- TODO criar controle de volume -->
-        </q-card-section>
-      </div>
-          </q-tab-panel>
-      </q-tab-panels>
+    <q-tab-panels v-model="toolbar" animated  transition-prev="fade" transition-next="fade" style="background-color:rgba(0, 0, 0, 0.1);">
+      <q-tab-panel name="options" >
+        <div style="min-width: 100px;" class="flex justify-center  font">
+          <q-card-section class="column q-gutter-y-md">
+            <!-- TODO criar um modal com uma msg e uma img dizendo que o jogo será resetado e sem tem certeza disso -->
+            <div>
+              <q-btn label="Reset" @click="resetGame" style="min-width: 200px;" color="negative" />
+            </div>
+            <div>
+              <q-btn label="contato" class="bg-blue text-white" style="min-width: 200px;" @click="contactCard"/>
+            </div>
+            <div>
+              <q-btn class="bg-orange-6 fit" color="white" label="Música" :icon="iconAudio" @click="audioToggle"/>
+            </div>
+          <!-- TODO criar controle de volume -->
+          </q-card-section>
+        </div>
+      </q-tab-panel>
+    </q-tab-panels>
 
     <!-- QUADRO DE UPDATE -->
     <q-dialog v-model="game.info" :maximized="isMobileMaximized">
@@ -96,13 +96,15 @@
         <div class="column items-center q-mb-md">
           <div class="flex q-gutter-x-lg">
 
-          <div style="font-size: 12px;">
+          <div class="column text-center q-mb-md" style="font-size: 12px; ">
+            <q-img src="../assets/cosmic.png" style="width: 65px;" class="q-mb-xs" />
+            <div>
             {{ cosmicDustCount | formatNumber}}
-            <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/>
+            </div>
           </div>
-          <div style="font-size: 12px;">
-            20
-            <q-img src="../assets/gem.png" style="width: 18px" class="q-mb-xs"/>
+          <div class="column text-center" style="font-size: 12px;">
+            <q-img src="../assets/unobtanio.png" style="width: 68px"/>
+            <div>20</div>
           </div>
           </div>
           <div style="font-size: 10px;">Por segundo: {{ game.cosmicDustPerSecond.toFixed(1) }}/s</div>
@@ -121,8 +123,8 @@
           <!-- EQUIPAMENTOS -->
         <div class="q-mt-md flex justify-center text-uppercase text-caption">
           <q-tabs v-model="equipamentBay" active-color="white" no-caps dense class="bg-warning text-white shadow-2 fit"  style="border-radius: 5px;" >
-            <q-tab name="inventory" label="Equipamentos" icon="img:https://image.flaticon.com/icons/png/128/4665/4665249.png" />
-            <q-tab name="missions" label="Missões" icon="img:https://img-premium.flaticon.com/png/512/1734/1734158.png?token=exp=1621052389~hmac=938a35b31581276c78299840ffc93856" />
+            <q-tab name="inventory" label="Inventário"><img src="../assets/inventory.png" style="width: 45px;"></q-tab>
+            <q-tab name="missions" label="Misões"><img src="../assets/mission.png" style="width: 35px;"></q-tab>
             <!-- <q-tab name="armamentos" label="Armamentos">
               <img src="../assets/moon.png" alt="" style="width: 30px;">
             </q-tab> -->
@@ -171,12 +173,12 @@
                <div class="flex justify-between q-mt-sm">
                  <!-- TODO colocar contador igual do drone -->
                 <div>Rendimento</div>
-                <div>50/min <q-img src="../assets/gem.png" style="width: 18px" class="q-mb-xs"/></div>
+                <div>50/min <q-img src="../assets/unobtanio.png" style="width: 20px" class="q-mb-xs"/></div>
                 <!-- TODO colocar icone o unobtanium -->
               </div>
               <div class="flex justify-between q-mt-sm">
                 <div>Custo</div>
-                <div>150.000 <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/></div>
+                <div>150.000 <q-img src="../assets/cosmic.png" style="width: 20px" class="q-mb-xs"/></div>
               </div>
                <q-btn label="Iniciar" size="13px" push color="warning" class="q-mt-md fit" />
               <q-separator class="q-mt-md" color="warning" size="1px" />
@@ -202,7 +204,7 @@
               </div>
               <div class="flex justify-between q-mt-sm">
                 <div>Custo</div>
-                <div>5.000 <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/></div>
+                <div>5.000 <q-img src="../assets/cosmic.png" style="width: 20px" class="q-mb-xs"/></div>
               </div>
               <q-separator class="q-mt-md" color="warning" size="1px" />
              </div>
@@ -324,13 +326,13 @@
                   <div v-if="game.openShop <= item.unlocked" class="fit dimmed not-avaliable"/>
                   <div class="flex justify-between">
                     <div class="row">
-                       <q-img :src="require(`../assets/${item.img}`)" style="width: 40px; height: 40px;" />
+                       <q-img :src="require(`../assets/${item.img}`)" style="width: 50px; height: 50px;" />
                     <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
                     </div>
                     <div class="column text-right">
                       <div>
                         Preço: {{ item.price | formatNumber }}
-                        <q-img src="../assets/cosmic.png" style="width: 14px" class="q-mb-xs"/>
+                        <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/>
                       </div>
                       <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
                       <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
@@ -864,7 +866,7 @@ export default {
       const filter = 'type'
       const result = Object.keys(this.game.items).reduce((acc, val) =>
         (this.game.items[val][filter] === 'equipament' ? acc : { ...acc, [val]: this.game.items[val] }), {})
-      console.log(result)
+      // console.log(result)
       return result
     },
 
@@ -872,7 +874,7 @@ export default {
       const filter = 'type'
       const result = Object.keys(this.game.items).reduce((acc, val) =>
         (this.game.items[val][filter] === 'item' ? acc : { ...acc, [val]: this.game.items[val] }), {})
-      console.log(result)
+      // console.log(result)
       return result
     },
 
@@ -895,7 +897,7 @@ export default {
 
     recovery () {
       if (this.game.droneFunction.droneSend || !this.game.droneFunction.labelDrone === 'Enviar Drone') { this.droneWorking() }
-      return console.log('resume...')
+      // return console.log('resume...')
     },
 
     copy (text) {
@@ -995,7 +997,7 @@ export default {
         icon: 'img:https://www.flaticon.com/premium-icon/icons/svg/4680/4680441.svg',
         color: 'blue'
       })
-      console.log(this.game.items[model.uplink].ups += 1)
+      // console.log(this.game.items[model.uplink].ups += 1)
     //   this.game.items[model.uplink].ups += 1
     },
 
@@ -1076,7 +1078,7 @@ export default {
           }
           break
         case 6:
-          console.log(model)
+          // console.log(model)
           if (this.game.cosmicDust >= model.price) {
             this.game.cosmicDust -= model.price
 
