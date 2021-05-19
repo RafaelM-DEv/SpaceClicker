@@ -9,8 +9,8 @@
 
       </q-toolbar>
     </q-header>
-<!--
-    <q-drawer
+
+    <!-- <q-drawer
       hidden
       v-model="leftDrawerOpen"
       show-if-above

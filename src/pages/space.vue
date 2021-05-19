@@ -1,20 +1,28 @@
 <template>
   <q-page class="q-pa-sm page font">
 
+    <!-- NOTAS DE UPDATE -->
+    <updateNote v-model="ShowUpdateNote"/>
+    <!-- TODO colocar a logo e badge de desenvolvimento -->
+    <!-- TODO remover tag style -->
     <q-page-scroller position="top" :scroll-offset="100" :offset="[18, 18]" style="z-index: 110;">
-       <div class="text-white bg-red q-py-sm q-px-sm text-center text-caption" style="border-radius: 5px;"  >
+       <div class="text-white bg-purple q-py-sm q-px-sm text-center text-caption" style="border-radius: 5px;" >
           Poeira Cósmica: {{ cosmicDustCount | formatNumber }}
       </div>
     </q-page-scroller>
 
-     <q-tabs v-model="toolbar" active-color="white" no-caps dense class="bg-blue text-white shadow-2 fit" style="border-radius: 5px;" >
-        <q-tab name="space" label="space" ripple><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab>
-        <q-tab name="options" label="Opções"><img src="../assets/options.png" style="width: 30px;"></q-tab>
+      <!-- TODO Remover tag style -->
+    <q-tabs v-model="toolbar" active-color="white" no-caps dense class="bg-blue text-white shadow-2 fit" style="border-radius: 5px;" >
+       <q-badge color="red" floating style="font-size: 8px;">
+      Dev
+    </q-badge>
+        <q-tab name="space" label="space" style="width: 100px;"><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab>
+        <q-tab name="options" label="Opções" style="width: 100px;"><img src="../assets/options.png" style="width: 30px;"></q-tab>
         <q-tab name="achivements" label="Conquistas"><img src="../assets/badge.png" style="width: 30px;"></q-tab>
-     </q-tabs>
+    </q-tabs>
 
     <!-- CONQUISTAS -->
-    <q-tab-panels v-model="toolbar" animated  transition-prev="fade" transition-next="fade" style="background-color:rgba(0, 0, 0, 0.1);">
+    <q-tab-panels v-model="toolbar" animated transition-prev="fade" transition-next="fade" style="background-color:rgba(0, 0, 0, 0.1);">
       <q-tab-panel name="achivements">
         <div class="achive font fit">
           <div class="col text-center text-white text-h6">Conquistas</div>
@@ -34,358 +42,299 @@
     </q-tab-panels>
 
     <!-- MENU DE OPÇÕES -->
-    <q-tab-panels v-model="toolbar" animated  transition-prev="fade" transition-next="fade" style="background-color:rgba(0, 0, 0, 0.1);">
+    <q-tab-panels v-model="toolbar" animated transition-prev="fade" transition-next="fade" style="background-color:rgba(0, 0, 0, 0.1);">
       <q-tab-panel name="options" >
         <div style="min-width: 100px;" class="flex justify-center  font">
           <q-card-section class="column q-gutter-y-md">
             <!-- TODO criar um modal com uma msg e uma img dizendo que o jogo será resetado e sem tem certeza disso -->
-            <div>
-              <q-btn label="Reset" @click="resetGame" style="min-width: 200px;" color="negative" />
-            </div>
-            <div>
-              <q-btn label="contato" class="bg-blue text-white" style="min-width: 200px;" @click="contactCard"/>
-            </div>
-            <div>
-              <q-btn class="bg-orange-6 fit" color="white" label="Música" :icon="iconAudio" @click="audioToggle"/>
-            </div>
-          <!-- TODO criar controle de volume -->
+            <div><q-btn label="Reset" @click="resetGame" style="min-width: 200px;" color="negative" /></div>
+            <div><q-btn label="contato" class="bg-blue text-white" style="min-width: 200px;" @click="contactCard"/></div>
+            <div><q-btn class="bg-orange-6 fit" color="white" label="Música" :icon="iconAudio" @click="audioToggle"/></div>
+            <!-- TODO criar controle de volume -->
           </q-card-section>
         </div>
       </q-tab-panel>
     </q-tab-panels>
 
-    <!-- QUADRO DE UPDATE -->
-    <q-dialog v-model="game.info" :maximized="isMobileMaximized">
-      <q-card style="min-width: 100px;" class="flex justify-center pixel-borders--1">
-        <q-card-section class="column q-gutter-y-sm">
-          <q-icon name="img:https://i.pinimg.com/originals/45/1a/27/451a27df78f84c8f671ec1e502a4fe97.gif" class="flex self-center robot"/>
-          <!-- <div class="devDialog font pixel-borders--1">
-            Olá, meu nome é Rafael e primeiramente desculpa pelos dados cosmicos perdidos estou trabalhando incansavelmente para chegar a um produto final e você claro é um TESTER, TESTERS são muitos
-            importantes no desenvolvimento de um produto sabia? são eles que enchem minha caixa de emails com feedbacks que fazem o Jogo ser bem Melhor! Vou deixar anotado aqui o que mudei dessa vez ok!
-          </div> -->
-
-          <div class="font devDialog pixel-borders--1">
-            <div class="text-center q-mb-sm text-bold">
-              Update log 13/05/2021
-            </div>
-            <p>>Conquistas Completas, Todas estão disponíveis no jogo!</p>
-            <p>>Resolvido Bug do Drone quando a Página Recarrega.</p>
-            <p>>Os equipamentos agora mostra os status atuais</p>
-            <p>>Foi adicionado um banner quando o contador de Poeira Cosmica não fica visivel, mostrando a quantidade atual.</p>
-            <p>>Ajustes nos upgrades</p>
-          </div>
-        </q-card-section>
-
-        <q-card-actions>
-          <div class="q-mb-md font">
-            <q-btn label="ok" @click="close()" class="bg-warning" />
-          </div>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
     <!-- STARDUST -->
     <q-tab-panels v-model="toolbar" animated transition-prev="fade" transition-next="fade" style="background-color:rgba(0, 0, 0, 0.1);">
-          <q-tab-panel name="space">
-    <div class="flex justify-center">
-      <div :class="isMobile">
-        <q-separator color="red" size="4px" />
+      <q-tab-panel name="space">
         <div class="flex justify-center">
-          <q-btn outline flat size="15px" :label="game.starCompanyName" @click="starCompany"/>
-        </div>
-        <div class="column items-center q-mb-md">
-          <div class="flex q-gutter-x-lg">
-
-          <div class="column text-center q-mb-md" style="font-size: 12px; ">
-            <q-img src="../assets/cosmic.png" style="width: 65px;" class="q-mb-xs" />
-            <div>
-            {{ cosmicDustCount | formatNumber}}
+          <div :class="isMobile">
+          <q-separator color="red" size="4px" />
+            <div class="flex justify-center">
+              <q-btn outline flat size="15px" :label="game.starCompanyName" @click="starCompany"/>
             </div>
-          </div>
-          <div class="column text-center" style="font-size: 12px;">
-            <q-img src="../assets/unobtanio.png" style="width: 68px"/>
-            <div>20</div>
-          </div>
-          </div>
-          <div style="font-size: 10px;">Por segundo: {{ game.cosmicDustPerSecond.toFixed(1) }}/s</div>
-          <div class="q-mt-sm" style="font-size: 9px;">Ganho por click: {{ game.click }}</div>
-        </div>
-
-        <!-- PEGAR POEIRA -->
-        <div class="justify-center flex">
-          <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
-          <div v-if="game.cosmicDust === 0" class="text-black q-px-sm" style="position: absolute; font-size: 10px; background-color: white; width: 290px;">Clique na nave para pegar poeira cósmica...</div>
-          <q-btn icon="img:https://i.gifer.com/origin/24/2432cf5ff737ad7d1794a29d042eb02e_w200.webp" flat round @click="getDust()" size="60px"/>
-        </div>
-
-        <q-separator class="q-mt-md" color="orange" size="4px" />
-          <!-- TODO Criar lista com botão dropdown para exibir os itens -->
-          <!-- EQUIPAMENTOS -->
-        <div class="q-mt-md flex justify-center text-uppercase text-caption">
-          <q-tabs v-model="equipamentBay" active-color="white" no-caps dense class="bg-warning text-white shadow-2 fit"  style="border-radius: 5px;" >
-            <q-tab name="inventory" label="Inventário"><img src="../assets/inventory.png" style="width: 45px;"></q-tab>
-            <q-tab name="missions" label="Misões"><img src="../assets/mission.png" style="width: 35px;"></q-tab>
-            <!-- <q-tab name="armamentos" label="Armamentos">
-              <img src="../assets/moon.png" alt="" style="width: 30px;">
-            </q-tab> -->
-          </q-tabs>
-        </div>
-
-        <q-tab-panels v-model="equipamentBay" animated style="background-color:rgba(0, 0, 0, 0.1);">
-          <q-tab-panel name="inventory">
-            <!-- DRONE -->
-            <div v-if="!game.installDrone" class="text-black q-px-sm q-mt-lg q-mx-sm" style="border-radius: 5px; font-size: 10px; background-color: white;">Compre algum equipamento para ser usado aqui!</div>
-            <div v-if="game.installDrone" class="q-ml-sm q-mt-lg justify-between flex">
-              <q-btn icon="img:https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg" :class="game.droneFunction.colorDrone" :label="game.droneFunction.labelDrone" size="12px" :disable="game.droneFunction.droneSend" @click="drone()"/>
-              <q-btn outline :label="game.droneFunction.droneTimer" size="12px"/>
-            </div>
-            <div v-if="game.installDrone" class="q-mt-sm q-ml-sm" style="font-size: 8px;">
-              <div class="flex justify-between">
-                <div>Capacidade de Coleta do drone</div>
-                <div>{{ game.items.drone.launchValue }}/s</div>
-              </div>
-              <div class="flex justify-between">
-                <div>Tempo de lançamento</div>
-                <div>{{ game.items.drone.timeLaunch }}s</div>
-              </div>
-              <div class="flex justify-between">
-                <div>Tempo de recarga</div>
-                <div>{{ game.items.drone.bateryRecover }}s</div>
-              </div>
-            </div>
-          </q-tab-panel>
-          <q-tab-panel name="missions"  style="font-size: 8px;" >
-            <div class="text-white">
-              <q-img src="https://i.pinimg.com/originals/19/d2/28/19d228e7cbd160555af5d92e3154b381.gif" style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
-                <div class="absolute-bottom text-caption text-center">
-                  #1 - Mineração na lua
+            <div class="column items-center q-mb-md">
+              <div class="flex justify-center q-gutter-x-lg">
+                <div class="text-center q-mb-md" style="font-size: 12px; ">
+                  <q-img src="../assets/cosmic.png" style="width: 65px;" class="q-mb-xs">
+                     <q-tooltip content-class="bg-purple" :offset="[1, 1]" >
+                      Poeira Cósmica
+                    </q-tooltip>
+                  </q-img>
+                  <!-- TODO testar responsividade com numeros muito grandes -->
+                  <div>{{ cosmicDustCount | formatNumber}}</div>
                 </div>
-                </q-img>
-
-              <div class="text-caption">
-
-                <p>Missão de criação de uma mineração na lua</p>
+                <div class="text-center" style="font-size: 12px;">
+                  <q-img src="../assets/unobtanio.png" style="width: 68px">
+                    <q-tooltip content-class="bg-purple" :offset="[1, 1]">
+                      Unobtânio
+                    </q-tooltip>
+                  </q-img>
+                  <div>20</div>
+                </div>
               </div>
-              <div class="text-center text-black"  style="border-radius: 5px; font-size: 10px; background-color: white;">
-               Existem diversos minérios na Lua, mas dentro deles há um muito raro chamado Unobitânio.
-               Crie uma base e comece a minerar para encontrá-los
-              </div>
-               <div class="flex justify-between q-mt-sm">
-                 <!-- TODO colocar contador igual do drone -->
-                <div>Rendimento</div>
-                <div>50/min <q-img src="../assets/unobtanio.png" style="width: 20px" class="q-mb-xs"/></div>
-                <!-- TODO colocar icone o unobtanium -->
-              </div>
-              <div class="flex justify-between q-mt-sm">
-                <div>Custo</div>
-                <div>150.000 <q-img src="../assets/cosmic.png" style="width: 20px" class="q-mb-xs"/></div>
-              </div>
-               <q-btn label="Iniciar" size="13px" push color="warning" class="q-mt-md fit" />
-              <q-separator class="q-mt-md" color="warning" size="1px" />
+              <div style="font-size: 10px;">Por segundo: {{ game.cosmicDustPerSecond.toFixed(1) }}/s</div>
+              <div class="q-mt-sm" style="font-size: 9px;">Ganho por click: {{ game.click }}</div>
+            </div>
+            <!-- PEGAR POEIRA -->
+            <div class="justify-center flex">
+              <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
+              <div v-if="game.cosmicDust === 0" class="text-black q-px-sm" style="position: absolute; font-size: 10px; background-color: white; width: 290px;">Clique na nave para pegar poeira cósmica...</div>
+              <q-btn icon="img:https://i.gifer.com/origin/24/2432cf5ff737ad7d1794a29d042eb02e_w200.webp" flat round @click="getDust()" size="60px"/>
             </div>
 
-            <div class="text-white">
-              <q-img src="https://i.imgur.com/9oO33CL.gif?noredirect" style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
-                <div class="absolute-bottom text-caption text-center">
-                  #4 - Pizza Espacial
+            <q-separator class="q-mt-md" color="orange" size="4px" />
+            <!-- INVENTÁRIO -->
+            <div class="q-mt-md flex justify-center text-uppercase text-caption">
+              <q-tabs v-model="equipamentBay" active-color="white" no-caps dense class="bg-warning text-white shadow-2 fit"  style="border-radius: 5px;" >
+                <q-tab name="inventory" label="Inventário"><img src="../assets/inventory.png" style="width: 45px;"></q-tab>
+                <q-tab name="missions" label="Misões"><img src="../assets/mission.png" style="width: 35px;"></q-tab>
+              </q-tabs>
+            </div>
+
+            <q-tab-panels v-model="equipamentBay" animated style="background-color:rgba(0, 0, 0, 0.1);">
+              <q-tab-panel name="inventory">
+                <!-- DRONE -->
+                <div v-if="!game.installDrone" class="text-black q-px-sm q-mt-lg q-mx-sm" style="border-radius: 5px; font-size: 10px; background-color: white;">Compre algum equipamento para ser usado aqui!</div>
+                <div v-if="game.installDrone" class="q-ml-sm q-mt-lg justify-between flex">
+                  <q-btn icon="img:https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg" :class="game.droneFunction.colorDrone" :label="game.droneFunction.labelDrone" size="12px" :disable="game.droneFunction.droneSend" @click="drone()"/>
+                  <q-btn outline :label="game.droneFunction.droneTimer" size="12px"/>
                 </div>
-                </q-img>
-
-              <div class="text-caption">
-
-                <p>Comércio interstelar</p>
-              </div>
-              <div class="text-justify" >
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum obcaecati ut non iusto ea consectetur deleniti reprehenderit ducimus. Suscipit, explicabo. Dolore consectetur omnis fugiat minima possimus quisquam sint eveniet cumque!
-              </div>
-               <div class="flex justify-between q-mt-sm">
-                <div>Rendimento</div>
-                <div>500/s</div>
-              </div>
-              <div class="flex justify-between q-mt-sm">
-                <div>Custo</div>
-                <div>5.000 <q-img src="../assets/cosmic.png" style="width: 20px" class="q-mb-xs"/></div>
-              </div>
-              <q-separator class="q-mt-md" color="warning" size="1px" />
-             </div>
-
-             <div class="text-white">
-              <q-img src="https://i.pinimg.com/originals/d8/ef/df/d8efdf8c2e2b4b2c8b4eb8b3fa79b5c9.gif" style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
-              <div class="absolute-bottom text-caption text-center">
-                  #4 - Pizza Espacial
+                <div v-if="game.installDrone" class="q-mt-sm q-ml-sm" style="font-size: 8px;">
+                  <div class="flex justify-between">
+                    <div>Capacidade de Coleta do drone</div>
+                    <div>{{ game.items.drone.launchValue }}/s</div>
+                  </div>
+                  <div class="flex justify-between">
+                    <div>Tempo de lançamento</div>
+                    <div>{{ game.items.drone.timeLaunch }}s</div>
+                  </div>
+                  <div class="flex justify-between">
+                    <div>Tempo de recarga</div>
+                    <div>{{ game.items.drone.bateryRecover }}s</div>
+                  </div>
                 </div>
-                </q-img>
-              <div class="text-caption">
+              </q-tab-panel>
 
-                <p>Pizza Espacial</p>
-              </div>
-              <div class="text-justify">
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum obcaecati ut non iusto ea consectetur deleniti reprehenderit ducimus. Suscipit, explicabo. Dolore consectetur omnis fugiat minima possimus quisquam sint eveniet cumque!
-              </div>
-               <div class="flex justify-between q-mt-sm">
-                <div>Rendimento</div>
-                <div>500/s</div>
-              </div>
-              <div class="flex justify-between q-mt-sm">
-                <div>Custo</div>
-                <div>5.000 <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/></div>
-              </div>
-              <q-separator class="q-mt-md" color="warning" size="1px" />
-             </div>
-
+              <q-tab-panel name="missions" style="font-size: 8px;">
                 <div class="text-white">
-              <q-img src="https://i.pinimg.com/originals/12/3f/56/123f56c7ee8793e6b31ee9f591478aac.gif"  style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
-                <div class="absolute-bottom text-caption text-center">
-                  #4 - Avaliação de dados
+                  <q-img src="https://i.pinimg.com/originals/19/d2/28/19d228e7cbd160555af5d92e3154b381.gif" style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
+                    <div class="absolute-bottom text-caption text-center">#1 - Mineração na lua</div>
+                  </q-img>
+                  <div class="text-justify text-black q-pa-xs" style="border-radius: 5px; background-color: white;">
+                    <p>Existem diversos minérios na Lua, mas dentro deles há um muito raro chamado Unobitânio.</p>
+                    Missão:
+                    <p>Crie uma base e comece a minerar para encontrá-los.</p>
+                  </div>
+                  <div class="flex justify-between q-mt-sm">
+                    <!-- TODO colocar contador igual do drone -->
+                    <div>Rendimento</div>
+                    <div>50/min <q-img src="../assets/unobtanio.png" style="width: 20px" class="q-mb-xs"/></div>
+                  </div>
+                  <div class="flex justify-between q-mt-xs">
+                    <div>Custo</div>
+                    <div>150.000 <q-img src="../assets/cosmic.png" style="width: 20px" class="q-mb-xs"/></div>
+                  </div>
+                  <div class="text-center text-warning">
+                    Itens Necessários:
+                  </div>
+                  <div class="flex justify-between q-mt-sm">
+                    <div>Processador</div>
+                    <div>50x</div>
+                  </div>
+                  <div class="flex justify-between q-mt-sm">
+                    <div>Garras</div>
+                    <div>150x</div>
+                  </div>
+                  <div class="flex justify-between q-mt-sm">
+                    <div>Aerogel</div>
+                    <div>150x</div>
+                  </div>
+                  <div class="flex justify-between q-mt-sm">
+                    <div>Scanner</div>
+                    <div>50x</div>
+                  </div>
+                  <q-btn label="Iniciar" size="13px" push color="warning" class="q-mt-md fit" />
+                  <q-separator class="q-mt-md" color="warning" size="1px" />
                 </div>
-              </q-img>
-              <div class="text-caption">
-                <p>Avaliação de dados</p>
-              </div>
-              <div class="text-justify">
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum obcaecati ut non iusto ea consectetur deleniti reprehenderit ducimus. Suscipit, explicabo. Dolore consectetur omnis fugiat minima possimus quisquam sint eveniet cumque!
-              </div>
-               <div class="flex justify-between q-mt-sm">
-                <div>Rendimento</div>
-                <div>500/s</div>
-              </div>
-              <div class="flex justify-between q-mt-sm">
-                <div>Custo</div>
-                <div>5.000 <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/></div>
-              </div>
-              <q-separator class="q-mt-md" color="warning" size="1px" />
-             </div>
-          </q-tab-panel>
-        </q-tab-panels>
-
-        <!-- <q-separator class="q-mt-md" color="blue" size="4px" /> -->
-
-      </div>
-
-      <!-- LISTA DE UPGRADES -->
-      <q-dialog v-model="upgradeDialog" :maximized="isMobileMaximized">
-        <q-card class="upgradeDialog">
-
-          <q-card-actions class="flex justify-center">
-            <div class="fit">
-              <q-btn v-close-popup color="warning" label="fechar" class="fit font" size="12px" />
-            </div>
-            <div class="text-white bg-red-9 q-py-xs text-center text-caption fit font" style="border-radius: 5px;"  >
-              Poeira Cósmica: {{ cosmicDustCount | formatNumber }}
-            </div>
-          </q-card-actions>
-
-          <q-card-section class="q-ma-none q-pa-sm" >
-            <q-list v-for="(update, index) in upgradesList" :key="index">
-              <div class="devDialog font pixel-borders--1 q-my-xs upgradeDialog__item">
-                <div class="flex justify-between no-wrap">
-                  <div class="column starship__items q-mb-sm q-ml-sm" style="max-width: 80px ">
-                    <div>
-                      <img :src="update.img" style="width: 30px; height: 30px;">
-                    </div>
-                    <div class="text-capitalize" style="font-size: 8px;">{{ update.label }}</div>
+                <!-- COMERCIO -->
+                <div class="text-white">
+                  <q-img src="https://i.imgur.com/9oO33CL.gif?noredirect"  style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
+                    <div class="absolute-bottom text-caption text-center">#1 - Comercio Espacial</div>
+                  </q-img>
+                  <div class="text-justify text-black q-pa-xs" style="border-radius: 5px; background-color: white;">
+                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Id molestias enim facere, ab sint quasi perferendis cumque sequi voluptate ut error rem dolores odit animi deleniti accusantium possimus nulla. Accusamus?</p>
+                    Missão:
+                    <p>loren</p>
                   </div>
-                  <div class="column text-right q-mt-md">
-                    <div>
-                       Preço: {{  update.price | formatNumber }}
-                      <q-img src="../assets/cosmic.png" style="width: 10px" class="q-mb-xs"/>
-                    </div>
-                    <div  v-if="update.idu !== 5" >Eficiência: +{{ update.value }}</div>
-                    <div  v-if="update.label === 'Drone Pro'">Eficiência: +{{ update.value }}</div>
-                    <!-- DRONE -->
-                    <div v-if="update.label === 'Drone Sentinela'" >Coleta de Poeira: +{{ update.value }}</div>
-                    <div v-if="update.label === 'Bateria de Drone'" >Coleta: +2s</div>
-                    <div v-if="update.label === 'Bateria de Drone'" >Recarga: +1s</div>
+                  <div class="flex justify-between q-mt-sm">
+                    <!-- TODO colocar contador igual do drone -->
+                    <div>Rendimento</div>
+                    <div>50/min <q-img src="../assets/unobtanio.png" style="width: 20px" class="q-mb-xs"/></div>
                   </div>
+                  <div class="flex justify-between q-mt-xs">
+                    <div>Custo</div>
+                    <div>150.000 <q-img src="../assets/cosmic.png" style="width: 20px" class="q-mb-xs"/></div>
+                  </div>
+                  <div class="text-center text-warning">
+                    Itens Necessários:
+                  </div>
+                  <div class="flex justify-between q-mt-sm">
+                    <div>Processador</div>
+                    <div>50x</div>
+                  </div>
+                  <div class="flex justify-between q-mt-sm">
+                    <div>Garras</div>
+                    <div>150x</div>
+                  </div>
+                  <div class="flex justify-between q-mt-sm">
+                    <div>Aerogel</div>
+                    <div>150x</div>
+                  </div>
+                  <div class="flex justify-between q-mt-sm">
+                    <div>Scanner</div>
+                    <div>50x</div>
+                  </div>
+                  <q-btn label="Iniciar" size="13px" push color="warning" class="q-mt-md fit" />
+                  <q-separator class="q-mt-md" color="warning" size="1px" />
                 </div>
-                <div class="q-px-md q-mt-sm starship__item-description" style="font-size: 8px;">{{ update.description }}</div>
-                <q-btn label="comprar" size="15px" push color="green" :disable="game.cosmicDust < update.price" class="q-mt-md fit" @click="buyUpgrade(update)" />
-              </div>
-            </q-list>
-          </q-card-section>
+              </q-tab-panel>
+            </q-tab-panels>
+          </div>
 
-        </q-card>
-      </q-dialog>
-      <!-- TODO criar uma tab para items e equipamentos -->
-      <!-- ITENS -->
-      <div :class="isMobile" >
-        <q-separator v-if="game.openShop !== 0" color="green" size="4px" />
-        <div v-if="game.openShop !== 0" class="q-mt-xs q-mb-xs flex justify-center text-uppercase">
-          Loja
-          <q-tabs v-model="shop" active-color="white" no-caps dense class="bg-green text-white shadow-2 fit"  style="border-radius: 5px;" >
-            <q-tab name="itens" label="Gadgets"><img src="" alt=""><img src="../assets/gadget.png" style="width: 30px;"></q-tab>
-            <q-tab name="equipamentos" label="Equipamentos"><img src="../assets/telescope.png" style="width: 30px;"></q-tab>
-          </q-tabs>
-        </div>
-
-        <q-tab-panels  v-if="game.openShop > 0" v-model="shop" animated style="background-color: black;">
-          <q-tab-panel name="itens">
-            <q-list v-if="game.openShop > 0" bordered class="starship__item-list text-white" style="font-size: 8px;">
-              <q-item v-for="(item, key) in gameItems" :key="key" class="starship__items">
-                <q-item-section class="row">
-                  <div v-if="game.openShop <= item.unlocked" class="fit dimmed not-avaliable"/>
-                  <div class="flex justify-between">
-                    <div class="row">
-                       <q-img :src="require(`../assets/${item.img}`)" style="width: 50px; height: 50px;" />
-                    <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
-                    </div>
-                    <div class="column text-right">
-                      <div>
-                        Preço: {{ item.price | formatNumber }}
-                        <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/>
+          <!-- LISTA DE UPGRADES -->
+          <q-dialog v-model="upgradeDialog" :maximized="isMobileMaximized">
+            <q-card class="upgradeDialog">
+              <q-card-actions class="flex justify-center">
+                <div class="fit">
+                  <q-btn v-close-popup color="warning" label="fechar" class="fit font" size="12px" />
+                </div>
+                <div class="text-white bg-purple q-py-xs text-center text-caption fit font" style="border-radius: 5px;"  >
+                  Poeira Cósmica: {{ cosmicDustCount | formatNumber }}
+                </div>
+              </q-card-actions>
+              <q-card-section class="q-ma-none q-pa-sm" >
+                <q-list v-for="(update, index) in upgradesList" :key="index">
+                  <div class="devDialog font pixel-borders--1 q-my-xs upgradeDialog__item">
+                    <div class="flex justify-between no-wrap">
+                      <div class="column starship__items q-mb-sm q-ml-sm" style="max-width: 80px ">
+                        <div>
+                          <img :src="update.img" style="width: 30px; height: 30px;">
+                        </div>
+                        <div class="text-capitalize" style="font-size: 8px;">{{ update.label }}</div>
                       </div>
-                      <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
-                      <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
-                    </div>
-                  </div>
-                  <div class="self-end q-mb-xs">Compradas: {{ item.amount | formatNumber }} unidades</div>
-                  <div class="q-px-md starship__item-description">{{ item.description }}</div>
-                  <q-btn label="comprar" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
-                  <q-btn label="upgrade" size="13px" push color="blue" :disable="game.cosmicDust < item.price || item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
-                <q-separator color="black" size="1px" class="q-mt-md" />
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-tab-panel>
-          <q-tab-panel name="equipamentos">
-            <q-list v-if="game.openShop > 0" bordered class="starship__item-list text-white" style="font-size: 8px;">
-              <q-item v-for="(item, key) in gameEquipaments" :key="key" class="starship__items">
-                <q-item-section class="row">
-                  <div v-if="game.openShop <= item.unlocked" class="fit dimmed not-avaliable"/>
-                  <div class="flex justify-between">
-                    <div class="row">
-                      <q-img :src="require(`../assets/${item.img}`)" style="width: 40px; height: 40px;" />
-                    <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
-                    </div>
-                    <div class="column text-right">
-                      <div>
-                        Preço: {{ item.price | formatNumber }}
-                        <q-img src="../assets/cosmic.png" style="width: 14px" class="q-mb-xs"/>
+                      <div class="column text-right q-mt-md">
+                        <div>
+                          Preço: {{  update.price | formatNumber }}
+                          <q-img src="../assets/cosmic.png" style="width: 10px" class="q-mb-xs"/>
+                        </div>
+                        <div  v-if="update.idu !== 5" >Eficiência: +{{ update.value }}</div>
+                        <div  v-if="update.label === 'Drone Pro'">Eficiência: +{{ update.value }}</div>
+                        <!-- DRONE -->
+                        <div v-if="update.label === 'Drone Sentinela'" >Coleta de Poeira: +{{ update.value }}</div>
+                        <div v-if="update.label === 'Bateria de Drone'" >Coleta: +2s</div>
+                        <div v-if="update.label === 'Bateria de Drone'" >Recarga: +1s</div>
                       </div>
-                      <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
-                      <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
                     </div>
+                    <div class="q-px-md q-mt-sm starship__item-description" style="font-size: 8px;">{{ update.description }}</div>
+                    <q-btn label="comprar" size="15px" push color="green" :disable="game.cosmicDust < update.price" class="q-mt-md fit" @click="buyUpgrade(update)" />
                   </div>
-                  <div class="self-end q-mb-xs">Compradas: {{ item.amount | formatNumber }} unidades</div>
-                  <div class="q-px-md starship__item-description">{{ item.description }}</div>
-                  <q-btn label="comprar" size="15px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
-                  <q-btn label="upgrade" size="13px" push color="blue" :disable="game.cosmicDust < item.price || item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
-                <q-separator color="black" size="1px" class="q-mt-md" />
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-tab-panel>
-        </q-tab-panels>
+                </q-list>
+              </q-card-section>
+            </q-card>
+          </q-dialog>
 
-        <div v-if="game.openShop === 0" class="flex fit">
-          <q-btn label="Comprar Melhorias - 50" size="10px" color="positive" class="fit" flat  @click="open">
-              <q-avatar class="q-ml-sm q-mb-xs self-center" size="20px"><img src="../assets/cosmic.png"></q-avatar>
-          </q-btn>
-        </div>
+          <!-- TODO criar uma tab para items e equipamentos -->
+          <!-- ITENS -->
+          <div :class="isMobile" >
+            <q-separator v-if="game.openShop !== 0" color="green" size="4px" />
+            <div v-if="game.openShop !== 0" class="q-mt-xs q-mb-xs flex justify-center text-uppercase">
+              Loja
+              <q-tabs v-model="shop" active-color="white" no-caps dense class="bg-green text-white shadow-2 fit"  style="border-radius: 5px;" >
+                <q-tab name="itens" label="Gadgets"><img src="" alt=""><img src="../assets/gadget.png" style="width: 30px;"></q-tab>
+                <q-tab name="equipamentos" label="Equipamentos"><img src="../assets/telescope.png" style="width: 30px;"></q-tab>
+              </q-tabs>
+            </div>
 
-      </div>
-    </div>
-          </q-tab-panel>
+            <q-tab-panels  v-if="game.openShop > 0" v-model="shop" animated style="background-color: black;">
+              <q-tab-panel name="itens">
+                <q-list v-if="game.openShop > 0" bordered class="starship__item-list text-white" style="font-size: 8px;">
+                  <q-item v-for="(item, key) in gameItems" :key="key" class="starship__items">
+                    <q-item-section class="row">
+                      <div v-if="game.openShop <= item.unlocked" class="fit dimmed not-avaliable"/>
+                      <div class="flex justify-between">
+                        <div class="row">
+                          <q-img :src="require(`../assets/${item.img}`)" style="width: 50px; height: 50px;" />
+                        <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
+                        </div>
+                        <div class="column text-right">
+                          <div>
+                            Preço: {{ item.price | formatNumber }}
+                            <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/>
+                          </div>
+                          <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
+                          <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
+                        </div>
+                      </div>
+                      <div class="self-end q-mb-xs">Compradas: {{ item.amount | formatNumber }} unidades</div>
+                      <div class="q-px-md starship__item-description">{{ item.description }}</div>
+                      <q-btn label="comprar" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
+                      <q-btn label="upgrade" size="13px" push color="blue" :disable="game.cosmicDust < item.price || item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
+                    <q-separator color="black" size="1px" class="q-mt-md" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-tab-panel>
+              <q-tab-panel name="equipamentos">
+                <q-list v-if="game.openShop > 0" bordered class="starship__item-list text-white" style="font-size: 8px;">
+                  <q-item v-for="(item, key) in gameEquipaments" :key="key" class="starship__items">
+                    <q-item-section class="row">
+                      <div v-if="game.openShop <= item.unlocked" class="fit dimmed not-avaliable"/>
+                      <div class="flex justify-between">
+                        <div class="row">
+                          <q-img :src="require(`../assets/${item.img}`)" style="width: 40px; height: 40px;" />
+                        <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
+                        </div>
+                        <div class="column text-right">
+                          <div>
+                            Preço: {{ item.price | formatNumber }}
+                            <q-img src="../assets/cosmic.png" style="width: 14px" class="q-mb-xs"/>
+                          </div>
+                          <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
+                          <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
+                        </div>
+                      </div>
+                      <div class="self-end q-mb-xs">Compradas: {{ item.amount | formatNumber }} unidades</div>
+                      <div class="q-px-md starship__item-description">{{ item.description }}</div>
+                      <q-btn label="comprar" size="15px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
+                      <q-btn label="upgrade" size="13px" push color="blue" :disable="game.cosmicDust < item.price || item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
+                    <q-separator color="black" size="1px" class="q-mt-md" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-tab-panel>
+            </q-tab-panels>
+
+            <div v-if="game.openShop === 0" class="flex fit">
+              <q-btn label="Comprar Melhorias - 50" size="10px" color="positive" class="fit" flat  @click="open">
+                  <q-avatar class="q-ml-sm q-mb-xs self-center" size="20px"><img src="../assets/cosmic.png"></q-avatar>
+              </q-btn>
+            </div>
+          </div>
+       </div>
+      </q-tab-panel>
     </q-tab-panels>
 
     <!-- NOME DA COMPANHIA -->
@@ -404,41 +353,40 @@
     <q-dialog v-model="contact">
       <q-card class="contact">
         <q-card-section>
-          <div class="">
-            <div class="text-center text-bold">Rafael Martins</div>
+          <div>
+            <div class="text-center text-bold q-mb-sm">Rafael Martins</div>
             <div class="flex">
-                <q-icon class="q-ml-xs" name="ion-logo-facebook" size="30px" />
-                <div class="q-mt-xs q-ml-xs"><a style="text-decoration: none; color: black;" href="https://www.facebook.com/Far3ll274">facebook.com/Far3ll274</a></div>
+              <q-icon class="q-ml-xs" name="ion-logo-facebook" size="30px" />
+              <div class="q-mt-xs q-ml-xs"><a style="text-decoration: none; color: black;" href="https://www.facebook.com/Far3ll274">facebook.com/Far3ll274</a></div>
             </div>
             <div class="flex q-mt-md ">
-                <q-icon class="q-ml-xs" name="ion-logo-twitter" size="30px" />
-                <p class="q-mt-xs q-ml-xs"><a style="text-decoration: none; color: black" href="https://twitter.com/Rafael_M274">@Rafael_M274</a></p>
+              <q-icon class="q-ml-xs" name="ion-logo-twitter" size="30px" />
+              <p class="q-mt-xs q-ml-xs"><a style="text-decoration: none; color: black" href="https://twitter.com/Rafael_M274">@Rafael_M274</a></p>
             </div>
             <div class="flex">
-                <div class="q-mt-xs q-ml-xs fit flex justify-between">
-                  <div>
-                    <q-icon name="ion-mail" size="30px" />
-                    far3ll.274@gmail.com
-                  </div>
-                  <div>
-                  <q-btn flat dense size="11px" icon="ion-copy" @click="copy()" />
-                  </div>
+              <div class="q-mt-xs q-ml-xs fit flex justify-between">
+                <div><q-icon name="ion-mail" size="30px" /> Far3ll.274@gmail.com</div>
+                <!-- <div><q-btn flat dense size="11px" icon="ion-copy" @click="copy()" /></div> -->
+              </div>
+                <div class="flex q-mt-md ">
+                <q-icon class="q-ml-xs" name="ion-logo-octocat" size="30px" />
+                <p class="q-mt-xs q-ml-xs"><a style="text-decoration: none; color: black" href="https://github.com/RafaelM-DEv">https://github.com/RafaelM-DEv</a></p>
               </div>
             </div>
           </div>
         </q-card-section>
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="ok" v-close-popup />
+        <q-card-actions align="center" class="text-primary">
+          <q-btn label="ok" v-close-popup color="blue" class="fit" />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-    <div class="flex justify-center fit q-mt-md bg-grey-7 fit q-px-sm">
+    <!-- <div class="flex justify-center fit q-mt-md bg-grey-7 fit q-px-sm">
       <div class="text-black text-center" style="font-size: 8px;">
         Rafael Martins - <a target="_blank" style="text-decoration: none; color: yellow" href="https://github.com/RafaelM-DEv">https://github.com/RafaelM-DEv</a>
         Version {{ version }}
       </div>
-    </div>
+    </div> -->
 
       <!-- SFX / MUSIC  -->
     <template class="text-center q-mt-sm">
@@ -480,22 +428,18 @@
 </template>
 
 <script>
+import updateNote from '../components/updateNote.vue'
+
 import gsap from 'gsap'
 import { copyToClipboard } from 'quasar'
 const numeral = require('numeral')
 
 export default {
-  filters: {
-    formatNumber: function (value) {
-      return numeral(value).format('0,0') // displaying other groupings/separators is possible, look at the docs
-    },
+  components: { updateNote },
 
-    formatNumberDec: function (value) {
-      return numeral(value).format('0,0.0') // displaying other groupings/separators is possible, look at the docs
-    }
-  },
   data () {
     return {
+      ShowUpdateNote: false,
       equipamentBay: 'inventory',
       shop: 'itens',
       asteroidDialog: false,
@@ -722,6 +666,16 @@ export default {
           }
         }
       }
+    }
+  },
+
+  filters: {
+    formatNumber: function (value) {
+      return numeral(value).format('0,0') // displaying other groupings/separators is possible, look at the docs
+    },
+
+    formatNumberDec: function (value) {
+      return numeral(value).format('0,0.0') // displaying other groupings/separators is possible, look at the docs
     }
   },
 
