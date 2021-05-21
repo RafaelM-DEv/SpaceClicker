@@ -12,13 +12,12 @@
     </q-page-scroller>
 
       <!-- TODO Remover tag style -->
-    <q-tabs v-model="toolbar" active-color="white" no-caps dense class="bg-blue text-white shadow-2 fit" style="border-radius: 5px;" >
-       <q-badge color="red" floating style="font-size: 8px;">
-      Dev
-    </q-badge>
-        <q-tab name="space" label="space" style="width: 100px;"><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab>
-        <q-tab name="options" label="Opções" style="width: 100px;"><img src="../assets/options.png" style="width: 30px;"></q-tab>
-        <q-tab name="achivements" label="Conquistas"><img src="../assets/badge.png" style="width: 30px;"></q-tab>
+    <q-tabs v-model="toolbar" active-color="white" no-caps dense class="bg-blue text-white shadow-2" style="border-radius: 5px;" >
+      <q-badge color="red" floating style="font-size: 8px;">Dev</q-badge>
+      <q-tab name="space" label="space" style="width: 100px;"><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab>
+      <q-tab name="options" label="Opções" style="width: 100px;"><img src="../assets/options.png" style="width: 30px;"></q-tab>
+      <q-tab name="achivements" label="Conquistas"><img src="../assets/badge.png" style="width: 30px;"></q-tab>
+      <div><q-btn class="bg-orange-6 q-mr-md q-ml-md" color="white" round :icon="iconAudio" @click="audioToggle"/></div>
     </q-tabs>
 
     <!-- CONQUISTAS -->
@@ -69,7 +68,7 @@
               <div class="flex justify-center q-gutter-x-lg">
                 <div class="text-center q-mb-md" style="font-size: 12px; ">
                   <q-img src="../assets/cosmic.png" style="width: 65px;" class="q-mb-xs">
-                     <q-tooltip content-class="bg-purple" :offset="[1, 1]" >
+                     <q-tooltip content-class="bg-purple" anchor="top middle" self="center middle" >
                       Poeira Cósmica
                     </q-tooltip>
                   </q-img>
@@ -78,11 +77,11 @@
                 </div>
                 <div class="text-center" style="font-size: 12px;">
                   <q-img src="../assets/unobtanio.png" style="width: 68px">
-                    <q-tooltip content-class="bg-purple" :offset="[1, 1]">
+                    <q-tooltip content-class="bg-purple" anchor="top middle" self="center middle">
                       Unobtânio
                     </q-tooltip>
                   </q-img>
-                  <div>20</div>
+                  <div>{{ game.unobtanio }}</div>
                 </div>
               </div>
               <div style="font-size: 10px;">Por segundo: {{ game.cosmicDustPerSecond.toFixed(1) }}/s</div>
@@ -127,89 +126,69 @@
                   </div>
                 </div>
               </q-tab-panel>
-
+              <!-- MISSÕES -->
               <q-tab-panel name="missions" style="font-size: 8px;">
-                <div class="text-white">
-                  <q-img src="https://i.pinimg.com/originals/19/d2/28/19d228e7cbd160555af5d92e3154b381.gif" style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
-                    <div class="absolute-bottom text-caption text-center">#1 - Mineração na lua</div>
-                  </q-img>
-                  <div class="text-justify text-black q-pa-xs" style="border-radius: 5px; background-color: white;">
-                    <p>Existem diversos minérios na Lua, mas dentro deles há um muito raro chamado Unobitânio.</p>
-                    Missão:
-                    <p>Crie uma base e comece a minerar para encontrá-los.</p>
+                <q-list v-for="(item, index) in game.quest" :key="index">
+                  <div class="text-white">
+                    <q-img :src="item.img" style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
+                      <div class="absolute-bottom text-caption text-center">{{ item.title }}</div>
+                    </q-img>
+                    <div class="text-justify text-black q-px-sm" style="border-radius: 5px; background-color: white;">
+                      <p>{{ item.description }}</p>
+                    </div>
+
+                    <q-separator class="q-mb-sm" color="white" inset size="1px" />
+
+                      <div class="q-mb-sm">
+                        <div class="text-center flex justify-center q-gutter-x-lg ">
+                          <div>
+                            <div>Rendimento</div>
+                            <div><q-img src="../assets/unobtanio.png" style="width: 34px"/></div>
+                            <div>{{ item.income }} - {{ item.maxIncome }}</div>
+                          </div>
+                          <div>
+                          <div>Custo</div>
+                            <div><q-img src="../assets/cosmic.png" style="width: 30px" class="q-mb-xs"/></div>
+                            <div>{{ item.dust | formatNumber }} </div>
+                          </div>
+                          <!-- <div class="self-center">
+                            <div>Duração</div>
+                            <div>{{ item.workTime }}min</div>
+                          </div> -->
+                        </div>
+                      </div>
+
+                      <q-separator class="q-mb-sm" color="white" inset size="1px" />
+
+                    <div class="q-ml-lg text-warning">
+                      Itens Necessários:
+                    </div>
+
+                  <div class="row">
+                    <div class="col bg-black-4 pixel-borders--1 q-pa-xs">
+                      <div v-for="(item, index) in item.cost" :key="index">
+                        <div class="flex justify-between q-mt-sm">
+                          <div>{{ index }}</div>
+                          <div v-if="game.items[index].amount >= item">{{ item }}x</div>
+                          <div v-else class="text-red" >{{ item }}x</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="text-center q-mt-md">
+                        <q-circular-progress show-value font-size="12px" :value="item.progressBar" size="80px" :thickness="0.22" color="warning" track-color="grey-3" :max="item.progressBarMax">
+                        <q-avatar size="50px">
+                          <img src="https://i.pinimg.com/originals/84/10/38/8410382ab79ad788c2416f1b4373ffcb.gif">
+                        </q-avatar>
+                        </q-circular-progress>
+                      </div>
+                    </div>
                   </div>
-                  <div class="flex justify-between q-mt-sm">
-                    <!-- TODO colocar contador igual do drone -->
-                    <div>Rendimento</div>
-                    <div>50/min <q-img src="../assets/unobtanio.png" style="width: 20px" class="q-mb-xs"/></div>
+
+                    <q-btn label="Iniciar" size="13px" push color="warning" class="q-mt-md fit" :disable="item.questStarted" @click="missionStart(item)"/>
+                    <q-separator class="q-mt-md" color="warning" size="1px" />
                   </div>
-                  <div class="flex justify-between q-mt-xs">
-                    <div>Custo</div>
-                    <div>150.000 <q-img src="../assets/cosmic.png" style="width: 20px" class="q-mb-xs"/></div>
-                  </div>
-                  <div class="text-center text-warning">
-                    Itens Necessários:
-                  </div>
-                  <div class="flex justify-between q-mt-sm">
-                    <div>Processador</div>
-                    <div>50x</div>
-                  </div>
-                  <div class="flex justify-between q-mt-sm">
-                    <div>Garras</div>
-                    <div>150x</div>
-                  </div>
-                  <div class="flex justify-between q-mt-sm">
-                    <div>Aerogel</div>
-                    <div>150x</div>
-                  </div>
-                  <div class="flex justify-between q-mt-sm">
-                    <div>Scanner</div>
-                    <div>50x</div>
-                  </div>
-                  <q-btn label="Iniciar" size="13px" push color="warning" class="q-mt-md fit" />
-                  <q-separator class="q-mt-md" color="warning" size="1px" />
-                </div>
-                <!-- COMERCIO -->
-                <div class="text-white">
-                  <q-img src="https://i.imgur.com/9oO33CL.gif?noredirect"  style="border-radius: 8px; border-color: grey; border-style: solid; height: 120px;" class="q-my-sm" >
-                    <div class="absolute-bottom text-caption text-center">#1 - Comercio Espacial</div>
-                  </q-img>
-                  <div class="text-justify text-black q-pa-xs" style="border-radius: 5px; background-color: white;">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Id molestias enim facere, ab sint quasi perferendis cumque sequi voluptate ut error rem dolores odit animi deleniti accusantium possimus nulla. Accusamus?</p>
-                    Missão:
-                    <p>loren</p>
-                  </div>
-                  <div class="flex justify-between q-mt-sm">
-                    <!-- TODO colocar contador igual do drone -->
-                    <div>Rendimento</div>
-                    <div>50/min <q-img src="../assets/unobtanio.png" style="width: 20px" class="q-mb-xs"/></div>
-                  </div>
-                  <div class="flex justify-between q-mt-xs">
-                    <div>Custo</div>
-                    <div>150.000 <q-img src="../assets/cosmic.png" style="width: 20px" class="q-mb-xs"/></div>
-                  </div>
-                  <div class="text-center text-warning">
-                    Itens Necessários:
-                  </div>
-                  <div class="flex justify-between q-mt-sm">
-                    <div>Processador</div>
-                    <div>50x</div>
-                  </div>
-                  <div class="flex justify-between q-mt-sm">
-                    <div>Garras</div>
-                    <div>150x</div>
-                  </div>
-                  <div class="flex justify-between q-mt-sm">
-                    <div>Aerogel</div>
-                    <div>150x</div>
-                  </div>
-                  <div class="flex justify-between q-mt-sm">
-                    <div>Scanner</div>
-                    <div>50x</div>
-                  </div>
-                  <q-btn label="Iniciar" size="13px" push color="warning" class="q-mt-md fit" />
-                  <q-separator class="q-mt-md" color="warning" size="1px" />
-                </div>
+                </q-list>
               </q-tab-panel>
             </q-tab-panels>
           </div>
@@ -381,12 +360,12 @@
       </q-card>
     </q-dialog>
 
-    <!-- <div class="flex justify-center fit q-mt-md bg-grey-7 fit q-px-sm">
+    <div class="flex justify-center fit q-mt-md bg-grey-7 fit q-px-sm">
       <div class="text-black text-center" style="font-size: 8px;">
         Rafael Martins - <a target="_blank" style="text-decoration: none; color: yellow" href="https://github.com/RafaelM-DEv">https://github.com/RafaelM-DEv</a>
         Version {{ version }}
       </div>
-    </div> -->
+    </div>
 
       <!-- SFX / MUSIC  -->
     <template class="text-center q-mt-sm">
@@ -396,7 +375,7 @@
     </template>
 
     <template class="text-center q-mt-sm">
-      <audio ref="music" id="bg-audio" autoplay loop>
+      <audio ref="music" id="bg-audio" loop>
         <source src="../assets/Checking.mp3">
       </audio>
     </template>
@@ -466,7 +445,8 @@ export default {
         click: 1,
         openShop: 0,
         starCompanyName: 'Nome da Companhia',
-        cosmicDust: 10000,
+        cosmicDust: 900000,
+        unobtanio: 0,
         cosmicDustPerSecond: 0,
         itemsBuyed: [],
         achievementsList: {
@@ -664,6 +644,55 @@ export default {
             ups: 0,
             totalEfficiency: 0
           }
+        },
+        questRecovery: false,
+        quest: {
+          moon: {
+            title: '#1 - Mineração na lua',
+            img: 'https://i.pinimg.com/originals/19/d2/28/19d228e7cbd160555af5d92e3154b381.gif',
+            description: 'Existem diversos minérios na Lua, mas dentro deles há um muito raro chamado Unobitânio.Crie uma base e comece a minerar para encontrá-los!',
+            dust: 200000,
+            cost: { // itens amount
+              aerogel: 50,
+              drone: 10,
+              garra: 40,
+              processor: 15,
+              scanner: 20,
+              station: 20
+            },
+            income: 10,
+            maxIncome: 20, // unobtânios - numero randon de (30-50)
+            workTime: 60000,
+            working: 0,
+            questStarted: false,
+            questNotify: false,
+            progressBar: 0,
+            progressBarMax: 60
+            // quando terminar abrir uma notificação de quanto foi adquirido
+            // criar barra de progresso
+          },
+          market: {
+            title: '#2 - Mercado espacial',
+            img: 'https://i.imgur.com/9oO33CL.gif?noredirect',
+            description: 'O Mercado espacial ira vender todo lixo e sucata espacial que você armazena ao longo da jornada. Abra um mercado espacial e ganhe vendendo sucatas!',
+            dust: 500000,
+            cost: { // itens amount
+              aerogel: 80,
+              drone: 10,
+              garra: 50,
+              processor: 15,
+              scanner: 20,
+              station: 20
+            },
+            income: 20,
+            maxIncome: 40, // unobtânios - numero randon de (30-50)
+            workTime: 60000,
+            working: 0,
+            questStarted: false,
+            questNotify: false,
+            progressBar: 0,
+            progressBarMax: 60
+          }
         }
       }
     }
@@ -697,9 +726,14 @@ export default {
       this.saveGame()
     }
     this.recovery()
+    this.isQuestRecovery()
   },
 
   computed: {
+    itemsNeed () {
+      return 'text-red'
+    },
+
     gameItems () {
       const items = this.gameItemsFilter()
       return items
@@ -815,6 +849,73 @@ export default {
   },
 
   methods: {
+    missionStart (item) {
+      let pass = true
+      item.progressBar = 0
+
+      if (this.game.cosmicDust >= item.dust) {
+        const timer = new Date()
+        item.questNotify = false
+
+        Object.entries(item.cost).forEach(([key]) => {
+          if (this.game.items[key].amount < item.cost[key]) {
+            pass = false
+          }
+        })
+
+        if (!pass) {
+          this.$q.notify({
+            message: '<span class="font" style="font-size: 8px;">Relatório de Missão<br><strong>Itens faltando</strong></span>',
+            multiLine: true,
+            html: true,
+            timeout: 6000,
+            progress: true,
+            avatar: 'https://image.flaticon.com/icons/png/512/455/455875.png',
+            color: 'negative'
+          })
+        } else {
+          this.game.cosmicDust -= item.dust
+          item.working = timer.getTime() + item.workTime
+          item.questStarted = true
+
+          // Contagem do tempo
+          const timeCount = setInterval(() => {
+            const ocurredTime = new Date().getTime()
+
+            // progress
+            item.progressBar += 1
+
+            if (ocurredTime > item.working) {
+              clearInterval(timeCount)
+              console.log('recebi a recompensa!')
+              item.questStarted = false
+              this.$q.notify({
+                message: `<span class="font" style="font-size: 8px;">Relatório de Missão<br><strong>Missão ${item.title} bem Sucedida!</strong></span>`,
+                multiLine: true,
+                html: true,
+                timeout: 6000,
+                progress: true,
+                avatar: 'https://image.flaticon.com/icons/png/512/455/455875.png',
+                color: 'gray'
+              })
+              item.questNotify = true
+              item.progressBar = 0
+              this.game.unobtanio = Math.floor(Math.random(item.income) * item.maxIncome) + 1
+            }
+          }, 1000)
+        }
+      } else {
+        this.$q.notify({
+          message: '<span class="font" style="font-size: 8px;">Relatório de Missão<br><strong>Não há poeira suficientes</strong></span>',
+          multiLine: true,
+          html: true,
+          timeout: 6000,
+          progress: true,
+          avatar: 'https://image.flaticon.com/icons/png/512/455/455875.png',
+          color: 'negative'
+        })
+      }
+    },
 
     gameItemsFilter () {
       const filter = 'type'
@@ -852,6 +953,47 @@ export default {
     recovery () {
       if (this.game.droneFunction.droneSend || !this.game.droneFunction.labelDrone === 'Enviar Drone') { this.droneWorking() }
       // return console.log('resume...')
+    },
+
+    isQuestRecovery () {
+      Object.entries(this.game.quest).forEach(([key, value]) => {
+        if (value.questStarted) {
+          const recover = setInterval(() => {
+            const timeNow = new Date().getTime()
+            value.progressBar += 1
+
+            if (value.working < timeNow) {
+              clearInterval(recover)
+              this.game.unobtanio = Math.floor(Math.random(value.income) * value.maxIncome) + 1
+              value.questStarted = false
+              value.progressBar = 0
+              value.questNotify = true
+
+              this.$q.notify({
+                message: `<span class="font" style="font-size: 8px;">Relatório de Missão<br><strong>Missão ${value.title} bem Sucedida!</strong></span>`,
+                multiLine: true,
+                html: true,
+                timeout: 6000,
+                progress: true,
+                avatar: 'https://image.flaticon.com/icons/png/512/455/455875.png',
+                color: 'gray'
+              })
+            }
+          }, 1000)
+          if (value.questNotify) {
+            this.$q.notify({
+              message: `<span class="font" style="font-size: 8px;">Relatório de Missão<br><strong>Missão ${value.title} bem Sucedida!</strong></span>`,
+              multiLine: true,
+              html: true,
+              timeout: 6000,
+              progress: true,
+              avatar: 'https://image.flaticon.com/icons/png/512/455/455875.png',
+              color: 'gray'
+            })
+            value.questNotify = true
+          }
+        }
+      })
     },
 
     copy (text) {
