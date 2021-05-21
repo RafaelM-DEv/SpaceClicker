@@ -368,6 +368,25 @@
     </div>
 
       <!-- SFX / MUSIC  -->
+
+    <template class="text-center q-mt-sm">
+      <audio ref="error">
+        <source src="../assets/error.mp3">
+      </audio>
+    </template>
+
+    <template class="text-center q-mt-sm">
+      <audio ref="MissionStartSong">
+        <source src="../assets/Mission_start.mp3">
+      </audio>
+    </template>
+
+    <template class="text-center q-mt-sm">
+      <audio ref="MissionComplete">
+        <source src="../assets/Mission_complete.mp3">
+      </audio>
+    </template>
+
     <template class="text-center q-mt-sm">
       <audio ref="buyItem">
         <source src="../assets/buy.mp3">
@@ -864,6 +883,7 @@ export default {
         })
 
         if (!pass) {
+          this.$refs.error.play()
           this.$q.notify({
             message: '<span class="font" style="font-size: 8px;">Relatório de Missão<br><strong>Itens faltando</strong></span>',
             multiLine: true,
@@ -874,6 +894,7 @@ export default {
             color: 'negative'
           })
         } else {
+          this.$refs.MissionStartSong.play()
           this.game.cosmicDust -= item.dust
           item.working = timer.getTime() + item.workTime
           item.questStarted = true
@@ -900,11 +921,13 @@ export default {
               })
               item.questNotify = true
               item.progressBar = 0
-              this.game.unobtanio = Math.floor(Math.random(item.income) * item.maxIncome) + 1
+              this.game.unobtanio += Math.floor(Math.random(item.income) * item.maxIncome) + 1
+              this.$refs.MissionComplete.play()
             }
           }, 1000)
         }
       } else {
+        this.$refs.error.play()
         this.$q.notify({
           message: '<span class="font" style="font-size: 8px;">Relatório de Missão<br><strong>Não há poeira suficientes</strong></span>',
           multiLine: true,
@@ -964,7 +987,7 @@ export default {
 
             if (value.working < timeNow) {
               clearInterval(recover)
-              this.game.unobtanio = Math.floor(Math.random(value.income) * value.maxIncome) + 1
+              this.game.unobtanio += Math.floor(Math.random(value.income) * value.maxIncome) + 1
               value.questStarted = false
               value.progressBar = 0
               value.questNotify = true
