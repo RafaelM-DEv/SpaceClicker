@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="showDialog" :value="value ">
+  <q-dialog v-model="showDialog" :value="value" persistent>
     <q-card style="min-width: 100px;" class="flex justify-center pixel-borders--1">
       <q-card-section class="column q-gutter-y-sm">
           <q-icon name="img:https://i.pinimg.com/originals/45/1a/27/451a27df78f84c8f671ec1e502a4fe97.gif" class="flex self-center robot"/>

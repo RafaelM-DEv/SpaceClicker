@@ -2,7 +2,7 @@
   <q-page class="q-pa-sm page font">
 
     <!-- NOTAS DE UPDATE -->
-    <updateNote v-model="game.ShowUpdateNote" @showView="toggleUpdate($event)"/>
+    <updateNote v-model="game.ShowUpdateNote" :value="game.ShowUpdateNote" @showView="toggleUpdate($event)"/>
     <!-- TODO colocar a logo e badge de desenvolvimento -->
     <!-- TODO remover tag style -->
     <q-page-scroller position="top" :scroll-offset="100" :offset="[18, 18]" style="z-index: 110;">
@@ -68,6 +68,7 @@
             <!-- TODO criar um modal com uma msg e uma img dizendo que o jogo será resetado e sem tem certeza disso -->
             <div><q-btn label="Reset" @click="resetGame" style="min-width: 200px;" color="negative" /></div>
             <div><q-btn label="contato" class="bg-blue text-white" style="min-width: 200px;" @click="contactCard"/></div>
+            <div><q-btn class="bg-orange-6 fit" color="white" label="Nota do Update" @click="toggleUpdate(true)"/></div>
             <div><q-btn class="bg-orange-6 fit" color="white" label="Música" :icon="iconAudio" @click="audioToggle"/></div>
             <!-- TODO criar controle de volume -->
           </q-card-section>
