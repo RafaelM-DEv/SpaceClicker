@@ -13,6 +13,7 @@
 
       <!-- TODO Remover tag style -->
       <!-- TODO deixar o menu posição fixa -->
+      <!-- MENU -->
     <q-tabs v-model="toolbar" active-color="white" no-caps dense class="bg-blue text-white shadow-2" style="border-radius: 5px;" >
       <!-- <q-badge color="red" floating style="font-size: 8px;">Dev</q-badge> -->
       <q-tab name="space" label="Home" style="width: 100px;"><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab>
@@ -33,13 +34,11 @@
                 <q-btn v-if="!item.conquest && !item.conquestRevel" label="revelar" color="purple" class="q-mx-sm" @click="revel = true">
                  <q-dialog v-model="revel">
                   <q-card>
-                    <q-card-section class="font" style="font-size: 10px;">
+                    <q-card-section class="font" style="font-size: 9px;">
                       <div class="text-center">
-                        <img src="../assets/unobtanio.png" alt="" style="width: 30px;">
+                        <img src="../assets/unobtainium.png" alt="" style="width: 30px;">
                       </div>
-                      <div>
-                        Para revelar essa conquista irá te custar 100x unobtânios
-                      </div>
+                      <div>Para revelar essa conquista irá te custar 100x unobtainium.</div>
                     </q-card-section>
                     <q-card-actions align="right">
                       <q-btn label="cancelar" class="font" outline v-close-popup style="font-size: 10px;"/>
@@ -98,12 +97,12 @@
                   <div>{{ cosmicDustCount | formatNumber}}</div>
                 </div>
                 <div class="text-center" style="font-size: 12px;">
-                  <q-img src="../assets/unobtanio.png" style="width: 68px">
+                  <q-img src="../assets/unobtainium.png" style="width: 68px">
                     <q-tooltip content-class="bg-purple font" anchor="top middle" self="center middle">
-                      Unobtânio
+                      unobtainium
                     </q-tooltip>
                   </q-img>
-                  <div>{{ game.unobtanio }}</div>
+                  <div>{{ game.unobtainium }}</div>
                 </div>
               </div>
               <div style="font-size: 10px;">Por segundo: {{ game.cosmicDustPerSecond.toFixed(1) }}/s</div>
@@ -124,7 +123,7 @@
             <div class="q-mt-md flex justify-center text-uppercase text-caption">
               <q-tabs v-model="equipamentBay" active-color="white" no-caps dense class="bg-warning text-white shadow-2 fit"  style="border-radius: 5px;" >
                 <q-tab name="inventory" label="Inventário"><img src="../assets/inventory.png" style="width: 45px;"></q-tab>
-                <q-tab name="missions" label="Misões"><img src="../assets/mission.png" style="width: 35px;"></q-tab>
+                <q-tab name="missions" label="Missões"><img src="../assets/mission.png" style="width: 35px;"></q-tab>
               </q-tabs>
             </div>
 
@@ -169,11 +168,11 @@
                       <div>Tempo de Processamento</div>
                       <div>{{ game.items.conversor.launchValue }}s</div>
                     </div>
-                      Quantidade de Unobitânio
-                      <q-input v-model="convertAmount" dark class="text-red shadown-6"  :disable="game.items.conversor.status === 'working'" type="number" dense color="purple" label-color="white" input-class="text-right" reverse-fill-mask fill-mask="0" filled >
+                      Quantidade de unobtainium
+                      <q-input v-model="convertAmount" class="text-red shadown-6" :disable="game.items.conversor.status === 'working'" type="number" dense dark color="purple" label-color="white" input-class="text-right" reverse-fill-mask fill-mask="0">
                         <template v-slot:prepend>
                           <q-avatar>
-                            <img src="../assets/unobtanio.png">
+                            <img src="../assets/unobtainium.png">
                           </q-avatar>
                         </template>
                       </q-input>
@@ -183,7 +182,7 @@
                         <img src="../assets/cosmic.png" style="width: 20px;">
                       </div>
                       <div class="q-ml-sm self-center">
-                        1/10.000
+                        1 => 10.000
                       </div>
                     </div>
                     <!-- <div class="flex justify-between">
@@ -214,7 +213,7 @@
                       <div class="text-center flex justify-center q-gutter-x-lg ">
                         <div>
                           <div>Rendimento</div>
-                          <div><q-img src="../assets/unobtanio.png" style="width: 34px"/></div>
+                          <div><q-img src="../assets/unobtainium.png" style="width: 34px"/></div>
                           <div>{{ item.income }} - {{ item.maxIncome }}</div>
                         </div>
                         <div>
@@ -244,7 +243,7 @@
                         <div class="text-center q-mt-md">
                           <q-circular-progress show-value font-size="12px" :value="item.progressBar" size="80px" :thickness="0.22" color="purple" track-color="grey-3" :max="item.progressBarMax">
                           <q-avatar size="50px">
-                            <img src="../assets/unobtanio.png">
+                            <img src="../assets/unobtainium.png">
                           </q-avatar>
                           </q-circular-progress>
                         </div>
@@ -336,7 +335,7 @@
                       <div class="self-end q-mb-xs">Compradas: {{ item.amount | formatNumber }} unidades</div>
                       <div class="q-px-md starship__item-description">{{ item.description }}</div>
                       <q-btn label="comprar" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
-                      <q-btn label="upgrade" size="13px" push color="blue" :disable="game.cosmicDust < item.price || item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
+                      <q-btn label="upgrade" size="13px" push color="blue" :disable="item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
                     <q-separator color="black" size="1px" class="q-mt-md" />
                     </q-item-section>
                   </q-item>
@@ -546,7 +545,7 @@ export default {
         openShop: 0,
         starCompanyName: 'Nome da Companhia',
         cosmicDust: 0,
-        unobtanio: 0,
+        unobtainium: 0,
         cosmicDustPerSecond: 0,
         itemsBuyed: [],
         achievementsList: {
@@ -599,10 +598,10 @@ export default {
             conquest: false,
             conquestRevel: false
           },
-          unobtanioAmount: {
+          unobtainiumAmount: {
             id: 7,
-            label: 'Colecionador de Unobtânio!',
-            description: 'Conquistado após conseguir 100 unidades de unobtânio',
+            label: 'Colecionador de unobtainium!',
+            description: 'Conquistado após conseguir 100 unidades de unobtainium',
             conquest: false,
             conquestRevel: false
           }
@@ -624,7 +623,7 @@ export default {
             img: 'garra.png',
             price: 200,
             value: 0.5,
-            description: 'Aumenta a eficiência da Garra.'
+            description: 'Aumenta a eficiência da Garra em +0.5'
           },
           {
             idu: 2,
@@ -659,7 +658,7 @@ export default {
             label: 'Drone Pro',
             img: 'drone.png',
             price: 7000,
-            value: 5,
+            value: 7,
             description: 'Aumenta a eficiência do drone em +5'
           },
           {
@@ -668,34 +667,34 @@ export default {
             label: 'Drone Sentinela',
             img: 'drone.png',
             price: 8000,
-            value: 5,
-            description: 'Aumenta a capacidade de coleta do drone lançado em +5'
+            value: 8,
+            description: 'Aumenta a capacidade de coleta do drone lançado em +8'
           },
           {
             idu: 5,
             uplink: 'drone',
-            label: 'drone container',
-            img: 'drone.png',
-            price: 8000,
-            value: 5,
-            description: 'Aumenta a capacidade de coleta do drone lançado em +5'
-          },
-          {
-            f: 6,
-            uplink: 'estação',
             label: 'Bateria de Drone',
             img: 'bateria.png',
-            price: 10000,
-            value: 2,
+            price: 8000,
+            value: 8,
             description: 'Aumenta o tempo de coleta do drone lançado em +2 e o tempo de recarga em +1.'
+          },
+          {
+            idu: 6,
+            uplink: 'estação',
+            label: 'Estação pro',
+            img: 'station.png',
+            price: 10000,
+            value: 10,
+            description: 'Aumenta a eficiência da estação em +5'
           },
           {
             idu: 7,
             uplink: 'conversor',
             label: 'conversor pro',
             img: 'converter.png',
-            price: 10000,
-            value: 5,
+            price: 15000,
+            value: 10,
             description: 'Aumenta a capacidade de reciclagem do conversor em +5'
           }
         ],
@@ -731,7 +730,7 @@ export default {
             type: 'item',
             label: 'Processador',
             img: 'cpu.png',
-            description: 'Material usado aumentar a capacidade de equipamentos eletrônicos.',
+            description: 'Material usado para aumentar a capacidade de processamento de dados.',
             price: 1150,
             value: 5,
             amount: 0,
@@ -742,9 +741,9 @@ export default {
           scanner: {
             id: 4,
             type: 'item',
-            label: 'scanner',
+            label: 'escâner',
             img: 'scanner.png',
-            description: 'Material usado para scanear asteroids.',
+            description: 'Material usado para escanear asteroides.',
             price: 1300,
             value: 8,
             amount: 0,
@@ -774,7 +773,7 @@ export default {
             type: 'item',
             label: 'estação',
             img: 'station.png',
-            description: 'Usado para lançar um drone e recarregar sua bateria',
+            description: 'Melhora a comunicação da Nave.',
             price: 1300,
             value: 8,
             amount: 0,
@@ -787,12 +786,12 @@ export default {
             type: 'equipament',
             label: 'conversor',
             img: 'converter.png',
-            description: 'Converte uno (Unobtânio) em PC (Poeira Cósmica). No seu estado "standby" ele consegue retirar PC (Poeira Cósmica) de fragmentos de asteroids.',
+            description: 'Converte uno (unobtainium) em PC (Poeira Cósmica). No seu estado "standby" ele consegue retirar PC de fragmentos de asteroids.',
             price: 5000,
             value: 10,
             timeLaunch: 0, // tempo de funcionamento
             timesConvert: 0, // não irá usar
-            launchValue: 10, // quantidade extraida do unobtânio
+            launchValue: 10, // quantidade extraida do unobtainium
             amount: 0,
             unlocked: 30,
             ups: 0,
@@ -805,18 +804,18 @@ export default {
           moon: {
             title: '#1 - Mineração na lua',
             img: 'https://i.pinimg.com/originals/19/d2/28/19d228e7cbd160555af5d92e3154b381.gif',
-            description: 'Existem diversos minérios na Lua, mas dentro deles há um muito raro chamado Unobitânio.Crie uma base e comece a minerar para encontrá-los!',
+            description: 'Existem diversos minérios na Lua, mas dentro deles há um muito raro chamado unobtainium.Crie uma base e comece a minerar para encontrá-los!',
             dust: 200000,
-            cost: { // itens amount
+            cost: {
+              garra: 50,
               aerogel: 50,
-              drone: 10,
-              garra: 40,
               Processador: 15,
               scanner: 20,
-              estação: 20
+              estação: 20,
+              drone: 10
             },
-            income: 10,
-            maxIncome: 20, // unobtânios - numero randon de (30-50)
+            income: 15,
+            maxIncome: 35,
             workTime: 60000,
             working: 0,
             questStarted: false,
@@ -827,24 +826,24 @@ export default {
           market: {
             title: '#2 - Mercado espacial',
             img: 'https://i.imgur.com/9oO33CL.gif?noredirect',
-            description: 'O Mercado espacial ira vender todo lixo e sucata espacial que você armazena ao longo da jornada. Abra um mercado espacial e ganhe vendendo sucatas!',
+            description: 'O Mercado espacial irá vender todo lixo e sucata espacial que você armazena ao longo da jornada. Abra um mercado espacial e ganhe vendendo sucatas!',
             dust: 500000,
-            cost: { // itens amount
-              aerogel: 80,
-              drone: 20,
+            cost: {
               garra: 100,
+              aerogel: 80,
               Processador: 30,
               scanner: 50,
-              estação: 50
+              estação: 50,
+              drone: 20
             },
-            income: 20,
-            maxIncome: 40, // unobtânios - numero randon de (30-50)
-            workTime: 60000,
+            income: 45,
+            maxIncome: 85,
+            workTime: 120000,
             working: 0,
             questStarted: false,
             questNotify: false,
             progressBar: 0,
-            progressBarMax: 60
+            progressBarMax: 120
           }
         }
       }
@@ -942,8 +941,8 @@ export default {
       return this.game.items.conversor.timesConvert
     },
 
-    unobtanioAmount () {
-      return this.game.unobtanio
+    unobtainiumAmount () {
+      return this.game.unobtainium
     }
 
   },
@@ -954,11 +953,11 @@ export default {
     },
 
     // CONQUISTAS
-    unobtanioAmount (newValue) {
-      if (newValue === 100 && !this.game.achievementsList.unobtanioAmount.conquest) {
-        this.game.achievementsList.unobtanioAmount.conquest = true
+    unobtainiumAmount (newValue) {
+      if (newValue === 100 && !this.game.achievementsList.unobtainiumAmount.conquest) {
+        this.game.achievementsList.unobtainiumAmount.conquest = true
         this.achievementSong()
-        this.achievementNotify(this.game.achievementsList.unobtanioAmount.label)
+        this.achievementNotify(this.game.achievementsList.unobtainiumAmount.label)
       }
     },
 
@@ -1022,19 +1021,19 @@ export default {
 
   methods: {
     revelar (model) {
-      if (this.game.unobtanio > 100) {
-        this.game.unobtanio -= 100
+      if (this.game.unobtainium > 100) {
+        this.game.unobtainium -= 100
         this.revel = false
         model.conquestRevel = true
       } else {
         this.$refs.error.play()
         this.$q.notify({
-          message: '<span class="font" style="font-size: 8px;">Alerta<br><strong>Não tem unobtânio suficiente</strong></span>',
+          message: '<span class="font" style="font-size: 8px;">Alerta<br><strong>Não tem unobtainium suficiente</strong></span>',
           multiLine: true,
           html: true,
           timeout: 6000,
           progress: true,
-          avatar: require('../assets/unobtanio.png'),
+          avatar: require('../assets/unobtainium.png'),
           color: 'negative'
         })
       }
@@ -1093,7 +1092,7 @@ export default {
               })
               item.questNotify = true
               item.progressBar = 0
-              this.game.unobtanio += Math.floor(Math.random() * (item.maxIncome - item.income) + item.income)
+              this.game.unobtainium += Math.floor(Math.random() * (item.maxIncome - item.income) + item.income)
               this.$refs.MissionComplete.play()
             }
           }, 1000)
@@ -1223,10 +1222,10 @@ export default {
 
     toConvert () {
       let working = this.game.items.conversor.launchValue
-      if (this.convertAmount <= this.game.unobtanio && this.convertAmount > 0) {
+      if (this.convertAmount <= this.game.unobtainium && this.convertAmount > 0) {
         this.game.items.conversor.status = 'working'
         this.$refs.convert.play()
-        this.game.unobtanio -= this.convertAmount
+        this.game.unobtainium -= this.convertAmount
         const work = setInterval(() => {
           this.game.items.conversor.timeLaunch = working
           working--
