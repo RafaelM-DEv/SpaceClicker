@@ -5,7 +5,7 @@
           <q-icon name="img:https://i.pinimg.com/originals/45/1a/27/451a27df78f84c8f671ec1e502a4fe97.gif" class="flex self-center robot"/>
           <div class="font devDialog pixel-borders--1">
             <div>
-              É com um grande prazer que estou lançando esse update depois de tanto trabalho! Espero de verdade que gostem e ter uma experiência exelente.
+              É com um grande prazer que estou lançando esse update depois de tanto trabalho! Espero de verdade que gostem e tenham uma experiência excelente.
             </div>
           <div class="text-center q-my-sm text-bold">
               Update log 23/05/2021
