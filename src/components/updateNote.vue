@@ -4,20 +4,28 @@
       <q-card-section class="column q-gutter-y-sm">
           <q-icon name="img:https://i.pinimg.com/originals/45/1a/27/451a27df78f84c8f671ec1e502a4fe97.gif" class="flex self-center robot"/>
           <div class="font devDialog pixel-borders--1">
-          <div class="text-center q-mb-sm text-bold">
-              Update log 13/05/2021
+            <div>
+              É com um grande prazer que estou lançando esse update depois de tanto trabalho! Espero de verdade que gostem e tenham uma
+              exelente experiencia.
+            </div>
+          <div class="text-center q-my-sm text-bold">
+              Update log 23/05/2021
           </div>
-          <p>>Conquistas Completas, Todas estão disponíveis no jogo!</p>
-          <p>>Resolvido Bug do Drone quando a Página Recarrega.</p>
-          <p>>Os equipamentos agora mostra os status atuais</p>
-          <p>>Foi adicionado um banner quando o contador de Poeira Cosmica não fica visivel, mostrando a quantidade atual.</p>
-          <p>>Ajustes nos upgrades</p>
+          <p>>Adicionado uma nova moeda.</p>
+          <p>>Novas Conquistas e nova função de revelar.</p>
+          <p>>Adicionado menu de Missões com duas missões e inventário(para equipamentos).</p>
+          <p>>Adicionado menu de equipamentos.</p>
+          <p>>Adicionado novo equipamento para converter a nova moeda em poeira cósmica.</p>
+          <p>>Removido item de bateria.</p>
+          <p>>Adicionado novo item "Processador".</p>
+          <p>>Adicionado novo item "estação".</p>
+          <p>>Atualizado elementos do layout e ícones.</p>
           </div>
       </q-card-section>
 
       <q-card-actions>
           <div class="q-mb-md font">
-          <q-btn label="ok" v-close-popup class="bg-warning" />
+          <q-btn label="ok" v-close-popup class="bg-warning" @click="toggle()" />
           </div>
       </q-card-actions>
     </q-card>
@@ -39,6 +47,12 @@ export default {
   watch: {
     value (value) {
       this.showDialog = this.value
+    }
+  },
+
+  methods: {
+    toggle () {
+      this.$emit('showView', false)
     }
   }
 

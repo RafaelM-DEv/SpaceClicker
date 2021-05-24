@@ -2,7 +2,7 @@
   <q-page class="q-pa-sm page font">
 
     <!-- NOTAS DE UPDATE -->
-    <updateNote v-model="ShowUpdateNote"/>
+    <updateNote v-model="game.ShowUpdateNote" @showView="toggleUpdate($event)"/>
     <!-- TODO colocar a logo e badge de desenvolvimento -->
     <!-- TODO remover tag style -->
     <q-page-scroller position="top" :scroll-offset="100" :offset="[18, 18]" style="z-index: 110;">
@@ -12,12 +12,13 @@
     </q-page-scroller>
 
       <!-- TODO Remover tag style -->
+      <!-- TODO deixar o menu posição fixa -->
     <q-tabs v-model="toolbar" active-color="white" no-caps dense class="bg-blue text-white shadow-2" style="border-radius: 5px;" >
-      <q-badge color="red" floating style="font-size: 8px;">Dev</q-badge>
-      <q-tab name="space" label="space" style="width: 100px;"><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab>
+      <!-- <q-badge color="red" floating style="font-size: 8px;">Dev</q-badge> -->
+      <q-tab name="space" label="Home" style="width: 100px;"><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab>
       <q-tab name="options" label="Opções" style="width: 100px;"><img src="../assets/options.png" style="width: 30px;"></q-tab>
       <q-tab name="achivements" label="Conquistas"><img src="../assets/badge.png" style="width: 30px;"></q-tab>
-      <div><q-btn class="bg-orange-6 q-mr-md q-ml-md" color="white" round :icon="iconAudio" @click="audioToggle"/></div>
+      <!-- <div><q-btn class="bg-orange-6 q-mr-md q-ml-md" color="white" round :icon="iconAudio" @click="audioToggle"/></div> -->
     </q-tabs>
 
     <!-- CONQUISTAS -->
@@ -28,7 +29,26 @@
           <div class="flex justify-center">
             <q-list v-for="(item, index) in game.achievementsList" :key="index" class="starship__item-list text-white starship__item-list--achiv" >
               <div>
-                <q-icon v-if="!item.conquest" name="img:https://www.flaticon.com/premium-icon/icons/svg/1321/1321744.svg" size="80px" />
+                <q-icon v-if="!item.conquest &&  !item.conquestRevel" name="img:https://www.flaticon.com/premium-icon/icons/svg/1321/1321744.svg" size="80px" />
+                <q-btn v-if="!item.conquest && !item.conquestRevel" label="revelar" color="purple" class="q-mx-sm" @click="revel = true">
+                 <q-dialog v-model="revel">
+                  <q-card>
+                    <q-card-section class="font" style="font-size: 10px;">
+                      <div class="text-center">
+                        <img src="../assets/unobtanio.png" alt="" style="width: 30px;">
+                      </div>
+                      <div>
+                        Para revelar essa conquista irá te custar 100x unobtânios
+                      </div>
+                    </q-card-section>
+                    <q-card-actions align="right">
+                      <q-btn label="cancelar" class="font" outline v-close-popup style="font-size: 10px;"/>
+                      <q-btn label="prosseguir" class="bg-green font text-white" @click="revelar(item)" style="font-size: 10px;"/>
+                    </q-card-actions>
+                  </q-card>
+                </q-dialog>
+                </q-btn>
+                <div v-if="item.conquestRevel && !item.conquest" class="q-px-sm starship__item-description starship__item-description--achivDescrip" style="opacity: 0.5;">{{ item.description }}</div>
                 <div v-if="item.conquest" class="starship__item-list--achiv">
                   <div class="q-ml-sm q-py-sm text-capitalize text-center">{{ item.label }}</div>
                   <div class="q-px-sm starship__item-description starship__item-description--achivDescrip">{{ item.description }}</div>
@@ -61,6 +81,7 @@
         <div class="flex justify-center">
           <div :class="isMobile">
           <q-separator color="red" size="4px" />
+          <div style="background-image: url(https://i.pinimg.com/originals/59/31/5f/59315fc4a62dd36b63f40b300ac793b2.gif);">
             <div class="flex justify-center">
               <q-btn outline flat size="15px" :label="game.starCompanyName" @click="starCompany"/>
             </div>
@@ -68,7 +89,7 @@
               <div class="flex justify-center q-gutter-x-lg">
                 <div class="text-center q-mb-md" style="font-size: 12px; ">
                   <q-img src="../assets/cosmic.png" style="width: 65px;" class="q-mb-xs">
-                     <q-tooltip content-class="bg-purple" anchor="top middle" self="center middle" >
+                     <q-tooltip content-class="bg-purple font" anchor="top middle" self="center middle" >
                       Poeira Cósmica
                     </q-tooltip>
                   </q-img>
@@ -77,7 +98,7 @@
                 </div>
                 <div class="text-center" style="font-size: 12px;">
                   <q-img src="../assets/unobtanio.png" style="width: 68px">
-                    <q-tooltip content-class="bg-purple" anchor="top middle" self="center middle">
+                    <q-tooltip content-class="bg-purple font" anchor="top middle" self="center middle">
                       Unobtânio
                     </q-tooltip>
                   </q-img>
@@ -87,14 +108,17 @@
               <div style="font-size: 10px;">Por segundo: {{ game.cosmicDustPerSecond.toFixed(1) }}/s</div>
               <div class="q-mt-sm" style="font-size: 9px;">Ganho por click: {{ game.click }}</div>
             </div>
+
             <!-- PEGAR POEIRA -->
             <div class="justify-center flex">
               <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
               <div v-if="game.cosmicDust === 0" class="text-black q-px-sm" style="position: absolute; font-size: 10px; background-color: white; width: 290px;">Clique na nave para pegar poeira cósmica...</div>
-              <q-btn icon="img:https://i.gifer.com/origin/24/2432cf5ff737ad7d1794a29d042eb02e_w200.webp" flat round @click="getDust()" size="60px"/>
+              <q-btn flat round @click="getDust()" size="60px" :ripple="{ color: 'purple' }" color=" q-mb-sm">
+                <q-img :src="require('../assets/vehicle.gif')" />
+              </q-btn>
             </div>
-
-            <q-separator class="q-mt-md" color="orange" size="4px" />
+          </div>
+            <q-separator class="" color="orange" size="4px" />
             <!-- INVENTÁRIO -->
             <div class="q-mt-md flex justify-center text-uppercase text-caption">
               <q-tabs v-model="equipamentBay" active-color="white" no-caps dense class="bg-warning text-white shadow-2 fit"  style="border-radius: 5px;" >
@@ -106,23 +130,69 @@
             <q-tab-panels v-model="equipamentBay" animated style="background-color:rgba(0, 0, 0, 0.1);">
               <q-tab-panel name="inventory">
                 <!-- DRONE -->
-                <div v-if="!game.installDrone" class="text-black q-px-sm q-mt-lg q-mx-sm" style="border-radius: 5px; font-size: 10px; background-color: white;">Compre algum equipamento para ser usado aqui!</div>
-                <div v-if="game.installDrone" class="q-ml-sm q-mt-lg justify-between flex">
-                  <q-btn icon="img:https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg" :class="game.droneFunction.colorDrone" :label="game.droneFunction.labelDrone" size="12px" :disable="game.droneFunction.droneSend" @click="drone()"/>
-                  <q-btn outline :label="game.droneFunction.droneTimer" size="12px"/>
+                <div>
+                  <div v-if="!game.installDrone" class="text-black q-px-sm q-mt-lg q-mx-sm" style="border-radius: 5px; font-size: 10px; background-color: white;">Compre algum equipamento na loja para ser usado aqui!</div>
+                  <div v-if="game.installDrone" class="q-ml-sm q-mt-lg justify-between flex">
+                    <q-btn icon="img:https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg" :class="game.droneFunction.colorDrone" :label="game.droneFunction.labelDrone" size="12px" :disable="game.droneFunction.droneSend" @click="drone()"/>
+                    <q-btn outline :label="game.droneFunction.droneTimer" size="12px"/>
+                  </div>
+                  <div v-if="game.installDrone" class="q-mt-sm q-mx-sm" style="font-size: 8px;">
+                    <div class="flex justify-between">
+                      <div>Capacidade de Coleta do drone</div>
+                      <div>{{ game.items.drone.launchValue }}/s</div>
+                    </div>
+                    <div class="flex justify-between">
+                      <div>Tempo de lançamento</div>
+                      <div>{{ game.items.drone.timeLaunch }}s</div>
+                    </div>
+                    <div class="flex justify-between">
+                      <div>Tempo de recarga</div>
+                      <div>{{ game.items.drone.bateryRecover }}s</div>
+                    </div>
+                  </div>
                 </div>
-                <div v-if="game.installDrone" class="q-mt-sm q-ml-sm" style="font-size: 8px;">
-                  <div class="flex justify-between">
-                    <div>Capacidade de Coleta do drone</div>
-                    <div>{{ game.items.drone.launchValue }}/s</div>
+                <!-- CONVERSOR -->
+                <div v-if="game.installConversor">
+                  <div class="q-ml-sm q-mt-lg justify-between flex">
+                    <q-btn class="bg-blue" :disable="game.items.conversor.status === 'working'" style="font-size: 12px;" @click="toConvert()">
+                      <q-img class="self-center" :src="require('../assets/converter.png')" style="width: 25px" />
+                      <div class="q-mt-xs q-ml-sm">
+                        Converter
+                      </div>
+                    </q-btn>
+                    <q-btn outline :label="game.items.conversor.timeLaunch" size="12px"/>
                   </div>
-                  <div class="flex justify-between">
-                    <div>Tempo de lançamento</div>
-                    <div>{{ game.items.drone.timeLaunch }}s</div>
-                  </div>
-                  <div class="flex justify-between">
-                    <div>Tempo de recarga</div>
-                    <div>{{ game.items.drone.bateryRecover }}s</div>
+                  <div lass="q-mt-sm q-ml-sm" style="font-size: 8px;">
+                    <div class="q-mx-sm q-my-sm">
+                    <div class="flex justify-between">
+                      <div>Tempo de Processamento</div>
+                      <div>{{ game.items.conversor.launchValue }}s</div>
+                    </div>
+                      Quantidade de Unobitânio
+                      <q-input v-model="convertAmount" dark class="text-red shadown-6"  :disable="game.items.conversor.status === 'working'" type="number" dense color="purple" label-color="white" input-class="text-right" reverse-fill-mask fill-mask="0" filled >
+                        <template v-slot:prepend>
+                          <q-avatar>
+                            <img src="../assets/unobtanio.png">
+                          </q-avatar>
+                        </template>
+                      </q-input>
+                    </div>
+                    <div class="flex justify-end q-mx-sm">
+                      <div>
+                        <img src="../assets/cosmic.png" style="width: 20px;">
+                      </div>
+                      <div class="q-ml-sm self-center">
+                        1/10.000
+                      </div>
+                    </div>
+                    <!-- <div class="flex justify-between">
+                      <div>Capacidade de Coleta do drone</div>
+                      <div>{{ game.items.conversor.launchValue }}/s</div>
+                    </div> -->
+                    <!-- <div class="flex justify-between">
+                      <div>Tempo de recarga</div>
+                      <div>{{ game.items.conversor.bateryRecover }}s</div>
+                    </div> -->
                   </div>
                 </div>
               </q-tab-panel>
@@ -139,52 +209,46 @@
 
                     <q-separator class="q-mb-sm" color="white" inset size="1px" />
 
-                      <div class="q-mb-sm">
-                        <div class="text-center flex justify-center q-gutter-x-lg ">
-                          <div>
-                            <div>Rendimento</div>
-                            <div><q-img src="../assets/unobtanio.png" style="width: 34px"/></div>
-                            <div>{{ item.income }} - {{ item.maxIncome }}</div>
-                          </div>
-                          <div>
-                          <div>Custo</div>
-                            <div><q-img src="../assets/cosmic.png" style="width: 30px" class="q-mb-xs"/></div>
-                            <div>{{ item.dust | formatNumber }} </div>
-                          </div>
-                          <!-- <div class="self-center">
-                            <div>Duração</div>
-                            <div>{{ item.workTime }}min</div>
-                          </div> -->
+                    <div class="q-mb-sm">
+                      <div class="text-center flex justify-center q-gutter-x-lg ">
+                        <div>
+                          <div>Rendimento</div>
+                          <div><q-img src="../assets/unobtanio.png" style="width: 34px"/></div>
+                          <div>{{ item.income }} - {{ item.maxIncome }}</div>
+                        </div>
+                        <div>
+                        <div>Custo</div>
+                          <div><q-img src="../assets/cosmic.png" style="width: 30px" class="q-mb-xs"/></div>
+                          <div>{{ item.dust | formatNumber }} </div>
                         </div>
                       </div>
+                    </div>
 
-                      <q-separator class="q-mb-sm" color="white" inset size="1px" />
+                    <q-separator class="q-mb-sm" color="white" inset size="1px" />
 
                     <div class="q-ml-lg text-warning">
                       Itens Necessários:
                     </div>
-
-                  <div class="row">
-                    <div class="col bg-black-4 pixel-borders--1 q-pa-xs">
-                      <div v-for="(item, index) in item.cost" :key="index">
-                        <div class="flex justify-between q-mt-sm">
-                          <div>{{ index }}</div>
-                          <div v-if="game.items[index].amount >= item">{{ item }}x</div>
-                          <div v-else class="text-red" >{{ item }}x</div>
+                    <div class="row">
+                      <div class="col bg-black-4 text-capitalize q-pa-xs">
+                        <div v-for="(item, index) in item.cost" :key="index">
+                          <div class="flex justify-between q-mt-sm">
+                            <div>{{ index }}</div>
+                            <div v-if="game.items[index].amount >= item">{{ item }}x</div>
+                            <div v-else class="text-red" >{{ item }}x</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="text-center q-mt-md">
+                          <q-circular-progress show-value font-size="12px" :value="item.progressBar" size="80px" :thickness="0.22" color="purple" track-color="grey-3" :max="item.progressBarMax">
+                          <q-avatar size="50px">
+                            <img src="../assets/unobtanio.png">
+                          </q-avatar>
+                          </q-circular-progress>
                         </div>
                       </div>
                     </div>
-                    <div class="col-6">
-                      <div class="text-center q-mt-md">
-                        <q-circular-progress show-value font-size="12px" :value="item.progressBar" size="80px" :thickness="0.22" color="warning" track-color="grey-3" :max="item.progressBarMax">
-                        <q-avatar size="50px">
-                          <img src="https://i.pinimg.com/originals/84/10/38/8410382ab79ad788c2416f1b4373ffcb.gif">
-                        </q-avatar>
-                        </q-circular-progress>
-                      </div>
-                    </div>
-                  </div>
-
                     <q-btn label="Iniciar" size="13px" push color="warning" class="q-mt-md fit" :disable="item.questStarted" @click="missionStart(item)"/>
                     <q-separator class="q-mt-md" color="warning" size="1px" />
                   </div>
@@ -210,7 +274,8 @@
                     <div class="flex justify-between no-wrap">
                       <div class="column starship__items q-mb-sm q-ml-sm" style="max-width: 80px ">
                         <div>
-                          <img :src="update.img" style="width: 30px; height: 30px;">
+                          <!-- <img :src="update.img" style="width: 30px; height: 30px;"> -->
+                          <q-img :src="require(`../assets/${update.img}`)" style="width: 30px; height: 30px;" />
                         </div>
                         <div class="text-capitalize" style="font-size: 8px;">{{ update.label }}</div>
                       </div>
@@ -276,6 +341,7 @@
                   </q-item>
                 </q-list>
               </q-tab-panel>
+              <!-- EQUIPAMENTOS -->
               <q-tab-panel name="equipamentos">
                 <q-list v-if="game.openShop > 0" bordered class="starship__item-list text-white" style="font-size: 8px;">
                   <q-item v-for="(item, key) in gameEquipaments" :key="key" class="starship__items">
@@ -291,8 +357,8 @@
                             Preço: {{ item.price | formatNumber }}
                             <q-img src="../assets/cosmic.png" style="width: 14px" class="q-mb-xs"/>
                           </div>
-                          <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
-                          <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
+                          <div>Eficiência: {{ item.value | formatNumber }}/s</div>
+                          <div>Total: {{ item.totalEfficiency | formatNumber }}/s</div>
                         </div>
                       </div>
                       <div class="self-end q-mb-xs">Compradas: {{ item.amount | formatNumber }} unidades</div>
@@ -307,8 +373,10 @@
             </q-tab-panels>
 
             <div v-if="game.openShop === 0" class="flex fit">
-              <q-btn label="Comprar Melhorias - 50" size="10px" color="positive" class="fit" flat  @click="open">
-                  <q-avatar class="q-ml-sm q-mb-xs self-center" size="20px"><img src="../assets/cosmic.png"></q-avatar>
+              <q-btn label="" size="10px" color="positive" class="fit"  @click="open">
+                  <!-- <q-avatar class="q-ml-sm q-mb-xs self-center" size="20px"><img src="../assets/cosmic.png"></q-avatar> -->
+              <div v-if="!game.installDrone" class="text-black q-px-sm  q-mx-sm" style="border-radius: 5px; font-size: 10px; background-color: white;">Clique aqui para liberar a loja! Custo 50 PC<img src="../assets/cosmic.png" style="width: 14px"></div>
+
               </q-btn>
             </div>
           </div>
@@ -347,9 +415,13 @@
                 <div><q-icon name="ion-mail" size="30px" /> Far3ll.274@gmail.com</div>
                 <!-- <div><q-btn flat dense size="11px" icon="ion-copy" @click="copy()" /></div> -->
               </div>
-                <div class="flex q-mt-md ">
+              <div class="flex q-mt-md ">
                 <q-icon class="q-ml-xs" name="ion-logo-octocat" size="30px" />
                 <p class="q-mt-xs q-ml-xs"><a style="text-decoration: none; color: black" href="https://github.com/RafaelM-DEv">https://github.com/RafaelM-DEv</a></p>
+              </div>
+               <div class="flex q-mt-xs ">
+                <q-icon class="q-ml-sm" name="ion-send" size="30px" style="transform: rotate(-20deg)" />
+                <p class="q-mt-xs q-ml-xs"><a style="text-decoration: none; color: black" href="https://t.me/joinchat/JmN7LFZEgzlhNDBh">Grupo Space Clicker Oficial</a></p>
               </div>
             </div>
           </div>
@@ -369,6 +441,11 @@
 
       <!-- SFX / MUSIC  -->
 
+    <template class="text-center q-mt-sm">
+      <audio ref="convert">
+        <source src="../assets/convert.mp3">
+      </audio>
+    </template>
     <template class="text-center q-mt-sm">
       <audio ref="error">
         <source src="../assets/error.mp3">
@@ -394,7 +471,7 @@
     </template>
 
     <template class="text-center q-mt-sm">
-      <audio ref="music" id="bg-audio" loop>
+      <audio ref="music" id="bg-audio" autoplay loop>
         <source src="../assets/Checking.mp3">
       </audio>
     </template>
@@ -437,7 +514,8 @@ export default {
 
   data () {
     return {
-      ShowUpdateNote: false,
+      revel: false,
+      convertAmount: 0,
       equipamentBay: 'inventory',
       shop: 'itens',
       asteroidDialog: false,
@@ -459,12 +537,14 @@ export default {
           colorDrone: 'bg-green',
           droneSend: false
         },
+        ShowUpdateNote: true,
         installDrone: false,
+        installConversor: false,
         info: true,
         click: 1,
         openShop: 0,
         starCompanyName: 'Nome da Companhia',
-        cosmicDust: 900000,
+        cosmicDust: 0,
         unobtanio: 0,
         cosmicDustPerSecond: 0,
         itemsBuyed: [],
@@ -473,37 +553,57 @@ export default {
             id: 1,
             label: 'Meu primeiro item!',
             description: 'Conquistado após comprar o primeiro item.',
-            conquest: false
+            conquest: false,
+            conquestRevel: false
           },
           achivGarraEfficiency: {
             id: 2,
             label: 'Mestre da Eficiência!',
-            description: 'Garra com Eficiência acima de 30.',
-            conquest: false
+            description: 'Garra com 50 de eficiência.',
+            conquest: false,
+            conquestRevel: false
           },
           aerogelAmount: {
             id: 3,
             label: 'Vai um Aerogel ai?',
-            description: 'Conquistado após comprar 20 Aerogel.',
-            conquest: false
+            description: 'Conquistado após comprar 100 Aerogel.',
+            conquest: false,
+            conquestRevel: false
           },
           cosmicDust: {
             id: 4,
-            label: '10k de Poeira não é o bastante!',
-            description: 'Conquistado apos conseguir 10k de poeira cósmica.',
-            conquest: false
+            label: '1M de Poeira não é o bastante!',
+            description: 'Conquistado após conseguir 1M de poeira cósmica.',
+            conquest: false,
+            conquestRevel: false
           },
           cosmicDustPerSecond: {
             id: 5,
             label: 'Vamos automatizar Tudo!',
             description: 'Chegou a 1k de Poeira cósmica por segundo',
-            conquest: false
+            conquest: false,
+            conquestRevel: false
           },
           droneAchiev: {
             id: 6,
             label: 'Enfim comprei um Drone!',
-            description: 'Conquistado apos comprar um Drone.',
-            conquest: false
+            description: 'Conquistado após comprar um Drone.',
+            conquest: false,
+            conquestRevel: false
+          },
+          convertAchiev: {
+            id: 7,
+            label: 'Foi uma necessidade!',
+            description: 'Conquistado após processar 2 vezes.',
+            conquest: false,
+            conquestRevel: false
+          },
+          unobtanioAmount: {
+            id: 7,
+            label: 'Colecionador de Unobtânio!',
+            description: 'Conquistado após conseguir 100 unidades de unobtânio',
+            conquest: false,
+            conquestRevel: false
           }
         },
         upgrades: [
@@ -511,7 +611,7 @@ export default {
             idu: 1,
             uplink: 'garra',
             label: 'Click Pro',
-            img: 'https://www.flaticon.com/premium-icon/icons/svg/2725/2725783.svg',
+            img: 'clicker.png',
             price: 100,
             value: 0.5,
             description: 'Aumenta o ganho do click.'
@@ -520,7 +620,7 @@ export default {
             idu: 1,
             uplink: 'garra',
             label: 'Garra Pro',
-            img: 'https://www.flaticon.com/br/premium-icon/icons/svg/3936/3936056.svg',
+            img: 'garra.png',
             price: 200,
             value: 0.5,
             description: 'Aumenta a eficiência da Garra.'
@@ -529,25 +629,25 @@ export default {
             idu: 2,
             uplink: 'aerogel',
             label: 'Aerogel Pro',
-            img: 'https://www.flaticon.com/premium-icon/icons/svg/3049/3049596.svg',
-            price: 1200,
+            img: 'nanocristal.png',
+            price: 1000,
             value: 2,
             description: 'Aumenta a eficiência do aerogel em +2'
           },
           {
             idu: 3,
-            uplink: 'processor',
+            uplink: 'Processador',
             label: 'Processador Pro',
-            img: 'https://www.flaticon.com/premium-icon/icons/svg/3804/3804975.svg',
+            img: 'cpu.png',
             price: 3000,
             value: 3,
-            description: 'Aumenta a eficiência da bateria em +3'
+            description: 'Aumenta a eficiência do processador em +3'
           },
           {
             idu: 4,
             uplink: 'scanner',
             label: 'Scanner',
-            img: 'https://www.flaticon.com/premium-icon/icons/svg/3270/3270577.svg',
+            img: 'scanner.png',
             price: 5000,
             value: 5,
             description: 'Aumenta a eficiência do scanner em +5'
@@ -556,7 +656,7 @@ export default {
             idu: 5,
             uplink: 'drone',
             label: 'Drone Pro',
-            img: 'https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg',
+            img: 'drone.png',
             price: 7000,
             value: 5,
             description: 'Aumenta a eficiência do drone em +5'
@@ -565,19 +665,37 @@ export default {
             idu: 5,
             uplink: 'drone',
             label: 'Drone Sentinela',
-            img: 'https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg',
+            img: 'drone.png',
             price: 8000,
             value: 5,
             description: 'Aumenta a capacidade de coleta do drone lançado em +5'
           },
           {
-            idu: 6,
+            idu: 5,
+            uplink: 'drone',
+            label: 'drone container',
+            img: 'drone.png',
+            price: 8000,
+            value: 5,
+            description: 'Aumenta a capacidade de coleta do drone lançado em +5'
+          },
+          {
+            f: 6,
             uplink: 'estação',
             label: 'Bateria de Drone',
-            img: 'https://www.flaticon.com/premium-icon/icons/svg/4014/4014313.svg',
+            img: 'bateria.png',
             price: 10000,
             value: 2,
             description: 'Aumenta o tempo de coleta do drone lançado em +2 e o tempo de recarga em +1.'
+          },
+          {
+            idu: 7,
+            uplink: 'conversor',
+            label: 'conversor pro',
+            img: 'converter.png',
+            price: 10000,
+            value: 5,
+            description: 'Aumenta a capacidade de reciclagem do conversor em +5'
           }
         ],
         items: {
@@ -607,7 +725,7 @@ export default {
             ups: 0,
             totalEfficiency: 0
           },
-          processor: {
+          Processador: {
             id: 3,
             type: 'item',
             label: 'Processador',
@@ -638,7 +756,7 @@ export default {
             type: 'equipament',
             label: 'drone',
             img: 'drone.png',
-            description: 'Equipamento / Drone pode ser lançado para coletar poeira cósmica.',
+            description: 'Drone pode ser lançado para coletar poeira cósmica.',
             price: 2000,
             value: 10,
             timeLaunch: 10,
@@ -650,7 +768,7 @@ export default {
             totalEfficiency: 0,
             status: 'Pronto'
           },
-          station: {
+          estação: {
             id: 6,
             type: 'item',
             label: 'estação',
@@ -662,6 +780,23 @@ export default {
             unlocked: 10,
             ups: 0,
             totalEfficiency: 0
+          },
+          conversor: {
+            id: 7,
+            type: 'equipament',
+            label: 'conversor',
+            img: 'converter.png',
+            description: 'Converte uno (Unobtânio) em PC (Poeira Cósmica). No seu estado "standby" ele consegue retirar PC (Poeira Cósmica) de fragmentos de asteroids.',
+            price: 5000,
+            value: 10,
+            timeLaunch: 0, // tempo de funcionamento
+            timesConvert: 0, // não irá usar
+            launchValue: 10, // quantidade extraida do unobtânio
+            amount: 0,
+            unlocked: 30,
+            ups: 0,
+            totalEfficiency: 0,
+            status: 'Pronto' // status do equipamento
           }
         },
         questRecovery: false,
@@ -675,9 +810,9 @@ export default {
               aerogel: 50,
               drone: 10,
               garra: 40,
-              processor: 15,
+              Processador: 15,
               scanner: 20,
-              station: 20
+              estação: 20
             },
             income: 10,
             maxIncome: 20, // unobtânios - numero randon de (30-50)
@@ -687,8 +822,6 @@ export default {
             questNotify: false,
             progressBar: 0,
             progressBarMax: 60
-            // quando terminar abrir uma notificação de quanto foi adquirido
-            // criar barra de progresso
           },
           market: {
             title: '#2 - Mercado espacial',
@@ -697,11 +830,11 @@ export default {
             dust: 500000,
             cost: { // itens amount
               aerogel: 80,
-              drone: 10,
-              garra: 50,
-              processor: 15,
-              scanner: 20,
-              station: 20
+              drone: 20,
+              garra: 100,
+              Processador: 30,
+              scanner: 50,
+              estação: 50
             },
             income: 20,
             maxIncome: 40, // unobtânios - numero randon de (30-50)
@@ -802,21 +935,40 @@ export default {
 
     droneAchiev () {
       return this.game.items.drone.amount
+    },
+
+    convertAchiev () {
+      return this.game.items.conversor.timesConvert
+    },
+
+    unobtanioAmount () {
+      return this.game.unobtanio
     }
 
   },
 
   watch: {
-    // recovery (oldValue, newValue) {
-    //   console.log(oldValue)
-    //   console.log(newValue)
-    // },
-
     animatedNumber (newValue) {
       gsap.to(this.$data, { duration: 0.5, cosmicDustCount: newValue })
     },
 
     // CONQUISTAS
+    unobtanioAmount (newValue) {
+      if (newValue === 100 && !this.game.achievementsList.unobtanioAmount.conquest) {
+        this.game.achievementsList.unobtanioAmount.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.unobtanioAmount.label)
+      }
+    },
+
+    convertAchiev (newValue) {
+      if (newValue === 1 && !this.game.achievementsList.convertAchiev.conquest) {
+        this.game.achievementsList.convertAchiev.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.convertAchiev.label)
+      }
+    },
+
     garraAmount (newValue) {
       if (newValue === 1 && !this.game.achievementsList.AchivGarra.conquest) {
         this.game.achievementsList.AchivGarra.conquest = true
@@ -826,7 +978,7 @@ export default {
     },
 
     garraEfficiency (newValue) {
-      if (newValue === 30 && !this.game.achievementsList.achivGarraEfficiency.conquest) {
+      if (newValue === 50 && !this.game.achievementsList.achivGarraEfficiency.conquest) {
         this.game.achievementsList.achivGarraEfficiency.conquest = true
         this.achievementSong()
         this.achievementNotify(this.game.achievementsList.achivGarraEfficiency.label)
@@ -834,7 +986,7 @@ export default {
     },
 
     aerogelAmount (newValue) {
-      if (newValue === 20 && !this.game.achievementsList.aerogelAmount.conquest) {
+      if (newValue === 100 && !this.game.achievementsList.aerogelAmount.conquest) {
         this.game.achievementsList.aerogelAmount.conquest = true
         this.achievementSong()
         this.achievementNotify(this.game.achievementsList.aerogelAmount.label)
@@ -843,7 +995,7 @@ export default {
     },
 
     cosmicDustAmount (newValue) {
-      if (newValue > 10000 && !this.game.achievementsList.cosmicDust.conquest) {
+      if (newValue > 1000000 && !this.game.achievementsList.cosmicDust.conquest) {
         this.game.achievementsList.cosmicDust.conquest = true
         this.achievementSong()
         this.achievementNotify(this.game.achievementsList.cosmicDust.label)
@@ -868,6 +1020,25 @@ export default {
   },
 
   methods: {
+    revelar (model) {
+      if (this.game.unobtanio > 100) {
+        this.game.unobtanio -= 100
+        this.revel = false
+        model.conquestRevel = true
+      } else {
+        this.$refs.error.play()
+        this.$q.notify({
+          message: '<span class="font" style="font-size: 8px;">Alerta<br><strong>Não tem unobtânio suficiente</strong></span>',
+          multiLine: true,
+          html: true,
+          timeout: 6000,
+          progress: true,
+          avatar: require('../assets/unobtanio.png'),
+          color: 'negative'
+        })
+      }
+    },
+
     missionStart (item) {
       let pass = true
       item.progressBar = 0
@@ -908,7 +1079,7 @@ export default {
 
             if (ocurredTime > item.working) {
               clearInterval(timeCount)
-              console.log('recebi a recompensa!')
+              // console.log('recebi a recompensa!')
               item.questStarted = false
               this.$q.notify({
                 message: `<span class="font" style="font-size: 8px;">Relatório de Missão<br><strong>Missão ${item.title} bem Sucedida!</strong></span>`,
@@ -921,7 +1092,7 @@ export default {
               })
               item.questNotify = true
               item.progressBar = 0
-              this.game.unobtanio += Math.floor(Math.random(item.income) * item.maxIncome) + 1
+              this.game.unobtanio += Math.floor(Math.random() * (item.maxIncome - item.income) + item.income)
               this.$refs.MissionComplete.play()
             }
           }, 1000)
@@ -987,11 +1158,11 @@ export default {
 
             if (value.working < timeNow) {
               clearInterval(recover)
-              this.game.unobtanio += Math.floor(Math.random(value.income) * value.maxIncome) + 1
+              Math.floor(Math.random() * (value.maxIncome - value.income) + value.income)
               value.questStarted = false
               value.progressBar = 0
               value.questNotify = true
-
+              this.$refs.MissionComplete.play()
               this.$q.notify({
                 message: `<span class="font" style="font-size: 8px;">Relatório de Missão<br><strong>Missão ${value.title} bem Sucedida!</strong></span>`,
                 multiLine: true,
@@ -1049,7 +1220,59 @@ export default {
       })
     },
 
-    // TODO DRONE ESTÁ RESETANDO QUANDO A PAGINA RECARREGA
+    toConvert () {
+      let working = this.game.items.conversor.launchValue
+      if (this.convertAmount <= this.game.unobtanio && this.convertAmount > 0) {
+        this.game.items.conversor.status = 'working'
+        this.$refs.convert.play()
+        this.game.unobtanio -= this.convertAmount
+        const work = setInterval(() => {
+          this.game.items.conversor.timeLaunch = working
+          working--
+          if (working === 0) {
+            clearInterval(work)
+            this.game.items.conversor.timesConvert += 1
+            this.game.items.conversor.status = 'pronto'
+            this.game.items.conversor.timeLaunch = 0
+            const convertValue = this.convertAmount * 10000
+            this.game.cosmicDust += convertValue
+            this.$refs.MissionComplete.play()
+            this.$q.notify({
+              message: `Conversão Completa<br><strong>Foi convertido ${convertValue}</strong>`,
+              multiLine: true,
+              html: true,
+              timeout: 6000,
+              progress: true,
+              avatar: require('../assets/converter.png'),
+              color: 'blue'
+            })
+          }
+        }, 1000)
+      } else if (this.convertAmount === 0) {
+        this.$refs.error.play()
+        this.$q.notify({
+          message: 'Atenção<br><strong>Informe uma quantidade a ser convertida</strong>',
+          multiLine: true,
+          html: true,
+          timeout: 6000,
+          progress: true,
+          avatar: require('../assets/converter.png'),
+          color: 'negative'
+        })
+      } else {
+        this.$refs.error.play()
+        this.$q.notify({
+          message: 'Atenção<br><strong>Não posssui recursos suficientes</strong>',
+          multiLine: true,
+          html: true,
+          timeout: 6000,
+          progress: true,
+          avatar: require('../assets/converter.png'),
+          color: 'negative'
+        })
+      }
+    },
+
     drone () {
       this.game.droneFunction.labelDrone = 'Enviado...'
       this.game.droneFunction.colorDrone = 'bg-blue'
@@ -1123,6 +1346,7 @@ export default {
     buyUpgrade (model) {
       this.$refs.buyItem.play()
       switch (model.idu) {
+        // garra
         case 1:
           if (this.game.cosmicDust >= model.price) {
             if (model.label === 'Click Pro') {
@@ -1136,7 +1360,7 @@ export default {
             }
             if (model.label === 'Garra Pro') {
               this.game.cosmicDust -= model.price
-              model.price += model.price * 0.2
+              model.price += model.price * 0.1
 
               this.game.items[model.uplink].value += model.value
 
@@ -1145,6 +1369,7 @@ export default {
           }
 
           break
+          // aerogel
         case 2:
           if (this.game.cosmicDust >= model.price) {
             this.game.cosmicDust -= model.price
@@ -1197,7 +1422,17 @@ export default {
           }
           break
         case 6:
-          // console.log(model)
+          if (this.game.cosmicDust >= model.price) {
+            this.game.cosmicDust -= model.price
+
+            this.game.items[model.uplink].value += model.value
+
+            model.price += model.price * 0.2
+
+            this.addInstallCountItem(model)
+          }
+          break
+        case 7:
           if (this.game.cosmicDust >= model.price) {
             this.game.cosmicDust -= model.price
 
@@ -1226,6 +1461,10 @@ export default {
       this.achievements = true
     },
 
+    toggleUpdate (model) {
+      this.game.ShowUpdateNote = model
+    },
+
     buyItem (model) {
       if (this.game.cosmicDust >= model.price) {
         this.$refs.buyItem.play()
@@ -1243,6 +1482,9 @@ export default {
         this.game.openShop += +1
         if (model.label === 'drone') {
           this.game.installDrone = true
+        }
+        if (model.label === 'conversor') {
+          this.game.installConversor = true
         }
       }
     },
@@ -1355,13 +1597,17 @@ export default {
 
 .starshipDesktop {
   background-image: url('https://gifimage.net/wp-content/uploads/2018/11/pixel-gif-stars-1.gif');
+  // background-repeat: no-repeat;
+  // background-size: cover;
+  // background-position: center;
+  // transform: rotate(30deg);
   width: 400px;
   min-height: 755px;
-  background-color: #556779;
-  border-radius: 6px;
-  border-width: 3px;
-  border-style: solid;
-  border-color: black;
+  background-color: #000000;
+  border-radius: 4px;
+  border-width: 2px;
+  border-style: groove;
+  border-color: rgba(0, 0, 0, 0.493);
   // max-height: 800px;
 
   & + & {
@@ -1374,7 +1620,8 @@ export default {
   margin: 10px 0 0 0;
   background-image: url('https://gifimage.net/wp-content/uploads/2018/11/pixel-gif-stars-1.gif');
   // background-color: #556779;
-
+  // background-size: cover;
+  // background-repeat: no-repeat;
   &__item-description {
     text-align: center;
     color: $dark;
