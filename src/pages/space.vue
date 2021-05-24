@@ -544,7 +544,7 @@ export default {
         click: 1,
         openShop: 0,
         starCompanyName: 'Nome da Companhia',
-        cosmicDust: 100,
+        cosmicDust: 0,
         unobtainium: 0,
         cosmicDustPerSecond: 0,
         itemsBuyed: [],
