@@ -66,9 +66,9 @@
         <div style="min-width: 100px;" class="flex justify-center  font">
           <q-card-section class="column q-gutter-y-md">
             <!-- TODO criar um modal com uma msg e uma img dizendo que o jogo será resetado e sem tem certeza disso -->
-            <div><q-btn label="Reset" @click="resetGame" style="min-width: 200px;" color="negative" /></div>
-            <div><q-btn label="contato" class="bg-blue text-white" style="min-width: 200px;" @click="contactCard"/></div>
-            <div><q-btn class="bg-orange-6 fit" color="white" label="Nota do Update" @click="toggleUpdate(true)"/></div>
+            <div><q-btn label="Reset" @click="resetGame" style="min-width: 250px;" color="negative" /></div>
+            <div><q-btn label="contato" class="bg-blue text-white" style="min-width: 250px;" @click="contactCard"/></div>
+            <div><q-btn class="bg-orange-6 fit" color="white" label="Nota do Update" style="max-width: 250px;" @click="toggleUpdate(true)"/></div>
             <div><q-btn class="bg-orange-6 fit" color="white" label="Música" :icon="iconAudio" @click="audioToggle"/></div>
             <!-- TODO criar controle de volume -->
           </q-card-section>
