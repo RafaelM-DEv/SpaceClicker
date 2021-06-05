@@ -602,15 +602,15 @@ export default {
           colorDrone: 'bg-green',
           droneSend: false
         },
-        ShowUpdateNote: true,
+        ShowUpdateNote: false,
         installDrone: false,
         installConversor: false,
         info: true,
         click: 1,
         openShop: 0,
         starCompanyName: 'Nome da Companhia',
-        cosmicDust: 1000000000,
-        unobtainium: 1000,
+        cosmicDust: 0,
+        unobtainium: 0,
         cosmicDustPerSecond: 0,
         itemsBuyed: [],
         achievementsList: {
