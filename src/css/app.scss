@@ -1,7 +1,15 @@
 // app global css in SCSS form
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-.font {font-family: 'Press Start 2P', cursive;}
+.font {
+ font-family: 'Press Start 2P', cursive;
+ &--8 {
+  font-size: 8px;
+ }
+ &--10 {
+  font-size: 10px;
+ }
+}
 
 
 .q-tab__label {
@@ -9,4 +17,10 @@
 }
 .q-tab-panel {
     padding: 0;
+}
+
+.border {
+  &--5 {
+    border-radius: 5px;
+  }
 }
