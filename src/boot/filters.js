@@ -2,7 +2,11 @@ const numeral = require('numeral')
 
 export default async ({ Vue }) => {
   Vue.filter('formatNumber', value => {
-    return numeral(value).format('0,0')
+    if (value.toString().length > 3) {
+      return numeral(value).format('0,000a')
+    } else {
+      return numeral(value).format('0,0')
+    }
   })
 
   Vue.filter('formatNumberDec', value => {

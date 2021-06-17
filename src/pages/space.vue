@@ -1,32 +1,23 @@
 <template>
-
   <q-page class="q-pa-sm page font">
     <!-- NOTAS DE UPDATE -->
     <updateNote v-model="game.ShowUpdateNote" :value="game.ShowUpdateNote" @showView="toggleUpdate($event)"/>
 
     <q-page-scroller position="top" :scroll-offset="100" :offset="[18, 18]" style="z-index: 110;">
-      <div class="text-white q-py-sm q-px-sm text-center text-caption border--5 bg-purple glass">
-          Poeira Cósmica: {{ cosmicDustCount | formatNumber }}
+      <div class="text-white q-px-xs text-center text-caption border--5 font--8 bg-purple">
+        <div>Poeira Cósmica: {{ cosmicDustCount | formatNumber }}</div>
+        <div>Unobtainium : {{ game.unobtainium }}</div>
       </div>
     </q-page-scroller>
 
-    <q-header v-if="!modeMobile" elevated >
-        <!-- TODO Remover tag style -->
-      <q-tabs v-model="headerToolbar" active-color="white" no-caps dense class="text-white shadow-2" style="border-radius: 5px;" >
+    <component :is="menuElementType" elevated >
+      <q-tabs v-model="headerToolbar" active-color="white" no-caps dense class="text-white shadow-2">
         <q-tab name="space" label="Home" style="width: 100px;"><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab>
+        <!-- <q-tab name="fight" label="batalha" style="width: 100px;"><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab> -->
         <q-tab name="options" label="Opções" style="width: 100px;"><img src="../assets/options.png" style="width: 30px;"></q-tab>
         <q-tab name="achivements" label="Conquistas"><img src="../assets/badge.png" style="width: 30px;"></q-tab>
       </q-tabs>
-    </q-header>
-
-    <q-footer v-if="modeMobile" elevated>
-      <!-- TODO Remover tag style -->
-      <q-tabs v-model="headerToolbar" active-color="white" no-caps dense class="text-white shadow-2" style="border-radius: 5px;" >
-        <q-tab name="space" label="Home" style="width: 100px;"><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab>
-        <q-tab name="options" label="Opções" style="width: 100px;"><img src="../assets/options.png" style="width: 30px;"></q-tab>
-        <q-tab name="achivements" label="Conquistas"><img src="../assets/badge.png" style="width: 30px;"></q-tab>
-      </q-tabs>
-    </q-footer>
+    </component>
 
     <!-- STARDUST -->
     <q-tab-panels v-model="headerToolbar" animated class="fit starship">
@@ -46,7 +37,9 @@
                       Poeira Cósmica
                     </q-tooltip>
                   </q-img>
-                  <div>{{ cosmicDustCount | formatNumber}}</div>
+                  <div>
+                    {{ cosmicDustCount | formatNumber}}
+                  </div>
                 </div>
                 <div class="text-center font--10">
                   <q-img src="../assets/unobtainium.png" style="width: 68px">
@@ -67,11 +60,12 @@
             <!-- PEGAR POEIRA -->
             <div class="justify-center flex">
               <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
-              <div v-if="game.cosmicDust === 0" class="text-black q-px-sm information" >Clique na nave para pegar poeira cósmica...</div>
+              <div v-if="game.cosmicDust === 0" class="text-black q-px-sm information shadow-3 text-center" style="z-index: 10;" >Clique na nave para começar a pegar poeira cósmica!</div>
               <q-circular-progress show-value instant-feedback :value="game.levelUp" size="180px" :thickness="0.1" color="warning" track-color="white" :max="game.maxlevelUp" class="q-mb-md">
                 <q-btn flat round push @click="getDust()" size="60px" :ripple="{ color: 'yellow-4' }">
                   <q-img :src="require(`../assets/ships/${game.shipEquiped.img}`)" />
                 </q-btn>
+
                   <span id="levelUpEfect" />
                   <span id="float" />
               </q-circular-progress>
@@ -100,7 +94,7 @@
             <q-tab-panels v-model="equipamentBay" animated class="transparent">
               <q-tab-panel name="inventory">
                 <!-- DRONE -->
-                <div v-if="!game.installDrone && !game.installConversor" class="text-black q-pa-sm q-ma-sm font--10 border--5 bg-white">Compre algum equipamento na loja para ser usado aqui!</div>
+                <div v-if="!game.installDrone && !game.installConversor" class="text-black q-pa-sm q-ma-sm font--10 border--5 bg-white shadow-2 text-center">Compre algum equipamento na loja para ser usado aqui!</div>
                 <div v-if="game.installDrone" class="q-mx-sm q-mt-lg justify-between flex">
                   <q-btn :class="game.droneFunction.colorDrone" push class="fit" size="12px" :disable="game.droneFunction.droneSend" @click="drone()">
                     <div class="row no-wrap q-gutter-x-lg q-my-sm">
@@ -171,6 +165,17 @@
                       </q-img>
                       <div class="text-justify text-black q-px-sm shadow-1" style="border-radius: 5px; background-color: white;">
                         <p>{{ item.description }}</p>
+                      </div>
+                      <q-separator class="q-mb-sm shadow-1" color="white" inset size="1px" />
+                      <div class="q-mb-sm">
+                        <div class="text-center flex justify-center q-gutter-x-lg">
+                          <div>
+                            <div>Nave Necessária equipada</div>
+                            <div><q-img :src="require(`../assets/ships/${item.shipRequire.img}`)" style="width: 94px"/></div>
+                            <div v-if="game.shipEquiped.id === item.shipRequire.id">{{ item.shipRequire.label }} equipada</div>
+                            <div v-else class="text-red" >{{ item.shipRequire.label }} não equipada</div>
+                          </div>
+                        </div>
                       </div>
                       <q-separator class="q-mb-sm shadow-1" color="white" inset size="1px" />
                       <div class="q-mb-sm">
@@ -256,7 +261,7 @@
                       </div>
                       <!-- TODO Remover lógica da view -->
                       <div>
-                        <div v-if="upgrade.idu !== 5">Eficiência: +{{ upgrade.value | formatNumber }}</div>
+                        <div v-if="upgrade.idu !== 5">Eficiência: +{{ upgrade.value | formatNumberDec }}</div>
                         <div v-if="upgrade.label === 'Drone Pro'">Eficiência: +{{ upgrade.value | formatNumber }}</div>
                         <div v-if="upgrade.label === 'Drone Pro' || upgrade.idu !== 5">(+0.2 por upgrade)</div>
                       </div>
@@ -277,9 +282,9 @@
         <div :class="spaceClicker" class="starship__items" >
           <q-separator v-if="game.openShop !== 0" color="green" size="4px" />
           <div v-if="game.openShop !== 0" class="q-my-xs flex justify-center text-uppercase">
-            Loja
+            Loja Espacial
             <q-tabs v-model="shop" active-color="white" no-caps dense class="bg-green text-white shadow-2 fit"  style="border-radius: 5px;" >
-              <q-tab name="itens" label="Gadgets"><img src="" alt=""><img src="../assets/gadget.png" style="width: 30px;"></q-tab>
+              <q-tab name="itens" label="Gadgets"><img src="../assets/gadget.png" style="width: 30px;"></q-tab>
               <q-tab name="equipamentos" label="Equipamentos"><img src="../assets/telescope.png" style="width: 30px;"></q-tab>
               <q-tab name="ships" label="Naves"><img src="../assets/ships/vehicle.gif" style="width: 55px;"></q-tab>
             </q-tabs>
@@ -288,30 +293,28 @@
             <q-tab-panel name="itens" class="q-gutter-md " style="min-height: 500px;">
             <q-pagination v-model="pageItems" :max="3"  push color="warning" class="flex justify-center" @click="changePage(pageItems)"/>
               <q-list v-for="(item, key) in gameItems" :key="key" class="text-white font--8">
-                <div>
-                  <q-item-section ref="item" v-if="item.page === pageItems" class="row justify-center align-center q-ml-sm">
-                    <div class="flex justify-between">
-                      <div class="row items-center">
-                        <q-img :src="require(`../assets/${item.img}`)" style="width: 40px; height: 40px;" />
-                        <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
-                      </div>
-                      <div class="column text-right q-mb-sm">
-                        <div>
-                          Preço: {{ item.price | formatNumber }}
-                          <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/>
-                        </div>
-                        <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
-                        <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
-                        <div class="self-end q-mb-xs">{{ item.amount | formatNumber }} unidades</div>
-                      </div>
+                <q-item-section ref="item" v-if="item.page === pageItems" class="row justify-center align-center q-ml-sm">
+                  <div class="flex justify-between">
+                    <div class="row items-center">
+                      <q-img :src="require(`../assets/${item.img}`)" style="width: 40px; height: 40px;" />
+                      <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
                     </div>
-                    <div class="q-px-md bg-white border--5 text-black text-center q-py-xs">{{ item.description }}</div>
-                    <div v-if="game.openShop <= item.unlocked" class="q-px-md bg-warning border--5 text-black text-center q-py-xs q-mt-sm">desbloqueio: {{ item.unlocked }} items </div>
-                    <q-btn v-if="game.openShop >= item.unlocked" label="comprar" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
-                    <q-btn v-if="game.openShop >= item.unlocked" label="upgrade" size="13px" push color="blue" :disable="item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
-                  <q-separator color="green" size="1px" class="q-mt-md" />
-                  </q-item-section>
-                </div>
+                    <div class="column text-right q-mb-sm">
+                      <div>
+                        Preço: {{ item.price | formatNumber }}
+                        <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/>
+                      </div>
+                      <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
+                      <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
+                      <div class="self-end q-mb-xs">{{ item.amount | formatNumber }} unidades</div>
+                    </div>
+                  </div>
+                  <div class="q-px-md bg-white border--5 text-black text-center q-py-xs">{{ item.description }}</div>
+                  <div v-if="game.openShop <= item.unlocked" class="q-px-md bg-warning border--5 text-black text-center q-py-xs q-mt-sm">desbloqueio: {{ item.unlocked }} items </div>
+                  <q-btn v-if="game.openShop >= item.unlocked" label="comprar" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
+                  <q-btn v-if="game.openShop >= item.unlocked" label="upgrade" size="13px" push color="blue" :disable="item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
+                <q-separator color="green" size="1px" class="q-mt-md" />
+                </q-item-section>
               </q-list>
             </q-tab-panel>
             <!-- Equipamentos -->
@@ -345,38 +348,45 @@
             </q-tab-panel>
             <!-- ships -->
             <q-tab-panel v-if="game.openShop > 0" name="ships">
+              <q-pagination v-model="pageShips" :max="4" push color="warning" class="flex justify-center" @click="changePage(pageShips)" />
               <q-list v-for="(item, key) in game.ship" :key="key" bordered class="text-white font--8 starship__items">
-                  <q-item-section class="row starship__items">
-                    <div class="column">
-                      <div class="flex justify-between items-center">
-                        <q-img :src="require(`../assets/ships/${item.img}`)" style="width: 80px; height: 80px;" />
-                        <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
-                        <div><q-btn label="Equipar Nave" size="13px" push color="green" :disable="checkParts(item.parts)" @click="equipShip(item)" /></div>
-                        <div class="q-px-md bg-white border--5 text-black text-center q-py-xs q-mx-md q-mb-xs">{{ item.description }}</div>
+                <q-item-section v-if="item.page === pageShips" class="row starship__items">
+                  <div class="column">
+                    <div class="flex justify-center bg-warning border--5 q-mt-sm q-px-sm shadow-2">
+                      <div class="fit justify-center flex">
+                        <q-img :src="require(`../assets/ships/${item.img}`)" style="width: 128px; height: 80px;" />
                       </div>
-                      <!-- // partes -->
-                        <div class="text-center">PARTES</div>
-                        <q-item v-for="(parts, key) in game.ship[key].parts" :key="key" class="column text-center">
-                          <div class="flex justify-between">
-                            <div>
-                              <q-img :src="require(`../assets/ships/${parts.img}`)" style="width: 50px; height: 50px;" />
-                              <div class="self-center q-ml-sm text-capitalize">{{ parts.label }}</div>
-                            </div>
-                            <div class="column q-mt-md">
-                              <span>preço: {{ parts.price }}<q-img src="../assets/unobtainium.png" style="width: 18px" class="q-mb-xs q-ml-xs"/></span>
-                            </div>
-                          </div>
-                          <div><q-btn :label="shipPartCheck(parts, 'label')" size="13px" push :color="shipPartCheck(parts, 'color')" :disable="parts.buyed" class="q-mt-md fit" @click="buyPart(parts, key)" /></div>
-                        </q-item>
+                      <div class="fit justify-center flex q-mb-sm text-capitalize">{{ item.label }}</div>
+                      <div class="fit justify-center flex">
+                        <q-btn label="Equipar Nave" size="13px" push color="blue" :disable="checkParts(item.parts)" @click="equipShip(item)" />
+                          <q-btn icon="close" size="13px" push color="red" class="q-ml-xs" :disable="checkParts(item.parts)" @click="unquipShip" />
+                      </div>
+                      <div class="q-px-md bg-white border--5 text-black text-center q-py-xs q-mx-md q-my-sm shadow-1">{{ item.description }}</div>
                     </div>
-                  <q-separator color="black" size="1px" class="q-mt-md" />
-                  </q-item-section>
+                    <!-- PARTS -->
+                    <q-separator color="white" size="1px" class="q-my-sm" />
+                    <div class="text-center q-mb-xs">PARTES</div>
+                  </div>
+                    <q-item v-for="(parts, key) in game.ship[key].parts" :key="key" class="bg-blue border--5 q-mb-xs">
+                      <div class="flex">
+                        <q-img :src="require(`../assets/ships/${parts.img}`)" style="width: 50px; height: 50px; border-radius: 1rem; border-color: white; border-style: solid; border-width: 2px;" />
+                      </div>
+                      <div class="column text-center justify-center col text-capitalize">
+                        <div>{{ parts.label }}</div>
+                        <div>preço: {{ parts.price }}<q-img src="../assets/unobtainium.png" style="width: 18px" class="q-mb-xs q-ml-xs"/></div>
+                      </div>
+                      <div>
+                        <q-btn :label="shipPartCheck(parts, 'label')" size="10px" push dense :color="shipPartCheck(parts, 'color')" :disable="parts.buyed" class="fit" @click="buyPart(parts, key)" />
+                      </div>
+                    </q-item>
+                <q-separator color="black" size="1px" class="q-mt-md" />
+                </q-item-section>
               </q-list>
             </q-tab-panel>
           </q-tab-panels>
           <div v-if="game.openShop === 0" class="flex fit">
             <q-btn label="" size="10px" color="positive" class="fit" @click="open">
-              <div v-if="!game.installDrone" class="text-black q-py-sm border--5 bg-white font--10">Clique aqui para liberar a loja! Custo 50 PC<img src="../assets/cosmic.png" style="width: 14px"></div>
+              <div v-if="!game.installDrone" class="text-black q-py-sm border--5 bg-white font--10 shadow-2">Clique aqui para liberar a loja! Custo 50 PC<img src="../assets/cosmic.png" style="width: 14px"></div>
             </q-btn>
           </div>
         </div>
@@ -388,7 +398,7 @@
             <!-- TODO criar um modal com uma msg e uma img dizendo que o jogo será resetado e sem tem certeza disso -->
             <div><q-btn label="contato" class="bg-blue text-white" style="min-width: 250px;" @click="contactCard"/></div>
             <div><q-btn label="Nota do Update" class="bg-green-6 fit" color="white"  style="max-width: 250px;" @click="toggleUpdate(true)"/></div>
-            <div><q-btn label="Mute" class="bg-orange-6 fit column" color="white" :icon="iconAudio" @click="audioToggle"/></div>
+            <div><q-btn label="Musica" class="bg-orange-6 fit column" color="white" :icon="iconAudio" @click="audioToggle"/></div>
             <div>
               <q-btn class="bg-orange-6 fit column" color="white" label="Volume">
                 <q-slider v-model="musicVolume" :min="0.0" :max="1" :step="0.1" @input="setVolume(musicVolume)" label :label-value="'volume ' + musicVolume" color="blue"/>
@@ -398,6 +408,10 @@
             <q-badge color="black" class="text-white font--8" :label="'Version:'+ version" />
           </q-card-section>
         </div>
+      </q-tab-panel>
+      <!-- batalha -->
+      <q-tab-panel name="fight" >
+        <div class="text-white">compoment</div>
       </q-tab-panel>
       <!-- CONQUISTAS -->
       <q-tab-panel name="achivements">
@@ -519,7 +533,7 @@
     </template>
 
     <template class="text-center q-mt-sm">
-      <audio ref="music" id="bg-audio"  loop>
+      <audio ref="music" id="bg-audio" autoplay loop>
         <source src="../assets/Checking.mp3">
       </audio>
     </template>
@@ -530,23 +544,6 @@
     <!-- TODO quadro de quests com níveis -->
     <!-- escanear area atras de obnjetos e criaturas -->
     <!-- explorar planetas, lua etc -->
-
-    <!-- ASTEROID -->
-     <q-dialog v-model="asteroidDialog" maximized>
-      <q-card class="achivements font">
-        <q-card-actions class="col">
-          <div class="col text-right text-white">
-            <q-btn icon="close" flat dense v-close-popup size="25px"/>
-          </div>
-        </q-card-actions>
-        <div class="col text-center text-white text-h6">asteroid</div>
-        <q-card-section class="flex justify-center">
-          <div>
-            Tests
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
 
@@ -569,12 +566,13 @@ export default {
       },
       pageItems: 1,
       pageQuest: 1,
+      pageShips: 1,
       bg: 'bg-warning',
       musicVolume: 0.2,
       toReveal: false,
       convertAmount: 0,
       equipamentBay: 'inventory',
-      shop: 'ships',
+      shop: 'itens',
       asteroidDialog: false,
       volume: 1,
       iconAudio: 'volume_up',
@@ -589,6 +587,7 @@ export default {
       upgradesList: [],
       game: {
         shipEquiped: {
+          id: 0,
           img: 'vehicle.gif'
         },
         levelUp: 0,
@@ -680,7 +679,7 @@ export default {
             price: 100,
             totalSpent: 0,
             value: 0.5,
-            description: 'Aumenta o ganho do click.( +0.5 por upgrade)'
+            description: 'Aumenta o ganho do click.'
           },
           {
             idu: 1,
@@ -885,29 +884,29 @@ export default {
             page: 1,
             label: 'Tundra',
             img: 'Ship1/Ship1.png',
-            description: 'nave desenvolvida para entrar em nebulosas toxicas.',
+            description: 'nave desenvolvida para mineração.',
             parts: {
               body: {
                 label: 'Corpo',
-                price: 100,
+                price: 30,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_body.png'
               },
               nose: {
                 label: 'Ponta',
-                price: 100,
+                price: 30,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_nose.png'
               },
               turbine: {
                 label: 'turbina',
-                price: 100,
+                price: 30,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_turbine.png'
               },
               datail: {
                 label: 'datalhes',
-                price: 100,
+                price: 30,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_detail.png'
               }
@@ -918,38 +917,261 @@ export default {
             page: 2,
             label: 'Sharter',
             img: 'Ship2/Ship2.png',
-            description: 'nave desenvolvida para entrar em nebulosas toxicas.',
+            description: 'nave desenvolvida para transporte de Mercadorias.',
             parts: {
               body: {
                 label: 'Corpo',
-                price: 100,
+                price: 60,
                 buyed: false,
                 img: 'Ship2/Parts/ship2_body.png'
               },
               nose: {
                 label: 'Corpo 2',
-                price: 100,
+                price: 60,
                 buyed: false,
                 img: 'Ship2/Parts/ship2_body2.png'
               },
               turbine: {
                 label: 'Turbina',
-                price: 100,
+                price: 60,
                 buyed: false,
                 img: 'Ship2/Parts/ship2_turbines.png'
               },
               datail: {
                 label: 'datalhes',
-                price: 100,
+                price: 60,
                 buyed: false,
                 img: 'Ship2/Parts/ship2_detail.png'
               },
               datail2: {
                 label: 'datalhes 2',
-                price: 100,
+                price: 60,
                 buyed: false,
                 img: 'Ship2/Parts/ship2_detail2.png'
               }
+            }
+          },
+          ship3: {
+            id: 3,
+            page: 3,
+            label: 'Equinox',
+            img: 'Ship3/Ship3.png',
+            description: 'nave desenvolvida para extrair energia.',
+            parts: {
+              body: {
+                label: 'Corpo',
+                price: 100,
+                buyed: false,
+                img: 'Ship3/Parts/ship3_body.png'
+              },
+              head: {
+                label: 'Cabeça',
+                price: 100,
+                buyed: false,
+                img: 'Ship3/Parts/ship3_head.png'
+              },
+              head2: {
+                label: 'Cabeça 2',
+                price: 100,
+                buyed: false,
+                img: 'Ship3/Parts/ship3_head2.png'
+              },
+              turbine: {
+                label: 'Turbina',
+                price: 100,
+                buyed: false,
+                img: 'Ship3/Parts/ship3_turbine.png'
+              },
+              datail: {
+                label: 'Datalhes',
+                price: 100,
+                buyed: false,
+                img: 'Ship3/Parts/ship3_detail.png'
+              },
+              tail: {
+                label: 'Traseira 2',
+                price: 100,
+                buyed: false,
+                img: 'Ship3/Parts/ship3_tail.png'
+              }
+            }
+          },
+          ship4: {
+            id: 4,
+            page: 4,
+            label: 'Reliant',
+            img: 'Ship4/Ship4.png',
+            description: 'nave desenvolvida para trasporte de unobtainium.',
+            parts: {
+              body: {
+                label: 'Corpo',
+                price: 110,
+                buyed: false,
+                img: 'Ship4/Parts/ship4_body1.png'
+              },
+              body2: {
+                label: 'Corpo 2',
+                price: 110,
+                buyed: false,
+                img: 'Ship4/Parts/ship4_body2.png'
+              },
+              bodyDetail: {
+                label: 'Corpo detalhe',
+                price: 110,
+                buyed: false,
+                img: 'Ship4/Parts/ship4_body_detail.png'
+              },
+              tail: {
+                label: 'Traseira',
+                price: 110,
+                buyed: false,
+                img: 'Ship4/Parts/ship4_tail.png'
+              },
+              tubes: {
+                label: 'Tubulação',
+                price: 110,
+                buyed: false,
+                img: 'Ship4/Parts/ship4_tubes.png'
+              },
+              datail: {
+                label: 'datalhes',
+                price: 110,
+                buyed: false,
+                img: 'Ship4/Parts/ship4_detail.png'
+              },
+              window: {
+                label: 'Janela',
+                price: 110,
+                buyed: false,
+                img: 'Ship4/Parts/ship4_windows.png'
+              }
+            }
+          },
+          ship5: {
+            id: 5,
+            page: 5,
+            label: 'Sharter',
+            img: 'Ship5/Ship5.png',
+            description: 'nave desenvolvida para entrar em nebulosas toxicas.',
+            parts: {
+              body: {
+                label: 'Corpo',
+                price: 120,
+                buyed: false,
+                img: 'Ship5/Parts/ship5_body1.png'
+              },
+              body2: {
+                label: 'Corpo 2',
+                price: 120,
+                buyed: false,
+                img: 'Ship5/Parts/ship5_body2.png'
+              },
+              body3: {
+                label: 'Corpo 3',
+                price: 120,
+                buyed: false,
+                img: 'Ship5/Parts/ship5_body3.png'
+              },
+              top: {
+                label: 'Teto',
+                price: 120,
+                buyed: false,
+                img: 'Ship5/Parts/ship5_top_detail.png'
+              },
+              tube: {
+                label: 'Tubulação',
+                price: 120,
+                buyed: false,
+                img: 'Ship5/Parts/ship5_tube.png'
+              },
+              window: {
+                label: 'Janela',
+                price: 120,
+                buyed: false,
+                img: 'Ship5/Parts/ship5_window.png'
+              }
+            }
+          },
+          ship6: {
+            id: 6,
+            page: 6,
+            label: 'Sharter',
+            img: 'Ship6/Ship6.png',
+            description: 'nave desenvolvida para entrar em nebulosas toxicas.',
+            parts: {
+              body: {
+                label: 'Corpo',
+                price: 130,
+                buyed: false,
+                img: 'Ship6/Parts/ship6_body1.png'
+              },
+              body2: {
+                label: 'Corpo 2',
+                price: 130,
+                buyed: false,
+                img: 'Ship6/Parts/ship6_body2.png'
+              },
+              body3: {
+                label: 'Corpo 3',
+                price: 130,
+                buyed: false,
+                img: 'Ship6/Parts/ship6_body3.png'
+              },
+              circle: {
+                label: 'Detalhes do Circulo',
+                price: 130,
+                buyed: false,
+                img: 'Ship6/Parts/ship6_circle_detail.png'
+              },
+              turbine: {
+                label: 'Turbina',
+                price: 130,
+                buyed: false,
+                img: 'Ship2/Parts/ship2_turbines.png'
+              },
+              datail: {
+                label: 'datalhes',
+                price: 130,
+                buyed: false,
+                img: 'Ship6/Parts/ship6_detail1.png'
+              },
+              datail2: {
+                label: 'datalhes 2',
+                price: 130,
+                buyed: false,
+                img: 'Ship6/Parts/ship6_detail2.png'
+              },
+              datail3: {
+                label: 'datalhes 3',
+                price: 130,
+                buyed: false,
+                img: 'Ship6/Parts/ship6_detail3.png'
+              },
+              datail4: {
+                label: 'datalhes 4',
+                price: 130,
+                buyed: false,
+                img: 'Ship6/Parts/ship6_detail4.png'
+              },
+              datail5: {
+                label: 'datalhes 5',
+                price: 130,
+                buyed: false,
+                img: 'Ship6/Parts/ship6_detail5.png'
+              },
+              wing: {
+                label: 'Asa 1',
+                price: 130,
+                buyed: false,
+                img: 'Ship6/Parts/ship6_wing_detail1.png'
+              },
+              wing2: {
+                label: 'Asa 2',
+                price: 130,
+                buyed: false,
+                img: 'Ship6/Parts/ship6_wing_detail2.png'
+              }
+
             }
           }
         },
@@ -967,6 +1189,11 @@ export default {
               aerogel: 80,
               escâner: 50,
               drone: 15
+            },
+            shipRequire: {
+              id: 1,
+              label: 'Tundra',
+              img: 'Ship1/Ship1.png'
             },
             income: 15,
             maxIncome: 35,
@@ -989,6 +1216,11 @@ export default {
               Processador: 30,
               estação: 50
             },
+            shipRequire: {
+              id: 2,
+              label: 'Sharter',
+              img: 'Ship2/Ship2.png'
+            },
             income: 45,
             maxIncome: 85,
             workTime: 120000,
@@ -1010,6 +1242,11 @@ export default {
               Processador: 50,
               estação: 80,
               drone: 40
+            },
+            shipRequire: {
+              id: 3,
+              label: 'Equinox',
+              img: 'Ship3/Ship3.png'
             },
             income: 75,
             maxIncome: 105,
@@ -1035,6 +1272,11 @@ export default {
               drone: 50,
               conversor: 20
             },
+            shipRequire: {
+              id: 4,
+              label: 'Reliant',
+              img: 'Ship4/Ship4.png'
+            },
             income: 95,
             maxIncome: 125,
             workTime: 240000,
@@ -1059,19 +1301,23 @@ export default {
       try {
         this.game = JSON.parse(localStorage.getItem(this.version))
       } catch (e) {
-        // localStorage.removeItem('game-1.2.0')
         console.log(e)
       }
     } else {
       localStorage.removeItem(this.oldVersion)
       this.saveGame()
     }
+    // setup
     this.recovery()
     this.isQuestRecovery()
     this.setVolume(0.2)
   },
 
   computed: {
+    menuElementType () {
+      return !this.modeMobile ? 'q-header' : 'q-footer'
+    },
+
     qtdDustConvert () {
       const result = this.convertAmount * 10000
       return result
@@ -1216,8 +1462,13 @@ export default {
 
   methods: {
     equipShip (model) {
-      console.log(model.img)
       this.game.shipEquiped.img = model.img
+      this.game.shipEquiped.id = model.id
+    },
+
+    unquipShip () {
+      this.game.shipEquiped.img = 'vehicle.gif'
+      this.game.shipEquiped.id = 0
     },
 
     checkParts (model) {
@@ -1252,20 +1503,24 @@ export default {
       if (this.game.unobtainium >= parts.price && !parts.buyed) {
         this.game.unobtainium -= parts.price
         parts.buyed = true
-        // mudar o label do botão e a cor
-        // desativar o botão
-        console.log('comprado')
+        this.$refs.buyItem.play()
       } else {
+        // TODO notify
         console.log('não comprado')
       }
     },
 
     changePage (model) {
-      // console.log(model)
+      this.$refs.buyItem.play()
     },
 
     setVolume (vol) {
       this.$refs.music.volume = vol
+      this.$refs.buyItem.volume = vol
+      this.$refs.MissionComplete.volume = vol
+      this.$refs.MissionStartSong.volume = vol
+      this.$refs.error.volume = vol
+      this.$refs.convert.volume = vol
     },
 
     toggleBg (model) {
@@ -1301,6 +1556,9 @@ export default {
 
         Object.entries(item.cost).forEach(([key]) => {
           if (this.game.items[key].amount < item.cost[key]) {
+            pass = false
+          }
+          if (this.game.shipEquiped !== item.shipRequire) {
             pass = false
           }
         })
@@ -1457,6 +1715,7 @@ export default {
     achievementSong () {
       const som = new Audio('http://soundimage.org/wp-content/uploads/2016/04/SynthChime2.mp3')
       som.play()
+      som.volume = this.musicVolume
     },
 
     achievementNotify (text) {
@@ -1599,7 +1858,7 @@ export default {
               this.game.click += model.value
 
               model.price += model.price * 0.2
-              model.value += 0.2
+              model.value += 0.3
               model.totalSpent += model.price
 
               this.addInstallCountItem(model)
@@ -1739,7 +1998,13 @@ export default {
         this.game.cosmicDust -= model.price // debita o valor
         this.game.cosmicDustPerSecond += model.value // adiciona o multiplicador do item
 
-        model.price += model.price * 0.1
+        if (model.amount < 100) {
+          model.price += model.price * 0.05
+          console.log('preço +0.05')
+        } else {
+          model.price += model.price * 0.08
+          console.log('preço +0.08')
+        }
         model.totalEfficiency += model.value
 
         if (model.amount === 0) {
@@ -1762,6 +2027,16 @@ export default {
       if (this.game.cosmicDust >= 50) {
         this.game.cosmicDust -= 50
         this.game.openShop = 1
+      } else {
+        this.$q.notify({
+          message: 'Atenção<br><strong>Quantidade de Poeira cosmica insuficiente</strong>',
+          multiLine: true,
+          html: true,
+          timeout: 6000,
+          progress: true,
+          avatar: require('../assets/cosmic.png'),
+          color: 'negative'
+        })
       }
     },
 
@@ -1794,7 +2069,7 @@ export default {
       document.getElementById('float').appendChild(clickPoints)
       setTimeout(() => {
         document.getElementById('float').removeChild(clickPoints)
-      }, 3000)
+      }, 2000)
       // XP
       this.game.levelUp += 1
       if (this.game.levelUp === this.game.maxlevelUp) {
@@ -1837,7 +2112,7 @@ export default {
       setInterval(() => {
         const parsed = JSON.stringify(this.game)
         localStorage.setItem(this.version, parsed)
-      }, 5000)
+      }, 10000)
     }
   }
 }
@@ -1889,7 +2164,9 @@ export default {
 .animete {
   position: absolute;
   font-size: 15px;
-  text-shadow: 3px 5px 3px rgba(0,0,0,0.6);
+  text-shadow: 3px 3px 0px rgb(0, 0, 0, 0.5);
+  color: rgb(255, 255, 255);
+
   animation: floatUP 3s;
 }
 
