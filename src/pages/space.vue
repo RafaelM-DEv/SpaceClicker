@@ -1191,9 +1191,9 @@ export default {
               drone: 15
             },
             shipRequire: {
-              id: 1,
-              label: 'Tundra',
-              img: 'Ship1/Ship1.png'
+              id: 0,
+              label: 'Damascus',
+              img: 'vehicle.gif'
             },
             income: 15,
             maxIncome: 35,
@@ -1217,7 +1217,7 @@ export default {
               estação: 50
             },
             shipRequire: {
-              id: 2,
+              id: 1,
               label: 'Sharter',
               img: 'Ship2/Ship2.png'
             },
