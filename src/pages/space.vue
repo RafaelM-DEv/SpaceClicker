@@ -79,6 +79,11 @@
                 </q-tooltip>
               </span>
             </div>
+            <!-- <span class="bg-video">
+              <video width="320" height="240" autoplay muted loop>
+                <source ref="bgVideo" src="../assets/space.webm" type="video/webm">
+              </video>
+            </span> -->
           </div>
 
           <q-separator class="q-mt-xs" color="orange" size="4px" />
@@ -108,7 +113,7 @@
                 <div v-if="game.installDrone" class="q-my-sm q-mx-sm bg-white border--5 text-black font--8 q-pa-xs shadow-1">
                   <div class="flex justify-between">
                     <div>Capacidade de Coleta do drone</div>
-                    <div>{{ game.items.drone.launchValue }}/s</div>
+                    <div>{{ game.items.drone.launchValue | formatNumber}}/s</div>
                   </div>
                   <div class="flex justify-between">
                     <div>Tempo de lançamento</div>
@@ -373,10 +378,14 @@
                       </div>
                       <div class="column text-center justify-center col text-capitalize">
                         <div>{{ parts.label }}</div>
-                        <div>preço: {{ parts.price }}<q-img src="../assets/unobtainium.png" style="width: 18px" class="q-mb-xs q-ml-xs"/></div>
+                        <div>
+                          preço: {{ parts.price | formatNumber }}
+                          <q-img v-if="item.id === 1" src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs q-ml-xs"/>
+                          <q-img v-else src="../assets/unobtainium.png" style="width: 18px" class="q-mb-xs q-ml-xs"/>
+                        </div>
                       </div>
                       <div>
-                        <q-btn :label="shipPartCheck(parts, 'label')" size="10px" push dense :color="shipPartCheck(parts, 'color')" :disable="parts.buyed" class="fit" @click="buyPart(parts, key)" />
+                        <q-btn :label="shipPartCheck(parts, 'label')" size="10px" push dense :color="shipPartCheck(parts, 'color')" :disable="parts.buyed" class="fit" @click="buyPart(parts, item)" />
                       </div>
                     </q-item>
                 <q-separator color="black" size="1px" class="q-mt-md" />
@@ -405,7 +414,9 @@
               </q-btn>
             </div>
             <div><q-btn label="Reset" @click="resetGame" style="min-width: 250px;" color="negative" /></div>
+            <div><q-btn label="Save Game" @click="saveGameForced" style="min-width: 250px;" color="positive" /></div>
             <q-badge color="black" class="text-white font--8" :label="'Version:'+ version" />
+            <q-badge color="black" class="text-white font--8" :label="'Salvo:'+saveStatus" />
           </q-card-section>
         </div>
       </q-tab-panel>
@@ -533,7 +544,7 @@
     </template>
 
     <template class="text-center q-mt-sm">
-      <audio ref="music" id="bg-audio" autoplay loop>
+      <audio ref="music" id="bg-audio" loop>
         <source src="../assets/Checking.mp3">
       </audio>
     </template>
@@ -549,9 +560,8 @@
 
 <script>
 import updateNote from '../components/updateNote.vue'
-
+import { date, copyToClipboard } from 'quasar'
 import gsap from 'gsap'
-import { copyToClipboard } from 'quasar'
 
 export default {
   components: { updateNote },
@@ -564,6 +574,7 @@ export default {
           label: 'comprar'
         }
       },
+      saveStatus: '--/--/--',
       pageItems: 1,
       pageQuest: 1,
       pageShips: 1,
@@ -608,8 +619,8 @@ export default {
         click: 1,
         openShop: 0,
         starCompanyName: 'Nome da Companhia',
-        cosmicDust: 0,
-        unobtainium: 0,
+        cosmicDust: 10000000,
+        unobtainium: 100,
         cosmicDustPerSecond: 0,
         itemsBuyed: [],
         achievementsList: {
@@ -736,7 +747,7 @@ export default {
             uplink: 'drone',
             label: 'Drone Sentinela',
             img: 'drone.png',
-            price: 8000,
+            price: 80,
             totalSpent: 0,
             value: 8,
             description: 'Aumenta a capacidade de coleta do drone lançado em +8'
@@ -746,7 +757,7 @@ export default {
             uplink: 'drone',
             label: 'Bateria de Drone',
             img: 'bateria.png',
-            price: 8000,
+            price: 1000,
             totalSpent: 0,
             value: 8,
             description: 'Aumenta o tempo de coleta do drone lançado em +2 e o tempo de recarga em +1.'
@@ -888,25 +899,25 @@ export default {
             parts: {
               body: {
                 label: 'Corpo',
-                price: 30,
+                price: 30000,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_body.png'
               },
               nose: {
                 label: 'Ponta',
-                price: 30,
+                price: 30000,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_nose.png'
               },
               turbine: {
                 label: 'turbina',
-                price: 30,
+                price: 30000,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_turbine.png'
               },
               datail: {
                 label: 'datalhes',
-                price: 30,
+                price: 30000,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_detail.png'
               }
@@ -1191,9 +1202,9 @@ export default {
               drone: 15
             },
             shipRequire: {
-              id: 0,
-              label: 'Damascus',
-              img: 'vehicle.gif'
+              id: 1,
+              label: 'Tundra',
+              img: 'Ship1/Ship1.png'
             },
             income: 15,
             maxIncome: 35,
@@ -1217,7 +1228,7 @@ export default {
               estação: 50
             },
             shipRequire: {
-              id: 1,
+              id: 2,
               label: 'Sharter',
               img: 'Ship2/Ship2.png'
             },
@@ -1499,11 +1510,21 @@ export default {
       }
     },
 
-    buyPart (parts, key) {
+    buyPart (parts, item) {
+      if (item.id === 1) {
+        if (this.game.cosmicDust >= parts.price && !parts.buyed) {
+          this.game.cosmicDust -= parts.price
+          parts.buyed = true
+          this.$refs.buyItem.play()
+        // colocar som de equipando
+        }
+      }
+
       if (this.game.unobtainium >= parts.price && !parts.buyed) {
         this.game.unobtainium -= parts.price
         parts.buyed = true
         this.$refs.buyItem.play()
+        // colocar som de equipando
       } else {
         // TODO notify
         console.log('não comprado')
@@ -1558,7 +1579,7 @@ export default {
           if (this.game.items[key].amount < item.cost[key]) {
             pass = false
           }
-          if (this.game.shipEquiped !== item.shipRequire) {
+          if (this.game.shipEquiped.id !== item.shipRequire.id) {
             pass = false
           }
         })
@@ -1936,6 +1957,7 @@ export default {
             if (model.label === 'Drone Sentinela') {
               this.game.items.drone.launchValue += model.value
               model.price += model.price * 0.2
+              model.value += 0.5
             }
             if (model.label === 'Bateria de Drone') {
               this.game.items.drone.timeLaunch += model.value
@@ -2108,11 +2130,36 @@ export default {
       this.$router.go(this.$router.currentRoute)
     },
 
+    saveGameForced () {
+      const parsed = JSON.stringify(this.game)
+      localStorage.setItem(this.version, parsed)
+      const time = new Date()
+      this.saveStatus = date.formatDate(time, 'DD/MM/YYYY [-] HH:mm[h]')
+      this.$q.notify({
+        message: '<strong>Jogo Salvo Manual</strong>',
+        html: true,
+        timeout: 500,
+        progress: true,
+        position: 'top-right',
+        color: 'positive'
+      })
+    },
+
     saveGame () {
       setInterval(() => {
         const parsed = JSON.stringify(this.game)
         localStorage.setItem(this.version, parsed)
-      }, 10000)
+        this.$q.notify({
+          message: '<strong>Jogo Salvo</strong>',
+          html: true,
+          timeout: 500,
+          progress: true,
+          position: 'top-right',
+          color: 'Positive'
+        })
+        const time = new Date()
+        this.saveStatus = date.formatDate(time, 'DD/MM/YYYY [-] HH:mm[h]')
+      }, 40000)
     }
   }
 }
@@ -2259,9 +2306,9 @@ export default {
   }
 
   &--bg {
-    background-image: url(https://i.pinimg.com/originals/59/31/5f/59315fc4a62dd36b63f40b300ac793b2.gif);
-    background-size: cover;
-    background-repeat: no-repeat;
+    // background-image: url(https://i.pinimg.com/originals/59/31/5f/59315fc4a62dd36b63f40b300ac793b2.gif);
+    // background-size: cover;
+    // background-repeat: no-repeat;
   }
 
   &__items {
