@@ -1,37 +1,20 @@
-/*
- * This file runs in a Node context (it's NOT transpiled by Babel), so use only
- * the ES6 features that are supported by your Node version. https://node.green/
- */
-
-// Configuration for your app
-// https://v1.quasar.dev/quasar-cli/quasar-conf-js
-/* eslint-env node */
 const ESLintPlugin = require('eslint-webpack-plugin')
 
 module.exports = function (/* ctx */) {
   return {
-    // https://v1.quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
-
-    // https://v1.quasar.dev/quasar-cli/prefetch-feature
-    // preFetch: true,
-
-    // app boot file (/src/boot)
-    // --> boot files are part of "main.js"
-    // https://v1.quasar.dev/quasar-cli/boot-files
     boot: [
       'analytcs',
       'i18n',
       'axios',
-      'filters'
+      'filters',
+      'setup'
     ],
 
-    // https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: [
       'app.scss'
     ],
 
-    // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       'ionicons-v4',
       // 'mdi-v5',
@@ -45,7 +28,6 @@ module.exports = function (/* ctx */) {
       'material-icons' // optional, you are not bound to it
     ],
 
-    // Full list of options: https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       vueRouterMode: 'history', // available values: 'hash', 'history'
 

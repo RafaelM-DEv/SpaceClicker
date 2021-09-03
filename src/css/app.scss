@@ -1,6 +1,5 @@
 // app global css in SCSS form
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
 .font {
  font-family: 'Press Start 2P', cursive;
  &--8 {
@@ -24,4 +23,15 @@
   &--5 {
     border-radius: 5px;
   }
+}
+
+.page {
+  background-image: url(https://i.pinimg.com/564x/b1/bd/c1/b1bdc1ae539dcbd1a7c33cef3e5f2d9a.jpg);
+  background-size: unset;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  // transition-delay: 2s;
 }

@@ -3,17 +3,19 @@
     <!-- NOTAS DE UPDATE -->
     <updateNote v-model="game.ShowUpdateNote" :value="game.ShowUpdateNote" @showView="toggleUpdate($event)"/>
 
-    <q-page-scroller position="top" :scroll-offset="100" :offset="[18, 18]" style="z-index: 110;">
+    <!-- <q-page-scroller position="top" :scroll-offset="100" :offset="[18, 18]" style="z-index: 110;">
       <div class="text-white q-px-xs text-center text-caption border--5 font--8 bg-purple">
         <div>Poeira Cósmica: {{ cosmicDustCount | formatNumber }}</div>
         <div>Unobtainium : {{ game.unobtainium }}</div>
       </div>
-    </q-page-scroller>
-
+    </q-page-scroller> -->
+    <!-- TODO reduzir os png ou desenhar no pixel Art -->
+    <!-- TODO remover requisião de nave equipada para missões, verificar se foi comprada -->
+    <!-- TODO componentizar o game, ver componentes do quasar -->
+    <!-- TODO criar seção de piloto -->
     <component :is="menuElementType" elevated >
       <q-tabs v-model="headerToolbar" active-color="white" no-caps dense class="text-white shadow-2">
-        <q-tab name="space" label="Home" style="width: 100px;"><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab>
-        <!-- <q-tab name="fight" label="batalha" style="width: 100px;"><img src="../assets/ufo.png" alt="" style="width: 30px;"></q-tab> -->
+        <q-tab name="space" label="Home" style="width: 100px;"><img src="../assets/spaceship.png" alt="" style="width: 30px;"></q-tab>
         <q-tab name="options" label="Opções" style="width: 100px;"><img src="../assets/options.png" style="width: 30px;"></q-tab>
         <q-tab name="achivements" label="Conquistas"><img src="../assets/badge.png" style="width: 30px;"></q-tab>
       </q-tabs>
@@ -28,6 +30,10 @@
             <div class="flex justify-center">
               <q-btn push size="15px" :label="game.starCompanyName" @click="setCompanyName"/>
             </div>
+            <!-- <q-tabs v-model="main" active-color="white" no-caps dense class="bg-red text-white shadow-2 fit q-mb-md"  style="border-radius: 5px;" >
+              <q-tab name="ship" label="Nave"><img src="../assets/spaceship.png" style="width: 30px;"></q-tab>
+              <q-tab name="user" label="Piloto"><img src="../assets/capacete-de-astronauta.png" style="width: 30px;"></q-tab>
+            </q-tabs> -->
             <!-- MOEDAS -->
             <div class="column items-center q-mb-md">
               <div class="flex q-gutter-x-lg">
@@ -44,7 +50,7 @@
                 <div class="text-center font--10">
                   <q-img src="../assets/unobtainium.png" style="width: 68px">
                     <q-tooltip content-class="bg-purple font" anchor="top middle" self="center middle">
-                      unobtainium
+                      Unobtainium
                     </q-tooltip>
                   </q-img>
                   <div>{{ game.unobtainium }}</div>
@@ -57,7 +63,7 @@
                 <q-badge class="font--10 q-mt-sm" color="warning">XP:{{ game.levelUp }}/{{ game.maxlevelUp }}</q-badge>
               </div>
             </div>
-            <!-- PEGAR POEIRA -->
+            <!-- SHIP/ AÇÃO PEGAR POEIRA  -->
             <div class="justify-center flex">
               <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
               <div v-if="game.cosmicDust === 0" class="text-black q-px-sm information shadow-3 text-center" style="z-index: 10;" >Clique na nave para começar a pegar poeira cósmica!</div>
@@ -70,6 +76,7 @@
                   <span id="float" />
               </q-circular-progress>
             </div>
+            <!-- LISTA DE ITENS COMPRADOS -->
             <div class="items-buyed">
               <span v-for="(item, index) in game.itemsBuyed" :key='index' class="items-buyed__list">
                 <q-img :src="require(`../assets/${item.img}`)" class="items-buyed__img"/>
@@ -79,15 +86,10 @@
                 </q-tooltip>
               </span>
             </div>
-            <!-- <span class="bg-video">
-              <video width="320" height="240" autoplay muted loop>
-                <source ref="bgVideo" src="../assets/space.webm" type="video/webm">
-              </video>
-            </span> -->
           </div>
 
           <q-separator class="q-mt-xs" color="orange" size="4px" />
-          <!-- INVENTÁRIO -->
+          <!-- INVENTÁRIO / MISSIONS TAB -->
           <div class="border--5" :class="bg">
             <div class="q-mt-sm flex justify-center text-uppercase font--10 shadow-5 border--5">
               <q-tabs v-model="equipamentBay" stretch inline-label active-color="white" no-caps dense class="text-white shadow-2 fit border--5" :class="bg">
@@ -97,6 +99,7 @@
             </div>
 
             <q-tab-panels v-model="equipamentBay" animated class="transparent">
+              <!-- INVENTÁRIO -->
               <q-tab-panel name="inventory">
                 <!-- DRONE -->
                 <div v-if="!game.installDrone && !game.installConversor" class="text-black q-pa-sm q-ma-sm font--10 border--5 bg-white shadow-2 text-center">Compre algum equipamento na loja para ser usado aqui!</div>
@@ -266,9 +269,9 @@
                       </div>
                       <!-- TODO Remover lógica da view -->
                       <div>
-                        <div v-if="upgrade.idu !== 5">Eficiência: +{{ upgrade.value | formatNumberDec }}</div>
+                        <div v-if="upgrade.idu !== 5 && upgrade.value !== 0">Eficiência: +{{ upgrade.value | formatNumberDec }}</div>
                         <div v-if="upgrade.label === 'Drone Pro'">Eficiência: +{{ upgrade.value | formatNumber }}</div>
-                        <div v-if="upgrade.label === 'Drone Pro' || upgrade.idu !== 5">(+0.2 por upgrade)</div>
+                        <div v-if="upgrade.label === 'Drone Pro' || upgrade.idu !== 5 && upgrade.value !== 0">(+0.2 por upgrade)</div>
                       </div>
                       <!-- DRONE -->
                       <div v-if="upgrade.label === 'Drone Sentinela'" >Coleta de Poeira: +{{ upgrade.value | formatNumber }}</div>
@@ -286,8 +289,8 @@
         <!-- ITENS -->
         <div :class="spaceClicker" class="starship__items" >
           <q-separator v-if="game.openShop !== 0" color="green" size="4px" />
-          <div v-if="game.openShop !== 0" class="q-my-xs flex justify-center text-uppercase">
-            Loja Espacial
+          <div v-if="game.openShop !== 0" class="q-my-md flex justify-center text-uppercase">
+            <div class="q-mb-sm">Loja Espacial</div>
             <q-tabs v-model="shop" active-color="white" no-caps dense class="bg-green text-white shadow-2 fit"  style="border-radius: 5px;" >
               <q-tab name="itens" label="Gadgets"><img src="../assets/gadget.png" style="width: 30px;"></q-tab>
               <q-tab name="equipamentos" label="Equipamentos"><img src="../assets/telescope.png" style="width: 30px;"></q-tab>
@@ -363,8 +366,8 @@
                       </div>
                       <div class="fit justify-center flex q-mb-sm text-capitalize">{{ item.label }}</div>
                       <div class="fit justify-center flex">
-                        <q-btn label="Equipar Nave" size="13px" push color="blue" :disable="checkParts(item.parts)" @click="equipShip(item)" />
-                          <q-btn icon="close" size="13px" push color="red" class="q-ml-xs" :disable="checkParts(item.parts)" @click="unquipShip" />
+                        <q-btn label="Equipar Nave" size="13px" push color="blue" :disable="checkParts(item)" @click="equipShip(item)" />
+                          <q-btn icon="close" size="13px" push color="red" class="q-ml-xs" :disable="checkParts(item)" @click="unquipShip(item)" />
                       </div>
                       <div class="q-px-md bg-white border--5 text-black text-center q-py-xs q-mx-md q-my-sm shadow-1">{{ item.description }}</div>
                     </div>
@@ -393,6 +396,7 @@
               </q-list>
             </q-tab-panel>
           </q-tab-panels>
+          <!-- INVENTÁRIO INFO -->
           <div v-if="game.openShop === 0" class="flex fit">
             <q-btn label="" size="10px" color="positive" class="fit" @click="open">
               <div v-if="!game.installDrone" class="text-black q-py-sm border--5 bg-white font--10 shadow-2">Clique aqui para liberar a loja! Custo 50 PC<img src="../assets/cosmic.png" style="width: 14px"></div>
@@ -415,14 +419,17 @@
             </div>
             <div><q-btn label="Reset" @click="resetGame" style="min-width: 250px;" color="negative" /></div>
             <div><q-btn label="Save Game" @click="saveGameForced" style="min-width: 250px;" color="positive" /></div>
+            <div>
+              <q-btn label="Sair" @click="logout" :loading="exit" style="min-width: 250px;" color="warning">
+                <template v-slot:loading>
+                  <q-spinner-facebook />
+                </template>
+              </q-btn>
+            </div>
             <q-badge color="black" class="text-white font--8" :label="'Version:'+ version" />
             <q-badge color="black" class="text-white font--8" :label="'Salvo:'+saveStatus" />
           </q-card-section>
         </div>
-      </q-tab-panel>
-      <!-- batalha -->
-      <q-tab-panel name="fight" >
-        <div class="text-white">compoment</div>
       </q-tab-panel>
       <!-- CONQUISTAS -->
       <q-tab-panel name="achivements">
@@ -431,8 +438,8 @@
             <q-list v-for="(item, index) in game.achievementsList" :key="index" class="achivements__item-list text-white font--8 q-ma-xs" >
               <div class="flex">
                 <img v-if="!item.conquest &&  !item.conquestRevel" src="../assets/interrogation.png" class="q-mt-xs" />
-                <q-btn v-if="!item.conquest && !item.conquestRevel" label="revelar" class="q-mx-sm" flat @click="toReveal = true">
-                  <q-dialog v-model="toReveal">
+                <!-- <q-btn v-if="!item.conquest && !item.conquestRevel" label="revelar" class="q-mx-sm" flat @click="toRevealToggle" /> -->
+                 <!-- <q-dialog v-model="toReveal">
                     <q-card class="font">
                       <q-card-section class="font--8 text-center">
                         <div><img src="../assets/unobtainium.png" style="width: 30px;"></div>
@@ -443,8 +450,7 @@
                         <q-btn label="prosseguir" class="bg-green font--8 text-white" @click="revelar(item)"/>
                       </q-card-actions>
                     </q-card>
-                  </q-dialog>
-                </q-btn>
+                  </q-dialog> -->
                 <div v-if="item.conquestRevel && !item.conquest" class="q-px-sm achivements__item-list__description" style="opacity: 0.5;">{{ item.description }}</div>
                 <div v-if="item.conquest" class="achivements__item-list">
                   <div class="q-ml-sm q-py-sm text-capitalize text-center">{{ item.label }}</div>
@@ -504,15 +510,7 @@
       </q-card>
     </q-dialog>
 
-    <!-- <div class="flex justify-center fit q-mt-md bg-grey-7 fit q-px-sm">
-      <div class="text-black text-center" style="font-size: 8px;">
-        Rafael Martins - <a target="_blank" style="text-decoration: none; color: yellow" href="https://github.com/RafaelM-DEv">https://github.com/RafaelM-DEv</a>
-        Version {{ version }}
-      </div>
-    </div> -->
-
       <!-- SFX / MUSIC  -->
-
     <template class="text-center q-mt-sm">
       <audio ref="convert">
         <source src="../assets/convert.mp3">
@@ -548,13 +546,6 @@
         <source src="../assets/Checking.mp3">
       </audio>
     </template>
-
-    <!-- TODO interceptar asteroids com drone , pode conter inimigos! -->
-    <!-- TODO equipamentos para melhorar drone, modelos de drone e equipamentos -->
-    <!-- TODO criar menu do comandante, um tab que muda as missões -->
-    <!-- TODO quadro de quests com níveis -->
-    <!-- escanear area atras de obnjetos e criaturas -->
-    <!-- explorar planetas, lua etc -->
   </q-page>
 </template>
 
@@ -563,39 +554,44 @@ import updateNote from '../components/updateNote.vue'
 import { date, copyToClipboard } from 'quasar'
 import gsap from 'gsap'
 
+import firebase from 'firebase/app'
+import { mapActions } from 'vuex'
+
 export default {
   components: { updateNote },
 
   data () {
     return {
+      main: 'ship',
       shipsControl: {
         partBtn: {
           color: 'green',
           label: 'comprar'
         }
       },
-      saveStatus: '--/--/--',
+      achievements: false,
+      asteroidDialog: false,
+      bg: 'bg-warning',
+      contact: false,
+      convertAmount: 0,
+      cosmicDustCount: 0,
+      equipamentBay: 'inventory',
+      exit: false,
+      headerToolbar: 'space',
+      iconAudio: 'volume_up',
+      musicVolume: 0.2,
+      oldVersion: '1.2.5',
       pageItems: 1,
       pageQuest: 1,
       pageShips: 1,
-      bg: 'bg-warning',
-      musicVolume: 0.2,
-      toReveal: false,
-      convertAmount: 0,
-      equipamentBay: 'inventory',
-      shop: 'itens',
-      asteroidDialog: false,
-      volume: 1,
-      iconAudio: 'volume_up',
-      achievements: false,
-      version: '1.2.6',
-      oldVersion: '1.2.5',
-      contact: false,
-      upgradeDialog: false,
-      headerToolbar: 'space',
+      saveStatus: '--/--/--',
       setName: false,
-      cosmicDustCount: 0,
+      shop: 'itens',
+      toReveal: false,
+      upgradeDialog: false,
       upgradesList: [],
+      version: '1.2.6',
+      volume: 1,
       game: {
         shipEquiped: {
           id: 0,
@@ -604,83 +600,11 @@ export default {
         levelUp: 0,
         maxlevelUp: 100,
         level: 1,
-        levelBonus: 1,
-        droneFunction: {
-          droneTimer: 0,
-          droneMaxTime: 0,
-          labelDrone: 'Enviar Drone',
-          colorDrone: 'bg-green',
-          droneSend: false
-        },
-        ShowUpdateNote: false,
-        installDrone: false,
-        installConversor: false,
-        info: true,
-        click: 1,
-        openShop: 0,
         starCompanyName: 'Nome da Companhia',
+        openShop: 0,
         cosmicDust: 10000000,
         unobtainium: 100,
         cosmicDustPerSecond: 0,
-        itemsBuyed: [],
-        achievementsList: {
-          AchivGarra: {
-            id: 1,
-            label: 'Meu primeiro item!',
-            description: 'Conquistado após comprar o primeiro item.',
-            conquest: false,
-            conquestRevel: false
-          },
-          achivGarraEfficiency: {
-            id: 2,
-            label: 'Mestre da Eficiência!',
-            description: 'Garra com 50 de eficiência.',
-            conquest: false,
-            conquestRevel: false
-          },
-          aerogelAmount: {
-            id: 3,
-            label: 'Vai um Aerogel ai?',
-            description: 'Conquistado após comprar 100 Aerogel.',
-            conquest: false,
-            conquestRevel: false
-          },
-          cosmicDust: {
-            id: 4,
-            label: '1M de Poeira não é o bastante!',
-            description: 'Conquistado após conseguir 1M de poeira cósmica.',
-            conquest: false,
-            conquestRevel: false
-          },
-          cosmicDustPerSecond: {
-            id: 5,
-            label: 'Vamos automatizar Tudo!',
-            description: 'Chegou a 1k de Poeira cósmica por segundo',
-            conquest: false,
-            conquestRevel: false
-          },
-          droneAchiev: {
-            id: 6,
-            label: 'Enfim comprei um Drone!',
-            description: 'Conquistado após comprar um Drone.',
-            conquest: false,
-            conquestRevel: false
-          },
-          convertAchiev: {
-            id: 7,
-            label: 'Foi uma necessidade!',
-            description: 'Conquistado após processar 2 vezes.',
-            conquest: false,
-            conquestRevel: false
-          },
-          unobtainiumAmount: {
-            id: 7,
-            label: 'Colecionador de unobtainium!',
-            description: 'Conquistado após conseguir 100 unidades de unobtainium',
-            conquest: false,
-            conquestRevel: false
-          }
-        },
         upgrades: [
           {
             idu: 1,
@@ -710,7 +634,7 @@ export default {
             price: 1000,
             totalSpent: 0,
             value: 2,
-            description: 'Aumenta a eficiência do aerogel. Bônus upgrade 10/20/50.'
+            description: 'Aumenta a eficiência do aerogel. Bônus upgrade 10/20/30.'
           },
           {
             idu: 3,
@@ -781,8 +705,175 @@ export default {
             totalSpent: 0,
             value: 10,
             description: 'Aumenta a capacidade de reciclagem do conversor.'
+          },
+          {
+            idu: 7,
+            uplink: 'conversor',
+            label: 'Conversor Diamante',
+            img: 'converter.png',
+            price: 150000,
+            totalSpent: 0,
+            value: 0,
+            description: 'Aumenta o multiplicador do conversor em + 5k e o tempo em +20s'
           }
         ],
+        achievementsList: {
+          garraAchiv: {
+            id: 1,
+            label: 'Meu primeiro item!',
+            description: 'Conquistado após comprar o primeiro item.',
+            conquest: false,
+            conquestRevel: false
+          },
+          garraAchivTwo: {
+            id: 1,
+            label: 'Gostei desse item Garra!',
+            description: 'Conquistado após comprar 50 unidades de garra!',
+            conquest: false,
+            conquestRevel: false
+          },
+          garraAchivThree: {
+            id: 1,
+            label: 'Quanto mais garra melhor!',
+            description: 'Conquistado após comprar 100 unidades de garra!',
+            conquest: false,
+            conquestRevel: false
+          },
+          garraEfficiencyAchiv: {
+            id: 2,
+            label: 'Mestre da Eficiência!',
+            description: 'Garra com 50+ de eficiência.',
+            conquest: false,
+            conquestRevel: false
+          },
+          garraEfficiencyAchivTwo: {
+            id: 2,
+            label: 'Mestre da Eficiência 2!',
+            description: 'Garra com 150+ de eficiência.',
+            conquest: false,
+            conquestRevel: false
+          },
+          garraEfficiencyAchivThree: {
+            id: 2,
+            label: 'Mestre da Eficiência 3!',
+            description: 'Garra com 250+ de eficiência.',
+            conquest: false,
+            conquestRevel: false
+          },
+          aerogelAmountAchiv: {
+            id: 3,
+            label: 'Vai um Aerogel ai?',
+            description: 'Conquistado após comprar 100 Aerogel.',
+            conquest: false,
+            conquestRevel: false
+          },
+          aerogelAmountAchivTwo: {
+            id: 3,
+            label: 'Preciso de mais disso!',
+            description: 'Conquistado após comprar 200 Aerogel.',
+            conquest: false,
+            conquestRevel: false
+          },
+          cosmicDustAchiv: {
+            id: 4,
+            label: '1m de Poeira não é o bastante!',
+            description: 'Conquistado após conseguir 1M de poeira cósmica.',
+            conquest: false,
+            conquestRevel: false
+          },
+          cosmicDustAchivTwo: {
+            id: 4,
+            label: '1b Uau Tudo isso?!',
+            description: 'Conquistado após conseguir 1b de poeira cósmica.',
+            conquest: false,
+            conquestRevel: false
+          },
+          cosmicDustPerSecond: {
+            id: 5,
+            label: 'Vamos automatizar Tudo!',
+            description: 'Chegou a 1k de Poeira cósmica por segundo',
+            conquest: false,
+            conquestRevel: false
+          },
+          droneAchiv: {
+            id: 6,
+            label: 'Enfim comprei um Drone!',
+            description: 'Conquistado após comprar um Drone.',
+            conquest: false,
+            conquestRevel: false
+          },
+          droneAchivTwo: {
+            id: 6,
+            label: 'Melhorei meu Drone!',
+            description: 'Conquistado após comprar um Drone.',
+            conquest: false,
+            conquestRevel: false
+          },
+          droneAchivThree: {
+            id: 6,
+            label: 'Um Exército de Drones!',
+            description: 'Conquistado após comprar um Drone.',
+            conquest: false,
+            conquestRevel: false
+          },
+          convertAchiev: {
+            id: 7,
+            label: 'Foi uma necessidade!',
+            description: 'Conquistado após processar 2 vezes.',
+            conquest: false,
+            conquestRevel: false
+          },
+          convertAchievTwo: {
+            id: 7,
+            label: 'Vamos Melhorar isso!',
+            description: 'Conquistado após Melhorar o Conversor.',
+            conquest: false,
+            conquestRevel: false
+          },
+          unobtainiumAmount: {
+            id: 7,
+            label: 'Colecionador de unobtainium!',
+            description: 'Conquistado após conseguir 100 unidades de unobtainium',
+            conquest: false,
+            conquestRevel: false
+          },
+          shipAchiv: {
+            id: 1,
+            label: 'Equipei uma Nave Nova!',
+            description: 'Conquistado após Equipar a primeira nave!',
+            conquest: false,
+            conquestRevel: false
+          },
+          shipAchivTwo: {
+            id: 1,
+            label: 'Equipei a Reliant',
+            description: 'Conquistado após Equipar Reliant!',
+            conquest: false,
+            conquestRevel: false
+          },
+          missionAchiv: {
+            id: 1,
+            label: 'Missão Iniciada!',
+            description: 'Conquistado após iniciar uma Missão!',
+            conquest: false,
+            conquestRevel: false
+          }
+        },
+        // -----------
+        levelBonus: 1,
+        droneFunction: {
+          droneTimer: 0,
+          droneMaxTime: 0,
+          labelDrone: 'Enviar Drone',
+          colorDrone: 'bg-green',
+          droneSend: false
+        },
+        ShowUpdateNote: false,
+        installDrone: false,
+        installConversor: false,
+        info: true,
+        click: 1,
+        itemsBuyed: [],
         items: {
           garra: {
             id: 1,
@@ -885,6 +976,7 @@ export default {
             amount: 0,
             unlocked: 30,
             ups: 0,
+            multiply: 10000,
             totalEfficiency: 0,
             status: 'Pronto' // status do equipamento
           }
@@ -895,6 +987,7 @@ export default {
             page: 1,
             label: 'Tundra',
             img: 'Ship1/Ship1.png',
+            shipLocked: false,
             description: 'nave desenvolvida para mineração.',
             parts: {
               body: {
@@ -927,6 +1020,7 @@ export default {
             id: 2,
             page: 2,
             label: 'Sharter',
+            shipLocked: false,
             img: 'Ship2/Ship2.png',
             description: 'nave desenvolvida para transporte de Mercadorias.',
             parts: {
@@ -966,6 +1060,7 @@ export default {
             id: 3,
             page: 3,
             label: 'Equinox',
+            shipLocked: false,
             img: 'Ship3/Ship3.png',
             description: 'nave desenvolvida para extrair energia.',
             parts: {
@@ -1011,6 +1106,7 @@ export default {
             id: 4,
             page: 4,
             label: 'Reliant',
+            shipLocked: false,
             img: 'Ship4/Ship4.png',
             description: 'nave desenvolvida para trasporte de unobtainium.',
             parts: {
@@ -1062,6 +1158,7 @@ export default {
             id: 5,
             page: 5,
             label: 'Sharter',
+            shipLocked: false,
             img: 'Ship5/Ship5.png',
             description: 'nave desenvolvida para entrar em nebulosas toxicas.',
             parts: {
@@ -1108,6 +1205,7 @@ export default {
             page: 6,
             label: 'Sharter',
             img: 'Ship6/Ship6.png',
+            shipLocked: false,
             description: 'nave desenvolvida para entrar em nebulosas toxicas.',
             parts: {
               body: {
@@ -1302,35 +1400,19 @@ export default {
     }
   },
 
-  created () {
-    this.getDustperSecond()
-    this.saveGame()
-  },
-
-  mounted () {
-    if (localStorage.getItem(this.version)) {
-      try {
-        this.game = JSON.parse(localStorage.getItem(this.version))
-      } catch (e) {
-        console.log(e)
-      }
-    } else {
-      localStorage.removeItem(this.oldVersion)
-      this.saveGame()
-    }
-    // setup
-    this.recovery()
-    this.isQuestRecovery()
-    this.setVolume(0.2)
-  },
-
   computed: {
+    // ...mapGetters(['user']),
+
+    user () {
+      return this.$store.getters.user
+    },
+
     menuElementType () {
       return !this.modeMobile ? 'q-header' : 'q-footer'
     },
 
     qtdDustConvert () {
-      const result = this.convertAmount * 10000
+      const result = this.convertAmount * this.game.items.conversor.multiply
       return result
     },
 
@@ -1395,6 +1477,22 @@ export default {
 
     unobtainiumAmount () {
       return this.game.unobtainium
+    },
+
+    shipOne () {
+      return this.game.ship.ship1.shipLocked
+    },
+
+    shipOFour () {
+      return this.game.ship.ship4.shipLocked
+    },
+
+    missionOne () {
+      return this.game.quest.moon.questStarted
+    },
+
+    conversorUpgrade () {
+      return this.game.items.conversor.ups
     }
 
   },
@@ -1405,6 +1503,38 @@ export default {
     },
 
     // CONQUISTAS
+    conversorUpgrade (newValue) {
+      if (newValue === 1 && !this.game.achievementsList.convertAchievTwo.conquest) {
+        this.game.achievementsList.convertAchievTwo.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.convertAchievTwo.label)
+      }
+    },
+
+    missionOne (newValue) {
+      if (newValue && !this.game.achievementsList.missionAchiv.conquest) {
+        this.game.achievementsList.missionAchiv.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.missionAchiv.label)
+      }
+    },
+
+    shipOFour (newValue) {
+      if (newValue && !this.game.achievementsList.shipAchivTwo.conquest) {
+        this.game.achievementsList.shipAchivTwo.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.shipAchivTwo.label)
+      }
+    },
+
+    shipOne (newValue) {
+      if (newValue && !this.game.achievementsList.shipAchiv.conquest) {
+        this.game.achievementsList.shipAchiv.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.shipAchiv.label)
+      }
+    },
+
     unobtainiumAmount (newValue) {
       if (newValue === 100 && !this.game.achievementsList.unobtainiumAmount.conquest) {
         this.game.achievementsList.unobtainiumAmount.conquest = true
@@ -1422,35 +1552,70 @@ export default {
     },
 
     garraAmount (newValue) {
-      if (newValue === 1 && !this.game.achievementsList.AchivGarra.conquest) {
-        this.game.achievementsList.AchivGarra.conquest = true
+      if (newValue === 1 && !this.game.achievementsList.garraAchiv.conquest) {
+        this.game.achievementsList.garraAchiv.conquest = true
         this.achievementSong()
-        this.achievementNotify(this.game.achievementsList.AchivGarra.label)
+        this.achievementNotify(this.game.achievementsList.garraAchiv.label)
+      }
+
+      if (newValue === 50 && !this.game.achievementsList.garraAchivTwo.conquest) {
+        this.game.achievementsList.garraAchivTwo.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.garraAchivTwo.label)
+      }
+
+      if (newValue === 100 && !this.game.achievementsList.garraAchivThree.conquest) {
+        this.game.achievementsList.garraAchivThree.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.garraAchivThree.label)
       }
     },
 
     garraEfficiency (newValue) {
-      if (newValue === 50 && !this.game.achievementsList.achivGarraEfficiency.conquest) {
-        this.game.achievementsList.achivGarraEfficiency.conquest = true
+      if (newValue > 50 && !this.game.achievementsList.garraEfficiencyAchiv.conquest) {
+        this.game.achievementsList.garraEfficiencyAchiv.conquest = true
         this.achievementSong()
-        this.achievementNotify(this.game.achievementsList.achivGarraEfficiency.label)
+        this.achievementNotify(this.game.achievementsList.garraEfficiencyAchiv.label)
+      }
+
+      if (newValue > 150 && !this.game.achievementsList.garraEfficiencyAchivTwo.conquest) {
+        this.game.achievementsList.garraEfficiencyAchivTwo.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.garraEfficiencyAchivTwo.label)
+      }
+
+      if (newValue > 250 && !this.game.achievementsList.garraEfficiencyAchivThree.conquest) {
+        this.game.achievementsList.garraEfficiencyAchivThree.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.garraEfficiencyAchivThree.label)
       }
     },
 
     aerogelAmount (newValue) {
-      if (newValue === 100 && !this.game.achievementsList.aerogelAmount.conquest) {
-        this.game.achievementsList.aerogelAmount.conquest = true
+      if (newValue === 100 && !this.game.achievementsList.aerogelAmountAchiv.conquest) {
+        this.game.achievementsList.aerogelAmountAchiv.conquest = true
         this.achievementSong()
-        this.achievementNotify(this.game.achievementsList.aerogelAmount.label)
-        this.$gtag.event('achievement', { event_category: 'achivement', event_label: 'amount', value: newValue })
+        this.achievementNotify(this.game.achievementsList.aerogelAmountAchiv.label)
+      }
+
+      if (newValue === 200 && !this.game.achievementsList.aerogelAmountAchivTwo.conquest) {
+        this.game.achievementsList.aerogelAmountAchivTwo.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.aerogelAmountAchivTwo.label)
       }
     },
 
     cosmicDustAmount (newValue) {
-      if (newValue > 1000000 && !this.game.achievementsList.cosmicDust.conquest) {
-        this.game.achievementsList.cosmicDust.conquest = true
+      if (newValue > 1000000 && !this.game.achievementsList.cosmicDustAchiv.conquest) {
+        this.game.achievementsList.cosmicDustAchiv.conquest = true
         this.achievementSong()
-        this.achievementNotify(this.game.achievementsList.cosmicDust.label)
+        this.achievementNotify(this.game.achievementsList.cosmicDustAchiv.label)
+      }
+
+      if (newValue > 1000000000 && !this.game.achievementsList.cosmicDustAchivTwo.conquest) {
+        this.game.achievementsList.cosmicDustAchivTwo.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.cosmicDustAchivTwo.label)
       }
     },
 
@@ -1463,29 +1628,89 @@ export default {
     },
 
     droneAchiev (newValue) {
-      if (newValue >= 1 && !this.game.achievementsList.droneAchiev.conquest) {
-        this.game.achievementsList.droneAchiev.conquest = true
+      if (newValue >= 1 && !this.game.achievementsList.droneAchiv.conquest) {
+        this.game.achievementsList.droneAchiv.conquest = true
         this.achievementSong()
-        this.achievementNotify(this.game.achievementsList.droneAchiev.label)
+        this.achievementNotify(this.game.achievementsList.droneAchiv.label)
+      }
+
+      if (newValue >= 15 && !this.game.achievementsList.droneAchivTwo.conquest) {
+        this.game.achievementsList.droneAchivTwo.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.droneAchivTwo.label)
+      }
+
+      if (newValue >= 50 && !this.game.achievementsList.droneAchivThree.conquest) {
+        this.game.achievementsList.droneAchivThree.conquest = true
+        this.achievementSong()
+        this.achievementNotify(this.game.achievementsList.droneAchivThree.label)
       }
     }
   },
 
+  created () {
+    this.getDustperSecond()
+    // this.saveGame()
+    this.signIn()
+    this.authUser()
+  },
+
+  mounted () {
+    if (localStorage.getItem(this.version)) {
+      try {
+        this.game = JSON.parse(localStorage.getItem(this.version))
+      } catch (e) {
+        console.log(e)
+      }
+    } else {
+      localStorage.removeItem(this.oldVersion)
+      // this.saveGame()
+    }
+    // setup
+    this.recovery()
+    this.isQuestRecovery()
+    this.setVolume(0.2)
+  },
+
   methods: {
+    ...mapActions(['signIn']),
+
+    toRevealToggle () {
+      this.toReveal = !this.toReveal
+    },
+
+    authUser () {
+      if (!this.user) {
+        this.$router.replace({ name: 'login' })
+      }
+    },
+
+    logout () {
+      this.exit = true
+      setTimeout(() => {
+        this.exit = false
+        firebase.auth().signOut().then(() => {
+          this.$router.replace({ name: 'login' })
+        })
+      }, 1000)
+    },
+
     equipShip (model) {
       this.game.shipEquiped.img = model.img
       this.game.shipEquiped.id = model.id
+      model.shipLocked = true
     },
 
-    unquipShip () {
+    unquipShip (model) {
       this.game.shipEquiped.img = 'vehicle.gif'
       this.game.shipEquiped.id = 0
+      model.shipLocked = false
     },
 
-    checkParts (model) {
+    checkParts (item) {
       let locked = false
-      for (const key in model) {
-        if (!model[key].buyed) {
+      for (const key in item.parts) {
+        if (!item.parts[key].buyed) {
           locked = true
         }
       }
@@ -1510,13 +1735,17 @@ export default {
       }
     },
 
+    missionEquipShip (model) {
+      this.equipShip(model)
+    },
+
     buyPart (parts, item) {
       if (item.id === 1) {
         if (this.game.cosmicDust >= parts.price && !parts.buyed) {
           this.game.cosmicDust -= parts.price
           parts.buyed = true
           this.$refs.buyItem.play()
-        // colocar som de equipando
+        // TODO colocar som de equipando
         }
       }
 
@@ -1524,10 +1753,9 @@ export default {
         this.game.unobtainium -= parts.price
         parts.buyed = true
         this.$refs.buyItem.play()
-        // colocar som de equipando
+        // TODO colocar som de equipando
       } else {
-        // TODO notify
-        console.log('não comprado')
+        // TODO desabilitar botão
       }
     },
 
@@ -1570,7 +1798,6 @@ export default {
     missionStart (item) {
       let pass = true
       item.progressBar = 0
-
       if (this.game.cosmicDust >= item.dust) {
         const timer = new Date()
         item.questNotify = false
@@ -1600,7 +1827,6 @@ export default {
           this.game.cosmicDust -= item.dust
           item.working = timer.getTime() + item.workTime
           item.questStarted = true
-
           // Contagem do tempo
           const timeCount = setInterval(() => {
             const ocurredTime = new Date().getTime()
@@ -1610,7 +1836,6 @@ export default {
 
             if (ocurredTime > item.working) {
               clearInterval(timeCount)
-              // console.log('recebi a recompensa!')
               item.questStarted = false
               this.$q.notify({
                 message: `<span class="font" style="font-size: 8px;">Relatório de Missão<br><strong>Missão ${item.title} bem Sucedida!</strong></span>`,
@@ -1646,7 +1871,6 @@ export default {
       const filter = 'type'
       const result = Object.keys(this.game.items).reduce((acc, val) =>
         (this.game.items[val][filter] === 'equipament' ? acc : { ...acc, [val]: this.game.items[val] }), {})
-      // console.log(result)
       return result
     },
 
@@ -1654,7 +1878,7 @@ export default {
       const filter = 'type'
       const result = Object.keys(this.game.items).reduce((acc, val) =>
         (this.game.items[val][filter] === 'item' ? acc : { ...acc, [val]: this.game.items[val] }), {})
-      // console.log(result)
+
       return result
     },
 
@@ -1677,7 +1901,6 @@ export default {
 
     recovery () {
       if (this.game.droneFunction.droneSend || !this.game.droneFunction.labelDrone === 'Enviar Drone') { this.droneWorking() }
-      // return console.log('resume...')
     },
 
     isQuestRecovery () {
@@ -1766,7 +1989,7 @@ export default {
             this.game.items.conversor.timesConvert += 1
             this.game.items.conversor.status = 'pronto'
             this.game.items.conversor.timeLaunch = 0
-            const convertValue = this.convertAmount * 10000
+            const convertValue = this.convertAmount * this.game.items.conversor.multiply
             this.game.cosmicDust += convertValue
             this.$refs.MissionComplete.play()
             this.$q.notify({
@@ -1911,7 +2134,7 @@ export default {
               model.value += 20
             }
             if (this.game.items[model.uplink].ups === 49) {
-              model.value += 50
+              model.value += 30
             }
             model.totalSpent += model.price
 
@@ -1980,14 +2203,24 @@ export default {
             this.addInstallCountItem(model)
           }
           break
+        // Conversor
         case 7:
           if (this.game.cosmicDust >= model.price) {
             this.game.cosmicDust -= model.price
-            this.game.items[model.uplink].value += model.value
+            if (model.label === 'Conversor Pro') {
+              this.game.items[model.uplink].value += model.value
 
-            model.value += 0.2
-            model.totalSpent += model.price
-            model.price += model.price * 0.2
+              model.value += 0.2
+              model.totalSpent += model.price
+              model.price += model.price * 0.2
+            }
+
+            if (model.label === 'Conversor Diamante') {
+              this.game.items.conversor.multiply += 5000
+              this.game.items.conversor.launchValue += 20
+              model.totalSpent += model.price // total Gasto
+              model.price += model.price * 0.5
+            }
 
             this.addInstallCountItem(model)
           }
@@ -2005,6 +2238,7 @@ export default {
       this.$refs.buyItem.play()
       this.dialog = !this.dialog
     },
+
     achievementsCheck () {
       this.$refs.buyItem.play()
       this.achievements = true
@@ -2022,10 +2256,8 @@ export default {
 
         if (model.amount < 100) {
           model.price += model.price * 0.05
-          console.log('preço +0.05')
         } else {
           model.price += model.price * 0.08
-          console.log('preço +0.08')
         }
         model.totalEfficiency += model.value
 
@@ -2062,28 +2294,22 @@ export default {
       }
     },
 
-    close () {
-      this.saveGame()
-      this.game.info = false
-    },
-
     setCompanyName () {
       this.setName = !this.setName
     },
 
     getDust () {
-      // <img src="https://i.imgur.com/qgpcufH.gif" alt="" style="width: 60px; height: 30px;">
       const clickPoints = document.createElement('span')
       const levelUpEfects = document.createElement('img')
       const positionX = Math.floor(Math.random() * (30 + 5) + 1)
       const positionY = Math.floor(Math.random() * (100 + 80) + 50)
 
       levelUpEfects.setAttribute('src', 'https://i.imgur.com/qgpcufH.gif')
-      levelUpEfects.setAttribute('class', 'animete levelUp ')
+      levelUpEfects.setAttribute('class', 'animate levelUp ')
       levelUpEfects.style.setProperty('--number', positionX + 'px')
       levelUpEfects.style.setProperty('--numberY', '-' + positionY + 'px')
 
-      clickPoints.setAttribute('class', 'animete')
+      clickPoints.setAttribute('class', 'animate')
       clickPoints.textContent = '+' + (this.game.click * this.game.levelBonus).toFixed(0)
       clickPoints.style.setProperty('--number', positionX + 'px')
       clickPoints.style.setProperty('--numberY', '-' + positionY + 'px')
@@ -2146,20 +2372,32 @@ export default {
     },
 
     saveGame () {
-      setInterval(() => {
-        const parsed = JSON.stringify(this.game)
-        localStorage.setItem(this.version, parsed)
-        this.$q.notify({
-          message: '<strong>Jogo Salvo</strong>',
-          html: true,
-          timeout: 500,
-          progress: true,
-          position: 'top-right',
-          color: 'Positive'
-        })
-        const time = new Date()
-        this.saveStatus = date.formatDate(time, 'DD/MM/YYYY [-] HH:mm[h]')
-      }, 40000)
+    //   TODO salvar ocasional, com ações no jogo
+      // TODO salvar local ref com uid do users
+      const parsed = JSON.stringify(this.game)
+      localStorage.setItem(this.version, parsed)
+      const time = new Date()
+      this.saveStatus = date.formatDate(time, 'DD/MM/YYYY [-] HH:mm[h]')
+      // const save = setInterval(() => {
+      //   if (this.exit) {
+      //     clearInterval(save)
+      //   } else {
+      //     const parsed = JSON.stringify(this.game)
+      //     localStorage.setItem(this.version, parsed)
+      //     const time = new Date()
+      //     this.saveStatus = date.formatDate(time, 'DD/MM/YYYY [-] HH:mm[h]')
+      //     if (this.$route.name === 'space') {
+      //       this.$q.notify({
+      //         message: '<strong>Jogo Salvo</strong>',
+      //         html: true,
+      //         timeout: 5000,
+      //         progress: true,
+      //         position: 'top-right',
+      //         color: 'Positive'
+      //       })
+      //     }
+      //   }
+      // }, 60000)
     }
   }
 }
@@ -2177,23 +2415,12 @@ export default {
   }
 }
 
-.page {
-  background-image: url(https://i.pinimg.com/564x/b1/bd/c1/b1bdc1ae539dcbd1a7c33cef3e5f2d9a.jpg);
-  background-size: unset;
-  background-attachment: fixed;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  align-items: center;
-  // flex-direction: column;
-  // justify-content: space-between;
-}
-
 #float {
   position: absolute;
   top: 50px;
   left: 50px;
   z-index: 1000;
+  user-select: none;
 }
 
 #levelUpEfect {
@@ -2208,7 +2435,7 @@ export default {
   height: 30px;
 }
 
-.animete {
+.animate {
   position: absolute;
   font-size: 15px;
   text-shadow: 3px 3px 0px rgb(0, 0, 0, 0.5);
@@ -2305,11 +2532,9 @@ export default {
     width: 100%;
   }
 
-  &--bg {
     // background-image: url(https://i.pinimg.com/originals/59/31/5f/59315fc4a62dd36b63f40b300ac793b2.gif);
     // background-size: cover;
     // background-repeat: no-repeat;
-  }
 
   &__items {
     background-image: url(../assets/bg-stars.gif);
