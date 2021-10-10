@@ -3,10 +3,10 @@
 .font {
  font-family: 'Press Start 2P', cursive;
  &--8 {
-  font-size: 8px;
+  font-size: 8px !important;
  }
  &--10 {
-  font-size: 10px;
+  font-size: 10px !important;
  }
 }
 
