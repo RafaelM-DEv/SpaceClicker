@@ -1,7 +1,15 @@
-// This is just an example,
-// so you can safely delete all default props below
+const message = {
+  text: '{msg}',
+  login: 'login',
+  password: 'Password',
+  create: 'Create account',
+  resetPassword: 'forgot the password?',
+  hint: {
+    email: 'Your favorite email',
+    password: 'There\'s no one watching'
+  }
+}
 
 export default {
-  failed: 'Action failed',
-  success: 'Action was successful'
+  message
 }

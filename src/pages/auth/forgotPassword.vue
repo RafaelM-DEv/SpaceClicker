@@ -5,7 +5,7 @@
         <q-img src="../../assets/cosmic.png" style="width: 100px;" class="animate__animated animate__fadeInDown" />
         <div class="text-h5 animate__animated animate__jackInTheBox">Space Clicker</div>
         <div class="bg-white q-pa-md q-my-sm border--5 q-gutter-y-md">
-          <span class="text-black font--8 text-center">Vamos enviar um email para <br> resetar sua senha!</span>
+          <span class="text-black font--8 text-center">{{ $t('hello')}}Vamos enviar um e-mail para <br> resetar sua senha!</span>
           <q-input v-model="email" label="e-mail"  class="border--5 font--8" outlined dense autofocus label-color="black"
                    type="email" :error='asErrorMail' :error-message='error' hint="seu email de acesso!" hide-hint />
         </div>

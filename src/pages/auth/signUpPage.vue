@@ -5,9 +5,9 @@
         <q-img src="../../assets/cosmic.png" style="width: 100px;" class="animate__animated animate__fadeInDown" />
         <div class="text-h5 animate__animated animate__jackInTheBox">Space Clicker</div>
         <div class="bg-white q-pa-md q-my-sm border--5 column full-width column">
-          <q-input v-model="email" label="e-mail" class="border--5 font--8" outlined dense autofocus label-color="black"
+          <q-input v-model="email" label="E-mail" class="border--5 font--8" outlined dense autofocus label-color="black"
                    type="email" :error='asErrorMail' :error-message='error' hint="seu email favorito!" hide-hint />
-          <q-input v-model="password"  label="Senha" class="border--5  font--8" outlined dense label-color="black"
+          <q-input v-model="password" :label="$t('message.password')" class="border--5  font--8" outlined dense label-color="black"
                    :error='asErrorPass' :error-message='error' :type="isPwd ? 'password' : 'text'" hint="não tem ninguém vendo!" hide-hint>
             <template v-slot:append>
               <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="showPassword"/>
