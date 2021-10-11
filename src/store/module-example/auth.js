@@ -1,3 +1,4 @@
+import firebase from 'firebase/app'
 
 const state = {
   user: {}
@@ -9,7 +10,10 @@ const getters = {
 
 const actions = {
   logOut ({ commit }) {
-    localStorage.removeItem('userClicker')
+    firebase.auth().signOut().then(() => {
+      localStorage.removeItem('userClicker')
+      return this.$router.replace({ name: 'login' })
+    })
     const user = {}
     commit('LOG_OUT', user)
   },

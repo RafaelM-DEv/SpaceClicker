@@ -1,22 +1,26 @@
 // app global css in SCSS form
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-.font {
- font-family: 'Press Start 2P', cursive;
- &--8 {
-  font-size: 8px !important;
- }
- &--10 {
-  font-size: 10px !important;
- }
-}
+@import 'auth/card';
 
+.font {
+  font-family: 'Press Start 2P', cursive;
+
+  &--8 {
+   font-size: 8px;
+  }
+
+  &--10 {
+   font-size: 10px;
+  }
+}
 
 .q-tab__label {
-    font-size: 9px;
+  font-size: 9px;
 }
+
 .q-tab-panel {
-    padding-left: 0;
-    padding-right: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .border {
@@ -31,7 +35,5 @@
   background-attachment: fixed;
   display: flex;
   justify-content: center;
-  align-content: center;
   align-items: center;
-  // transition-delay: 2s;
 }

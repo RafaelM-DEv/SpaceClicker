@@ -420,7 +420,7 @@
             <div><q-btn label="Reset" @click="resetGame" style="min-width: 250px;" color="negative" /></div>
             <div><q-btn label="Save Game" @click="saveGameForced" style="min-width: 250px;" color="positive" /></div>
             <div>
-              <q-btn label="Sair" @click="logout" :loading="exit" style="min-width: 250px;" color="warning">
+              <q-btn label="Sair" @click="logOut" :loading="exit" style="min-width: 250px;" color="warning">
                 <template v-slot:loading>
                   <q-spinner-facebook />
                 </template>
@@ -554,7 +554,6 @@ import updateNote from '../components/updateNote.vue'
 import { date, copyToClipboard } from 'quasar'
 import gsap from 'gsap'
 
-import firebase from 'firebase/app'
 import { mapActions } from 'vuex'
 
 export default {
@@ -1673,7 +1672,10 @@ export default {
   },
 
   methods: {
-    ...mapActions(['signIn']),
+    ...mapActions([
+      'signIn',
+      'logOut'
+    ]),
 
     toRevealToggle () {
       this.toReveal = !this.toReveal
@@ -1683,16 +1685,6 @@ export default {
       if (!this.user) {
         this.$router.replace({ name: 'login' })
       }
-    },
-
-    logout () {
-      this.exit = true
-      setTimeout(() => {
-        this.exit = false
-        firebase.auth().signOut().then(() => {
-          this.$router.replace({ name: 'login' })
-        })
-      }, 1000)
     },
 
     equipShip (model) {
