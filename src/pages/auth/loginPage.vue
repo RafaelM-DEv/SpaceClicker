@@ -7,7 +7,7 @@
         <div class="bg-white q-pa-md q-my-sm border--5 column full-width">
           <q-input v-model="email" label="E-mail" class="border--5 font--8" outlined dense autofocus label-color="black"
                     type="email" :error='asErrorMail' :error-message='error' :hint="$t('message.hint.email')" hide-hint />
-          <q-input v-model="password" :label="$t('message.password')" class="border--5  font--8" outlined dense label-color="black"
+          <q-input v-model="password" :label="$t('message.password')" class="border--5 font--8" outlined dense label-color="black"
                     :error='asErrorPass' :error-message='error' :type="isPwd ? 'password' : 'text'" :hint="$t('message.hint.password')" hide-hint>
             <template v-slot:append>
               <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="showPassword"/>
@@ -19,8 +19,17 @@
           <q-btn :label="$t('message.create')" color="blue" class="fit" push @click="animate('signin')" />
         </div>
           <q-btn :label="$t('message.resetPassword')" color="white" class="fit font--10 q-mt-md" flat @click="animate('forgotPassword')" />
-          <div>
-            <q-select v-model="$i18n.locale" class="bg-white border--5" label="location" dense outlined :options="langs" />
+          <div class="q-mt-sm">
+            <div class="q-gutter-sm flex justify-center">
+              <div class="q-gutter-x-sm">
+              <q-radio v-model="$i18n.locale" dense val="en-us" color="primary" keep-color />
+                <q-img src="../../assets/usa.png" style="width: 30px" />
+              </div>
+              <div class="q-gutter-x-sm">
+                <q-radio v-model="$i18n.locale" dense val="pt-br" color="primary" keep-color />
+                <q-img src="../../assets/brazil.png" style="width: 30px" />
+              </div>
+            </div>
           </div>
       </div>
     </div>
@@ -46,8 +55,7 @@ export default {
       error: '',
       isPwd: true,
       email: '',
-      password: '',
-      langs: ['en-us', 'pt-br']
+      password: ''
     }
   },
 
@@ -109,12 +117,12 @@ export default {
 
           if (error.code === 'auth/wrong-password') {
             this.asErrorPass = true
-            this.error = this.password.length === 0 ? 'Não pode ser vazio' : 'Senha inválida'
+            this.error = this.password.length === 0 ? this.$t('message.forgotPassword.error') : this.$t('message.loginPage.wrongPass')
           }
 
           if (error.code === 'auth/invalid-email') {
             this.asErrorMail = true
-            this.error = this.email.length === 0 ? 'Não pode ser vazio' : 'E-mail não é válido'
+            this.error = this.email.length === 0 ? this.$t('message.forgotPassword.error') : this.$t('message.loginPage.invalidEmail')
           }
 
           if (error.code === 'auth/too-many-requests') {

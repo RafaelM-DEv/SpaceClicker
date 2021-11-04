@@ -5,13 +5,13 @@
         <q-img src="../../assets/cosmic.png" style="width: 100px;" class="animate__animated animate__fadeInDown" />
         <div class="text-h5 animate__animated animate__jackInTheBox">Space Clicker</div>
         <div class="bg-white q-pa-md q-my-sm border--5 q-gutter-y-md">
-          <span class="text-black font--8 text-center">{{ $t('hello')}}Vamos enviar um e-mail para <br> resetar sua senha!</span>
+          <span class="text-black font--10 text-center">{{ $t('message.forgotPassword.forgotHint')}}</span>
           <q-input v-model="email" label="e-mail"  class="border--5 font--8" outlined dense autofocus label-color="black"
-                   type="email" :error='asErrorMail' :error-message='error' hint="seu email de acesso!" hide-hint />
+                   type="email" :error='asErrorMail' :error-message='error' :hint="$t('message.hint.email')" hide-hint />
         </div>
         <div class="q-mt-md">
-          <q-btn label="Enviar" color="green" class="fit" push @click="resetPassword" />
-          <q-btn label="cancelar" color="white" flat class="fit" @click="animate('login')"/>
+          <q-btn :label="$t('message.forgotPassword.send')" color="green" class="fit" push @click="resetPassword" />
+          <q-btn :label="$t('message.forgotPassword.cancel')" color="white" flat class="fit" @click="animate('login')"/>
         </div>
       </div>
     </div>
@@ -77,12 +77,12 @@ export default {
         (error) => {
           if (error.code === 'auth/user-not-found') {
             this.asErrorMail = true
-            this.error = this.email.length === 0 ? 'Não pode ser vazio' : 'E-mail inválido'
+            this.error = this.email.length === 0 ? this.$t('message.forgotPassword.error') : this.$t('message.forgotPassword.invalidEmail')
           }
 
           if (error.code === 'auth/invalid-email') {
             this.asErrorMail = true
-            this.error = this.email.length === 0 ? 'Não pode ser vazio' : 'E-mail inválido'
+            this.error = this.email.length === 0 ? this.$t('message.forgotPassword.error') : this.$t('message.forgotPassword.invalidEmail')
           }
         }
       )
