@@ -3,21 +3,13 @@
     <!-- NOTAS DE UPDATE -->
     <updateNote v-model="game.ShowUpdateNote" :value="game.ShowUpdateNote" @showView="toggleUpdate($event)"/>
 
-    <!-- <q-page-scroller position="top" :scroll-offset="100" :offset="[18, 18]" style="z-index: 110;">
-      <div class="text-white q-px-xs text-center text-caption border--5 font--8 bg-purple">
-        <div>Poeira Cósmica: {{ cosmicDustCount | formatNumber }}</div>
-        <div>Unobtainium : {{ game.unobtainium }}</div>
-      </div>
-    </q-page-scroller> -->
-    <!-- TODO reduzir os png ou desenhar no pixel Art -->
-    <!-- TODO remover requisião de nave equipada para missões, verificar se foi comprada -->
-    <!-- TODO componentizar o game, ver componentes do quasar -->
-    <!-- TODO criar seção de piloto -->
     <component :is="menuElementType" elevated >
       <q-tabs v-model="headerToolbar" active-color="white" no-caps dense class="text-white shadow-2">
-        <q-tab name="space" label="Home" style="width: 100px;"><img src="../assets/spaceship.png" alt="" style="width: 30px;"></q-tab>
-        <q-tab name="options" label="Opções" style="width: 100px;"><img src="../assets/options.png" style="width: 30px;"></q-tab>
-        <q-tab name="achivements" label="Conquistas"><img src="../assets/badge.png" style="width: 30px;"></q-tab>
+        <q-tab name="space" :label="$t('message.space.navBar.home')" style="width: 100px;"></q-tab>
+        <q-tab name="inventory" :label="$t('message.tabInventory')"></q-tab>
+        <q-tab name="store" :label="$t('message.tabStore')"></q-tab>
+        <q-tab name="options" :label="$t('message.space.navBar.options')" style="width: 100px;"></q-tab>
+        <q-tab name="achivements" :label="$t('message.space.navBar.achieve')"></q-tab>
       </q-tabs>
     </component>
 
@@ -25,22 +17,17 @@
     <q-tab-panels v-model="headerToolbar" animated class="fit starship">
       <q-tab-panel name="space" class="flex justify-center" :class="spaceClicker">
         <div :class="spaceClicker">
-          <q-separator color="red" size="4px" />
           <div class="starship--bg">
             <div class="flex justify-center">
               <q-btn push size="15px" :label="game.starCompanyName" @click="setCompanyName"/>
             </div>
-            <!-- <q-tabs v-model="main" active-color="white" no-caps dense class="bg-red text-white shadow-2 fit q-mb-md"  style="border-radius: 5px;" >
-              <q-tab name="ship" label="Nave"><img src="../assets/spaceship.png" style="width: 30px;"></q-tab>
-              <q-tab name="user" label="Piloto"><img src="../assets/capacete-de-astronauta.png" style="width: 30px;"></q-tab>
-            </q-tabs> -->
             <!-- MOEDAS -->
             <div class="column items-center q-mb-md">
               <div class="flex q-gutter-x-lg">
                 <div class="text-center q-mb-md font--10">
                   <q-img src="../assets/cosmic.png" style="width: 65px;" class="q-mb-xs">
                      <q-tooltip content-class="bg-purple font" anchor="top middle" self="center middle" >
-                      Poeira Cósmica
+                      {{ $t('message.space.dust')}}
                     </q-tooltip>
                   </q-img>
                   <div>
@@ -56,245 +43,216 @@
                   <div>{{ game.unobtainium }}</div>
                 </div>
               </div>
-              <div class="font--10">Por segundo: {{ game.cosmicDustPerSecond.toFixed(1) }}/s</div>
-              <div class="font--10 q-gutter-x-sm">Ganho por click: {{ game.click | formatNumber }}<q-badge class="font--10" color="info">{{game.levelBonus.toFixed(1) }}x</q-badge></div>
+              <div class="font--10">{{ $t('message.space.get') }}: {{ game.cosmicDustPerSecond.toFixed(1) }}/s</div>
+              <div class="font--10 q-gutter-x-sm">{{ $t('message.space.getClick') }}: {{ game.click | formatNumber }}<q-badge class="font--10" color="info">{{game.levelBonus.toFixed(1) }}x</q-badge></div>
               <div class="flex q-gutter-x-sm">
                 <q-badge class="font--10 q-mt-sm" color="negative">level: {{ game.level }}</q-badge>
                 <q-badge class="font--10 q-mt-sm" color="warning">XP:{{ game.levelUp }}/{{ game.maxlevelUp }}</q-badge>
               </div>
             </div>
             <!-- SHIP/ AÇÃO PEGAR POEIRA  -->
-            <div class="justify-center flex">
+            <div class="justify-center flex starship__ship effect"  @mousemove="move" @mouseleave="leave" @mouseenter="enter">
+              <span class="card">
               <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
-              <div v-if="game.cosmicDust === 0" class="text-black q-px-sm information shadow-3 text-center" style="z-index: 10;" >Clique na nave para começar a pegar poeira cósmica!</div>
-              <q-circular-progress show-value instant-feedback :value="game.levelUp" size="180px" :thickness="0.1" color="warning" track-color="white" :max="game.maxlevelUp" class="q-mb-md">
-                <q-btn flat round push @click="getDust()" size="60px" :ripple="{ color: 'yellow-4' }">
+              <div v-if="game.cosmicDust === 0" class="text-black q-px-sm information shadow-3 text-center" style="z-index: 10;" >{{ $t('message.space.tuto.tipOne') }}</div>
+              <q-circular-progress show-value instant-feedback :value="game.levelUp" size="280px" :thickness="0.1" color="warning" track-color="white" :max="game.maxlevelUp" class="q-mb-md progress">
+                <q-btn id="ship" flat round @click="getDust()" size="90px">
                   <q-img :src="require(`../assets/ships/${game.shipEquiped.img}`)" />
                 </q-btn>
-
                   <span id="levelUpEfect" />
                   <span id="float" />
               </q-circular-progress>
+              </span>
             </div>
             <!-- LISTA DE ITENS COMPRADOS -->
             <div class="items-buyed">
               <span v-for="(item, index) in game.itemsBuyed" :key='index' class="items-buyed__list">
                 <q-img :src="require(`../assets/${item.img}`)" class="items-buyed__img"/>
-                <q-tooltip content-class="bg-purple font font--8" anchor="top middle" self="center middle">
-                  <div>Upgrade: +{{ game.items[item.label].ups }}</div>
-                  <div>Total de eficiência: {{ game.items[item.label].totalEfficiency | formatNumber}}/s</div>
-                </q-tooltip>
+                <!-- TODO resolver erro de ups -->
+                <!-- <q-tooltip content-class="bg-purple font font--8" anchor="top middle" self="center middle">
+                  <div>{{ $t('message.space.itens.upgrade') }}: +{{ game.items[item.label].ups }}</div>
+                  <div>{{ $t('message.space.itens.efficiency') }}: {{ game.items[item.label].totalEfficiency | formatNumber}}/s</div>
+                </q-tooltip> -->
               </span>
             </div>
           </div>
 
-          <q-separator class="q-mt-xs" color="orange" size="4px" />
-          <!-- INVENTÁRIO / MISSIONS TAB -->
-          <div class="border--5" :class="bg">
-            <div class="q-mt-sm flex justify-center text-uppercase font--10 shadow-5 border--5">
-              <q-tabs v-model="equipamentBay" stretch inline-label active-color="white" no-caps dense class="text-white shadow-2 fit border--5" :class="bg">
-                <q-tab name="inventory" label="Inventário" @click="toggleBg('inventory')" ><img src="../assets/inventory.png" style="width: 45px;" class="q-ml-xs"></q-tab>
-                <q-tab name="missions" label="Missões" @click="toggleBg('mission')"><img src="../assets/mission.png" style="width: 40px;" class="q-ml-xs"></q-tab>
-              </q-tabs>
-            </div>
+        </div>
+        <!-- LISTA DE UPGRADES -->
 
-            <q-tab-panels v-model="equipamentBay" animated class="transparent">
-              <!-- INVENTÁRIO -->
-              <q-tab-panel name="inventory">
-                <!-- DRONE -->
-                <div v-if="!game.installDrone && !game.installConversor" class="text-black q-pa-sm q-ma-sm font--10 border--5 bg-white shadow-2 text-center">Compre algum equipamento na loja para ser usado aqui!</div>
-                <div v-if="game.installDrone" class="q-mx-sm q-mt-lg justify-between flex">
-                  <q-btn :class="game.droneFunction.colorDrone" push class="fit" size="12px" :disable="game.droneFunction.droneSend" @click="drone()">
+        <!-- ITENS -->
+
+      </q-tab-panel>
+
+      <q-tab-panel name="inventory" >
+        <div class="border--5" :class="bg" style="height: 80vh">
+          <div class="q-mt-sm flex justify-center text-uppercase font--10 shadow-5 border--5">
+            <q-tabs v-model="equipamentBay" stretch inline-label active-color="white" no-caps dense class="text-white shadow-2 fit border--5" :class="bg">
+              <q-tab name="inventory" :label="$t('message.space.bag')" @click="toggleBg('inventory')" >
+                <!-- <img src="../assets/inventory.png" style="width: 45px;" class="q-ml-xs"> -->
+              </q-tab>
+              <q-tab name="missions" :label="$t('message.space.missions')" @click="toggleBg('mission')">
+                <!-- <img src="../assets/mission.png" style="width: 40px;" class="q-ml-xs"> -->
+              </q-tab>
+            </q-tabs>
+          </div>
+
+          <q-tab-panels v-model="equipamentBay" animated class="transparent">
+            <!-- INVENTÁRIO -->
+            <q-tab-panel name="inventory">
+              <!-- DRONE -->
+              <div v-if="!game.installDrone && !game.installConversor" class="text-black q-pa-sm q-ma-sm font--10 border--5 bg-white shadow-2 text-center">
+                {{ $t('message.space.tuto.tipTwo') }}
+              </div>
+              <div v-if="game.installDrone" class="q-mx-sm q-mt-lg justify-between flex">
+                <q-btn :class="game.droneFunction.colorDrone" push class="fit" size="12px" :disable="game.droneFunction.droneSend" @click="drone()">
+                  <div class="row no-wrap q-gutter-x-lg q-my-sm">
+                    <q-circular-progress show-value font-size="12px" :value="game.droneFunction.droneTimer" size="80px" :thickness="0.22" color="purple" track-color="grey-3" :max="game.droneFunction.droneMaxTime" class="q-ml-sm">
+                      <q-avatar size="50px"><img src="../assets/drone.png"></q-avatar>
+                    </q-circular-progress>
+                    <div class="font--10 self-center">{{ game.droneFunction.labelDrone }}</div>
+                  </div>
+                </q-btn>
+              </div>
+              <div v-if="game.installDrone" class="q-my-sm q-mx-sm bg-white border--5 text-black font--8 q-pa-xs shadow-1">
+                <div class="flex justify-between">
+                  <div>{{ $t('message.space.drone.capacity') }}</div>
+                  <div>{{ game.items.drone.launchValue | formatNumber}}/s</div>
+                </div>
+                <div class="flex justify-between">
+                  <div>{{ $t('message.space.drone.timeRelease') }}</div>
+                  <div>{{ game.items.drone.timeLaunch }}s</div>
+                </div>
+                <div class="flex justify-between">
+                  <div>{{ $t('message.space.drone.reloadingTime') }}</div>
+                  <div>{{ game.items.drone.bateryRecover }}s</div>
+                </div>
+              </div>
+              <q-separator v-if="game.installDrone && game.installConversor" class="q-my-sm shadow-1" color="white" inset size="1px" />
+              <!-- CONVERSOR -->
+              <div v-if="game.installConversor">
+                <div class="q-mx-sm justify-between flex">
+                  <q-btn class="bg-blue font--10 fit" push :disable="game.items.conversor.status === 'working'" @click="toConvert()">
                     <div class="row no-wrap q-gutter-x-lg q-my-sm">
-                      <q-circular-progress show-value font-size="12px" :value="game.droneFunction.droneTimer" size="80px" :thickness="0.22" color="purple" track-color="grey-3" :max="game.droneFunction.droneMaxTime" class="q-ml-sm">
-                        <q-avatar size="50px"><img src="../assets/drone.png"></q-avatar>
+                      <q-circular-progress show-value font-size="12px" :value="game.items.conversor.timeLaunch" size="80px" :thickness="0.22" color="purple" track-color="grey-3" :max="this.game.items.conversor.launchValue" class="q-ml-sm">
+                        <q-avatar size="50px"><img src="../assets/converter.png"></q-avatar>
                       </q-circular-progress>
-                      <div class="font--10 self-center">{{ game.droneFunction.labelDrone }}</div>
+                      <div class="font--10 self-center">{{$t('message.space.converter.label') }}</div>
                     </div>
                   </q-btn>
                 </div>
-                <div v-if="game.installDrone" class="q-my-sm q-mx-sm bg-white border--5 text-black font--8 q-pa-xs shadow-1">
-                  <div class="flex justify-between">
-                    <div>Capacidade de Coleta do drone</div>
-                    <div>{{ game.items.drone.launchValue | formatNumber}}/s</div>
-                  </div>
-                  <div class="flex justify-between">
-                    <div>Tempo de lançamento</div>
-                    <div>{{ game.items.drone.timeLaunch }}s</div>
-                  </div>
-                  <div class="flex justify-between">
-                    <div>Tempo de recarga</div>
-                    <div>{{ game.items.drone.bateryRecover }}s</div>
-                  </div>
-                </div>
-                <q-separator v-if="game.installDrone && game.installConversor" class="q-my-sm shadow-1" color="white" inset size="1px" />
-                <!-- CONVERSOR -->
-                <div v-if="game.installConversor">
-                  <div class="q-mx-sm justify-between flex">
-                    <q-btn class="bg-blue font--10 fit" push :disable="game.items.conversor.status === 'working'" @click="toConvert()">
-                      <div class="row no-wrap q-gutter-x-lg q-my-sm">
-                        <q-circular-progress show-value font-size="12px" :value="game.items.conversor.timeLaunch" size="80px" :thickness="0.22" color="purple" track-color="grey-3" :max="this.game.items.conversor.launchValue" class="q-ml-sm">
-                          <q-avatar size="50px"><img src="../assets/converter.png"></q-avatar>
-                        </q-circular-progress>
-                        <div class="font--10 self-center" >Converter</div>
-                      </div>
-                    </q-btn>
-                  </div>
-                  <div lass="q-mt-sm q-ml-sm">
-                    <div class="q-mx-sm q-my-sm">
-                      <div class="flex justify-between q-mb-sm bg-white border--5 text-black font--8 q-pa-xs shadow-1">
-                        <div>Tempo de Processamento</div>
-                        <div>{{ game.items.conversor.launchValue }}s</div>
-                      </div>
-                      <q-input v-model.number="convertAmount" filled standout="bg-purple text-white" label="Qtd. Unobtainium" type="number" color="purple" label-color="white" input-class="text-right text-white" reverse-fill-mask :disable="game.items.conversor.status === 'working'" >
-                        <template v-slot:before>
-                          <q-avatar><img src="../assets/unobtainium.png"></q-avatar>
-                        </template>
-                      </q-input>
+                <div lass="q-mt-sm q-ml-sm">
+                  <div class="q-mx-sm q-my-sm">
+                    <div class="flex justify-between q-mb-sm bg-white border--5 text-black font--8 q-pa-xs shadow-1">
+                      <div>{{ $t('message.space.converter.timeWork') }}</div>
+                      <div>{{ game.items.conversor.launchValue }}s</div>
                     </div>
-                    <div class="flex justify-end q-mx-sm font--8">
-                      <div class="q-ml-sm flex items-center">
-                        <div class="q-mr-xs">Total: {{ qtdDustConvert | formatNumber }}</div>
-                        <div><img src="../assets/cosmic.png" style="width: 20px;"></div>
-                      </div>
+                    <q-input v-model.number="convertAmount" filled standout="bg-purple text-white" :label="$t('message.space.converter.amount')" type="number" color="purple" label-color="white" input-class="text-right text-white" reverse-fill-mask :disable="game.items.conversor.status === 'working'" >
+                      <template v-slot:before>
+                        <q-avatar><img src="../assets/unobtainium.png"></q-avatar>
+                      </template>
+                    </q-input>
+                  </div>
+                  <div class="flex justify-end q-mx-sm font--8">
+                    <div class="q-ml-sm flex items-center">
+                      <div class="q-mr-xs">Total: {{ qtdDustConvert | formatNumber }}</div>
+                      <div><img src="../assets/cosmic.png" style="width: 20px;"></div>
                     </div>
                   </div>
                 </div>
-                <q-separator  v-if="game.installDrone && game.installConversor" class="q-my-sm shadow-1" color="white" inset size="1px" />
-              </q-tab-panel>
-              <!-- MISSÕES -->
-              <q-tab-panel name="missions" >
-              <q-pagination v-model="pageQuest" :max="4"  push color="warning" class="flex justify-center q-mt-sm" @click="changePage(pageQuest)" />
-                <div class="font--8 q-mb-xs text-white">
-                  <q-list v-for="(item, index) in game.quest" :key="index" >
-                    <div v-if="item.qId === pageQuest" class="q-mx-sm">
-                      <q-img ref="Mission" :src="require(`../assets/${item.img}`)" class="q-my-sm border--5 shadow-2" style="border-color: white; border-style: solid; height: 120px;">
-                        <div class="absolute-bottom text-caption text-center">{{ item.title }}</div>
-                      </q-img>
-                      <div class="text-justify text-black q-px-sm shadow-1" style="border-radius: 5px; background-color: white;">
-                        <p>{{ item.description }}</p>
-                      </div>
-                      <q-separator class="q-mb-sm shadow-1" color="white" inset size="1px" />
-                      <div class="q-mb-sm">
-                        <div class="text-center flex justify-center q-gutter-x-lg">
-                          <div>
-                            <div>Nave Necessária equipada</div>
-                            <div><q-img :src="require(`../assets/ships/${item.shipRequire.img}`)" style="width: 94px"/></div>
-                            <div v-if="game.shipEquiped.id === item.shipRequire.id">{{ item.shipRequire.label }} equipada</div>
-                            <div v-else class="text-red" >{{ item.shipRequire.label }} não equipada</div>
-                          </div>
-                        </div>
-                      </div>
-                      <q-separator class="q-mb-sm shadow-1" color="white" inset size="1px" />
-                      <div class="q-mb-sm">
-                        <div class="text-center flex justify-center q-gutter-x-lg">
-                          <div>
-                            <div>Rendimento</div>
-                            <div><q-img src="../assets/unobtainium.png" style="width: 34px"/></div>
-                            <div>{{ item.income }} - {{ item.maxIncome }}</div>
-                          </div>
-                          <div>
-                            <div>Custo</div>
-                            <div><q-img src="../assets/cosmic.png" style="width: 30px" class="q-mb-xs"/></div>
-                            <div>{{ item.dust | formatNumber }} </div>
-                          </div>
-                        </div>
-                      </div>
-                      <q-separator class="q-mb-sm shadow-1" color="white" inset size="1px" />
-                      <div>Itens Necessários:</div>
-                      <div class="row">
-                        <div class="col text-capitalize q-pa-xs bg-white text-black border--5 shadow-1">
-                          <div v-for="(item, index) in item.cost" :key="index">
-                            <div class="flex justify-between q-mt-sm">
-                              <div>{{ index }}</div>
-                              <div v-if="game.items[index].amount >= item">{{ item }}x</div>
-                              <div v-else class="text-red" >{{ item }}x</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-6">
-                          <div class="text-center q-mt-md">
-                            <q-circular-progress show-value class="shadow-2" style="border-radius: 3rem;" font-size="12px" :value="item.progressBar" size="80px" :thickness="0.22" color="purple" track-color="grey-3" :max="item.progressBarMax">
-                              <q-tooltip content-class="bg-purple font" anchor="top middle" self="center middle" >
-                                Tempo: {{ item.progressBar }}seg.
-                                Total: {{ item.progressBarMax }}seg.
-                              </q-tooltip>
-                              <q-avatar size="50px">
-                                <img src="../assets/unobtainium.png">
-                              </q-avatar>
-                            </q-circular-progress>
-                          </div>
-                        </div>
-                      </div>
-                      <q-btn label="Iniciar" size="13px" push color="warning" class="q-mt-md fit" :disable="item.questStarted" @click="missionStart(item)"/>
-                      <q-separator class="q-mt-md" color="white" size="1px" />
+              </div>
+              <q-separator  v-if="game.installDrone && game.installConversor" class="q-my-sm shadow-1" color="white" inset size="1px" />
+            </q-tab-panel>
+            <!-- MISSÕES -->
+            <q-tab-panel name="missions" >
+            <q-pagination v-model="pageQuest" :max="4"  push color="warning" class="flex justify-center q-mt-sm" @click="changePage(pageQuest)" />
+              <div class="font--8 q-mb-xs text-white">
+                <q-list v-for="(item, index) in game.quest" :key="index" >
+                  <div v-if="item.qId === pageQuest" class="q-mx-sm">
+                    <q-img ref="Mission" :src="require(`../assets/${item.img}`)" class="q-my-sm border--5 shadow-2" style="border-color: white; border-style: solid; height: 120px;">
+                      <div class="absolute-bottom text-caption text-center">{{ item.title }}</div>
+                    </q-img>
+                    <div class="text-justify text-black q-px-sm shadow-1" style="border-radius: 5px; background-color: white;">
+                      <p>{{ item.description }}</p>
                     </div>
-                  </q-list>
-                  <!-- TODO implementar som ao clicar -->
-                </div>
-              </q-tab-panel>
-            </q-tab-panels>
-          </div>
+                    <q-separator class="q-mb-sm shadow-1" color="white" inset size="1px" />
+                    <div class="q-mb-sm">
+                      <div class="text-center flex justify-center q-gutter-x-lg">
+                        <div>
+                          <div>{{ $t('message.space.quest.requiredShip') }}</div>
+                          <div><q-img :src="require(`../assets/ships/${item.shipRequire.img}`)" style="width: 94px"/></div>
+                          <div v-if="game.shipEquiped.id === item.shipRequire.id">{{ item.shipRequire.label }} {{ $t('message.space.quest.equipped') }}</div>
+                          <div v-else class="text-red" >{{ item.shipRequire.label }} {{ $t('message.space.quest.notEquipped') }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <q-separator class="q-mb-sm shadow-1" color="white" inset size="1px" />
+                    <div class="q-mb-sm">
+                      <div class="text-center flex justify-center q-gutter-x-lg">
+                        <div>
+                          <div>{{ $t('message.space.quest.performance') }}</div>
+                          <div><q-img src="../assets/unobtainium.png" style="width: 34px"/></div>
+                          <div>{{ item.income }} - {{ item.maxIncome }}</div>
+                        </div>
+                        <div>
+                          <div>{{ $t('message.space.quest.cost') }}</div>
+                          <div><q-img src="../assets/cosmic.png" style="width: 30px" class="q-mb-xs"/></div>
+                          <div>{{ item.dust | formatNumber }} </div>
+                        </div>
+                      </div>
+                    </div>
+                    <q-separator class="q-mb-sm shadow-1" color="white" inset size="1px" />
+                    <div>{{ $t('message.space.quest.itens') }}:</div>
+                    <div class="row">
+                      <div class="col text-capitalize q-pa-xs bg-white text-black border--5 shadow-1">
+                        <div v-for="(item, index) in item.cost" :key="index">
+                          <div class="flex justify-between q-mt-sm">
+                            <div>{{ index }}</div>
+                            <div v-if="game.items[index].amount >= item">{{ item }}x</div>
+                            <div v-else class="text-red" >{{ item }}x</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="text-center q-mt-md">
+                          <q-circular-progress show-value class="shadow-2" style="border-radius: 3rem;" font-size="12px" :value="item.progressBar" size="80px" :thickness="0.22" color="purple" track-color="grey-3" :max="item.progressBarMax">
+                            <q-tooltip content-class="bg-purple font" anchor="top middle" self="center middle" >
+                              {{ $t('message.space.quest.time') }}: {{ item.progressBar }}seg.
+                              Total: {{ item.progressBarMax }}seg.
+                            </q-tooltip>
+                            <q-avatar size="50px">
+                              <img src="../assets/unobtainium.png">
+                            </q-avatar>
+                          </q-circular-progress>
+                        </div>
+                      </div>
+                    </div>
+                    <q-btn :label="$t('message.space.quest.start')" size="13px" push color="warning" class="q-mt-md fit" :disable="item.questStarted" @click="missionStart(item)"/>
+                    <q-separator class="q-mt-md" color="white" size="1px" />
+                  </div>
+                </q-list>
+                <!-- TODO implementar som ao clicar -->
+              </div>
+            </q-tab-panel>
+          </q-tab-panels>
         </div>
-        <!-- LISTA DE UPGRADES -->
-        <q-dialog v-model="upgradeDialog" :maximized="modeMobile">
-          <q-card class="upgradeDialog font text-center">
-            <q-card-actions class="flex justify-center">
-              <div class="fit">
-                  <q-btn v-close-popup color="warning" label="fechar" push class="fit font shadow-2" size="12px" />
-              </div>
-              <div class="text-white shadow-5 bg-purple q-py-xs text-center text-caption fit font" style="border-radius: 5px;"  >
-                Poeira Cósmica: {{ cosmicDustCount | formatNumber }}
-              </div>
-            </q-card-actions>
-            <!-- Upgrades -->
-            <q-card-section class="q-ma-none q-pa-sm" >
-              <q-list v-for="(upgrade, index) in upgradesList" :key="index">
-                <div class="font--8 q-my-xs q-pa-sm upgradeDialog__item border--5 shadow-3">
-                  <div class="flex justify-between no-wrap">
-                    <div class="column q-mb-sm q-ml-sm" style="max-width: 80px ">
-                      <div><q-img :src="require(`../assets/${upgrade.img}`)" style="width: 30px; height: 30px;" /></div>
-                      <div class="text-capitalize" style="font-size: 8px;">{{ upgrade.label }}</div>
-                    </div>
-                    <div class="column text-right q-mt-md">
-                      <div>
-                        Preço: {{  upgrade.price | formatNumber }}
-                        <q-tooltip content-class="bg-purple font font--8" anchor="top middle" self="center middle" >
-                          Total Gasto: {{ upgrade.totalSpent | formatNumber }}
-                          <q-img src="../assets/cosmic.png" style="width: 15px" class="q-mb-xs"/>
-                          <div>Preço * 0.2</div>
-                          <div>Qtd.: +{{game.items[upgrade.uplink].ups}}</div>
-                        </q-tooltip>
-                        <q-img src="../assets/cosmic.png" style="width: 15px" class="q-mb-xs"/>
-                      </div>
-                      <!-- TODO Remover lógica da view -->
-                      <div>
-                        <div v-if="upgrade.idu !== 5 && upgrade.value !== 0">Eficiência: +{{ upgrade.value | formatNumberDec }}</div>
-                        <div v-if="upgrade.label === 'Drone Pro'">Eficiência: +{{ upgrade.value | formatNumber }}</div>
-                        <div v-if="upgrade.label === 'Drone Pro' || upgrade.idu !== 5 && upgrade.value !== 0">(+0.2 por upgrade)</div>
-                      </div>
-                      <!-- DRONE -->
-                      <div v-if="upgrade.label === 'Drone Sentinela'" >Coleta de Poeira: +{{ upgrade.value | formatNumber }}</div>
-                      <div v-if="upgrade.label === 'Bateria de Drone'" >Coleta: +2s</div>
-                      <div v-if="upgrade.label === 'Bateria de Drone'" >Recarga: +1s</div>
-                    </div>
-                  </div>
-                  <div class="q-px-md q-mt-sm bg-white border--5 font--8">{{ upgrade.description }}</div>
-                  <q-btn label="comprar" size="15px" push color="blue" :disable="game.cosmicDust < upgrade.price" class="q-mt-md fit" @click="buyUpgrade(upgrade)" />
-                </div>
-              </q-list>
-            </q-card-section>
-          </q-card>
-        </q-dialog>
-        <!-- ITENS -->
-        <div :class="spaceClicker" class="starship__items" >
+      </q-tab-panel>
+
+      <q-tab-panel name="store" >
+         <div class="starship__items" style="height: 100vh">
           <q-separator v-if="game.openShop !== 0" color="green" size="4px" />
           <div v-if="game.openShop !== 0" class="q-my-md flex justify-center text-uppercase">
-            <div class="q-mb-sm">Loja Espacial</div>
+            <div class="q-mb-sm">{{ $t('message.items.Shop') }}</div>
             <q-tabs v-model="shop" active-color="white" no-caps dense class="bg-green text-white shadow-2 fit"  style="border-radius: 5px;" >
-              <q-tab name="itens" label="Gadgets"><img src="../assets/gadget.png" style="width: 30px;"></q-tab>
-              <q-tab name="equipamentos" label="Equipamentos"><img src="../assets/telescope.png" style="width: 30px;"></q-tab>
-              <q-tab name="ships" label="Naves"><img src="../assets/ships/vehicle.gif" style="width: 55px;"></q-tab>
+              <q-tab name="itens" :label="$t('message.store.itens')">
+                <!-- <img src="../assets/gadget.png" style="width: 30px;"> -->
+              </q-tab>
+              <q-tab name="equipamentos" :label="$t('message.store.equipments')">
+                <!-- <img src="../assets/telescope.png" style="width: 30px;"> -->
+              </q-tab>
+              <q-tab name="ships" :label="$t('message.store.ships')">
+                <!-- <img src="../assets/ships/vehicle.gif" style="width: 55px;"> -->
+              </q-tab>
             </q-tabs>
           </div>
           <q-tab-panels v-if="game.openShop > 0" v-model="shop" animated class="starship__items">
@@ -309,18 +267,18 @@
                     </div>
                     <div class="column text-right q-mb-sm">
                       <div>
-                        Preço: {{ item.price | formatNumber }}
+                        {{ $t('message.items.Price') }}: {{ item.price | formatNumber }}
                         <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/>
                       </div>
-                      <div>Eficiência: {{ item.value | formatNumberDec }}/s</div>
-                      <div>Total: {{ item.totalEfficiency.toFixed(1) }}/s</div>
-                      <div class="self-end q-mb-xs">{{ item.amount | formatNumber }} unidades</div>
+                      <div>{{ $t('message.items.Efficiency') }}: {{ item.value | formatNumberDec }}/s</div>
+                      <div>{{ $t('message.items.Total') }}: {{ item.totalEfficiency.toFixed(1) }}/s</div>
+                      <div class="self-end q-mb-xs">{{ item.amount | formatNumber }} {{ $t('message.items.units') }}</div>
                     </div>
                   </div>
                   <div class="q-px-md bg-white border--5 text-black text-center q-py-xs">{{ item.description }}</div>
-                  <div v-if="game.openShop <= item.unlocked" class="q-px-md bg-warning border--5 text-black text-center q-py-xs q-mt-sm">desbloqueio: {{ item.unlocked }} items </div>
-                  <q-btn v-if="game.openShop >= item.unlocked" label="comprar" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
-                  <q-btn v-if="game.openShop >= item.unlocked" label="upgrade" size="13px" push color="blue" :disable="item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
+                  <div v-if="game.openShop <= item.unlocked" class="q-px-md bg-warning border--5 text-black text-center q-py-xs q-mt-sm">{{ $t('message.items.unlock') }}: {{ item.unlocked }} items </div>
+                  <q-btn v-if="game.openShop >= item.unlocked" :label="$t('message.items.buy')" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
+                  <q-btn v-if="game.openShop >= item.unlocked" :label="$t('message.items.upgrade')" size="13px" push color="blue" :disable="item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
                 <q-separator color="green" size="1px" class="q-mt-md" />
                 </q-item-section>
               </q-list>
@@ -337,18 +295,18 @@
                       </div>
                       <div class="column text-right">
                         <div>
-                          Preço: {{ item.price | formatNumber }}
+                          {{ $t('message.items.Price') }}: {{ item.price | formatNumber }}
                           <q-img src="../assets/cosmic.png" style="width: 14px" class="q-mb-xs"/>
                         </div>
-                        <div>Eficiência: {{ item.value | formatNumber }}/s</div>
+                        <div>{{ $t('message.items.Efficiency') }}: {{ item.value | formatNumber }}/s</div>
                         <div>Total: {{ item.totalEfficiency | formatNumber }}/s</div>
                       </div>
                     </div>
-                    <div class="self-end q-mb-xs">{{ item.amount | formatNumber }} unidades</div>
+                    <div class="self-end q-mb-xs">{{ item.amount | formatNumber }} {{ $t('message.items.units') }}</div>
                     <div class="q-px-md bg-white border--5 text-black text-center q-py-xs">{{ item.description }}</div>
-                    <div v-if="game.openShop <= item.unlocked" class="q-px-md bg-warning border--5 text-black text-center q-py-xs q-mt-sm">desbloqueio: {{ item.unlocked }} items </div>
-                    <q-btn v-if="game.openShop >= item.unlocked" label="comprar" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
-                    <q-btn v-if="game.openShop >= item.unlocked" label="upgrade" size="13px" push color="blue" :disable="item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
+                    <div v-if="game.openShop <= item.unlocked" class="q-px-md bg-warning border--5 text-black text-center q-py-xs q-mt-sm">{{ $t('message.items.unlock') }}: {{ item.unlocked }} items </div>
+                    <q-btn v-if="game.openShop >= item.unlocked" :label="$t('message.items.buy')" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
+                    <q-btn v-if="game.openShop >= item.unlocked" :label="$t('message.items.upgrade')" size="13px" push color="blue" :disable="item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
                   <q-separator color="black" size="1px" class="q-mt-md" />
                   </q-item-section>
                 </q-item>
@@ -403,10 +361,61 @@
             </q-btn>
           </div>
         </div>
+
+        <q-dialog v-model="upgradeDialog" :maximized="modeMobile">
+          <q-card class="upgradeDialog font text-center">
+            <q-card-actions class="flex justify-center">
+              <div class="fit">
+                  <q-btn v-close-popup color="warning" label="fechar" push class="fit font shadow-2" size="12px" />
+              </div>
+              <div class="text-white shadow-5 bg-purple q-py-xs text-center text-caption fit font" style="border-radius: 5px;"  >
+                {{ $t('message.space.dust') }}: {{ cosmicDustCount | formatNumber }}
+              </div>
+            </q-card-actions>
+            <!-- Upgrades -->
+            <q-card-section class="q-ma-none q-pa-sm" >
+              <q-list v-for="(upgrade, index) in upgradesList" :key="index">
+                <div class="font--8 q-my-xs q-pa-sm upgradeDialog__item border--5 shadow-3">
+                  <div class="flex justify-between no-wrap">
+                    <div class="column q-mb-sm q-ml-sm" style="max-width: 80px ">
+                      <div><q-img :src="require(`../assets/${upgrade.img}`)" style="width: 30px; height: 30px;" /></div>
+                      <div class="text-capitalize" style="font-size: 8px;">{{ upgrade.label }}</div>
+                    </div>
+                    <div class="column text-right q-mt-md">
+                      <div>
+                        {{ $t('message.space.upgrade.price') }}: {{  upgrade.price | formatNumber }}
+                        <q-tooltip content-class="bg-purple font font--8" anchor="top middle" self="center middle" >
+                          {{ $t('message.space.upgrade.TotalSpent') }}: {{ upgrade.totalSpent | formatNumber }}
+                          <q-img src="../assets/cosmic.png" style="width: 15px" class="q-mb-xs"/>
+                          <div>{{ $t('message.space.upgrade.price') }} * 0.2</div>
+                          <div>{{ $t('message.space.upgrade.amount') }}.: +{{game.items[upgrade.uplink].ups}}</div>
+                        </q-tooltip>
+                        <q-img src="../assets/cosmic.png" style="width: 15px" class="q-mb-xs"/>
+                      </div>
+                      <!-- TODO Remover lógica da view -->
+                      <div>
+                        <div v-if="upgrade.idu !== 5 && upgrade.value !== 0">{{ $t('message.space.upgrade.efficiency') }}: +{{ upgrade.value | formatNumberDec }}</div>
+                        <div v-if="upgrade.label === 'Drone Pro'">{{ $t('message.space.upgrade.efficiency') }}: +{{ upgrade.value | formatNumber }}</div>
+                        <div v-if="upgrade.label === 'Drone Pro' || upgrade.idu !== 5 && upgrade.value !== 0">(+0.2 {{ $t('message.space.upgrade.per') }})</div>
+                      </div>
+                      <!-- DRONE -->
+                      <div v-if="upgrade.label === 'Drone Sentinela'" >{{ $t('message.space.upgrade.getDust') }}: +{{ upgrade.value | formatNumber }}</div>
+                      <div v-if="upgrade.label === 'Bateria de Drone'" >{{ $t('message.space.upgrade.get') }}: +2s</div>
+                      <div v-if="upgrade.label === 'Bateria de Drone'" >{{ $t('message.space.upgrade.recharge') }}: +1s</div>
+                    </div>
+                  </div>
+                  <div class="q-px-md q-mt-sm bg-white border--5 font--8">{{ upgrade.description }}</div>
+                  <q-btn :label="$t('message.items.buy')" size="15px" push color="blue" :disable="game.cosmicDust < upgrade.price" class="q-mt-md fit" @click="buyUpgrade(upgrade)" />
+                </div>
+              </q-list>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
       </q-tab-panel>
+
       <!-- MENU DE OPÇÕES -->
       <q-tab-panel name="options" >
-        <div style="min-width: 100px;" class="flex justify-center  font">
+        <div style="min-width: 100px;" class="flex justify-center font">
           <q-card-section class="column q-gutter-y-md">
             <!-- TODO criar um modal com uma msg e uma img dizendo que o jogo será resetado e sem tem certeza disso -->
             <div><q-btn label="contato" class="bg-blue text-white" style="min-width: 250px;" @click="contactCard"/></div>
@@ -466,8 +475,8 @@
     <q-dialog v-model="setName" persistent>
         <q-card class="font company text-white">
           <q-card-section class="bg-warning">
-            <span class="font--8 q-ml-xs" >Nome da Companhia:</span>
-            <q-input v-model="game.starCompanyName" class="font--8" dark @focus="game.starCompanyName = '' " outlined :rules="[val => !!val || 'Eii precisamos de um nome!!!']" color="white"/>
+            <span class="font--8 q-ml-xs" >{{$t('message.company')}}:</span>
+            <q-input v-model="game.starCompanyName" class="font--8" dark @focus="game.starCompanyName = '' " outlined :rules="[val => !!val || this.$t('message.msgCompanyErr')]" color="white"/>
           </q-card-section>
          <q-card-actions align="right" class="text-primary">
           <q-btn label="ok" color="blue" v-close-popup :disable="game.starCompanyName === '' "/>
@@ -599,9 +608,9 @@ export default {
         levelUp: 0,
         maxlevelUp: 100,
         level: 1,
-        starCompanyName: 'Nome da Companhia',
+        starCompanyName: this.$t('message.company'),
         openShop: 0,
-        cosmicDust: 10000000,
+        cosmicDust: 100000,
         unobtainium: 100,
         cosmicDustPerSecond: 0,
         upgrades: [
@@ -613,247 +622,247 @@ export default {
             price: 100,
             totalSpent: 0,
             value: 0.5,
-            description: 'Aumenta o ganho do click.'
+            description: this.$t('message.space.upgrade.click.description')
           },
           {
             idu: 1,
             uplink: 'garra',
-            label: 'Garra Pro',
+            label: this.$t('message.space.upgrade.claw.label'),
             img: 'garra.png',
             price: 200,
             totalSpent: 0,
             value: 0.5,
-            description: 'Aumenta a eficiência da Garra.'
+            description: this.$t('message.space.upgrade.claw.description')
           },
           {
             idu: 2,
             uplink: 'aerogel',
-            label: 'Aerogel Pro',
+            label: this.$t('message.space.upgrade.airgel.label'),
             img: 'nanocristal.png',
             price: 1000,
             totalSpent: 0,
             value: 2,
-            description: 'Aumenta a eficiência do aerogel. Bônus upgrade 10/20/30.'
+            description: this.$t('message.space.upgrade.airgel.description')
           },
           {
             idu: 3,
             uplink: 'Processador',
-            label: 'Processador Pro',
+            label: this.$t('message.space.upgrade.processor.label'),
             img: 'cpu.png',
             price: 3000,
             totalSpent: 0,
             value: 3,
-            description: 'Aumenta a eficiência do processador.'
+            description: this.$t('message.space.upgrade.processor.description')
           },
           {
             idu: 4,
             uplink: 'escâner',
-            label: 'escâner',
+            label: this.$t('message.space.upgrade.scanner.label'),
             img: 'scanner.png',
             price: 5000,
             totalSpent: 0,
             value: 5,
-            description: 'Aumenta a eficiência do escâner.'
+            description: this.$t('message.space.upgrade.scanner.description')
           },
           {
             idu: 5,
             uplink: 'drone',
-            label: 'Drone Pro',
+            label: this.$t('message.space.upgrade.drone.label'),
             img: 'drone.png',
             price: 7000,
             totalSpent: 0,
             value: 7,
-            description: 'Aumenta a eficiência do drone'
+            description: this.$t('message.space.upgrade.drone.description')
           },
           {
             idu: 5,
             uplink: 'drone',
-            label: 'Drone Sentinela',
+            label: this.$t('message.space.upgrade.droneSentry.label'),
             img: 'drone.png',
             price: 80,
             totalSpent: 0,
             value: 8,
-            description: 'Aumenta a capacidade de coleta do drone lançado em +8'
+            description: this.$t('message.space.upgrade.droneSentry.description')
           },
           {
             idu: 5,
             uplink: 'drone',
-            label: 'Bateria de Drone',
+            label: this.$t('message.space.upgrade.droneBattery.label'),
             img: 'bateria.png',
             price: 1000,
             totalSpent: 0,
             value: 8,
-            description: 'Aumenta o tempo de coleta do drone lançado em +2 e o tempo de recarga em +1.'
+            description: this.$t('message.space.upgrade.droneBattery.description')
           },
           {
             idu: 6,
             uplink: 'estação',
-            label: 'Estação pro',
+            label: this.$t('message.space.upgrade.proStation.label'),
             img: 'station.png',
             price: 10000,
             totalSpent: 0,
             value: 10,
-            description: 'Aumenta a eficiência da estação.'
+            description: this.$t('message.space.upgrade.proStation.description')
           },
           {
             idu: 7,
             uplink: 'conversor',
-            label: 'conversor pro',
+            label: this.$t('message.space.upgrade.converter.label'),
             img: 'converter.png',
             price: 15000,
             totalSpent: 0,
             value: 10,
-            description: 'Aumenta a capacidade de reciclagem do conversor.'
+            description: this.$t('message.space.upgrade.converter.description')
           },
           {
             idu: 7,
             uplink: 'conversor',
-            label: 'Conversor Diamante',
+            label: this.$t('message.space.upgrade.diamondConverter.label'),
             img: 'converter.png',
             price: 150000,
             totalSpent: 0,
             value: 0,
-            description: 'Aumenta o multiplicador do conversor em + 5k e o tempo em +20s'
+            description: this.$t('message.space.upgrade.diamondConverter.description')
           }
         ],
         achievementsList: {
           garraAchiv: {
             id: 1,
-            label: 'Meu primeiro item!',
-            description: 'Conquistado após comprar o primeiro item.',
+            label: this.$t('message.space.achievements.garraAchiv.label'),
+            description: this.$t('message.space.achievements.garraAchiv.description'),
             conquest: false,
             conquestRevel: false
           },
           garraAchivTwo: {
             id: 1,
-            label: 'Gostei desse item Garra!',
-            description: 'Conquistado após comprar 50 unidades de garra!',
+            label: this.$t('message.space.achievements.garraAchivTwo.label'),
+            description: this.$t('message.space.achievements.garraAchivTwo.description'),
             conquest: false,
             conquestRevel: false
           },
           garraAchivThree: {
             id: 1,
-            label: 'Quanto mais garra melhor!',
-            description: 'Conquistado após comprar 100 unidades de garra!',
+            label: this.$t('message.space.achievements.garraAchivThree.label'),
+            description: this.$t('message.space.achievements.garraAchivThree.description'),
             conquest: false,
             conquestRevel: false
           },
           garraEfficiencyAchiv: {
             id: 2,
-            label: 'Mestre da Eficiência!',
-            description: 'Garra com 50+ de eficiência.',
+            label: this.$t('message.space.achievements.garraEfficiencyAchiv.label'),
+            description: this.$t('message.space.achievements.garraEfficiencyAchiv.description'),
             conquest: false,
             conquestRevel: false
           },
           garraEfficiencyAchivTwo: {
             id: 2,
-            label: 'Mestre da Eficiência 2!',
-            description: 'Garra com 150+ de eficiência.',
+            label: this.$t('message.space.achievements.garraEfficiencyAchivTwo.label'),
+            description: this.$t('message.space.achievements.garraEfficiencyAchivTwo.description'),
             conquest: false,
             conquestRevel: false
           },
           garraEfficiencyAchivThree: {
             id: 2,
-            label: 'Mestre da Eficiência 3!',
-            description: 'Garra com 250+ de eficiência.',
+            label: this.$t('message.space.achievements.garraEfficiencyAchivThree.label'),
+            description: this.$t('message.space.achievements.garraEfficiencyAchivThree.description'),
             conquest: false,
             conquestRevel: false
           },
           aerogelAmountAchiv: {
             id: 3,
-            label: 'Vai um Aerogel ai?',
-            description: 'Conquistado após comprar 100 Aerogel.',
+            label: this.$t('message.space.achievements.aerogelAmountAchiv.label'),
+            description: this.$t('message.space.achievements.aerogelAmountAchiv.description'),
             conquest: false,
             conquestRevel: false
           },
           aerogelAmountAchivTwo: {
             id: 3,
-            label: 'Preciso de mais disso!',
-            description: 'Conquistado após comprar 200 Aerogel.',
+            label: this.$t('message.space.achievements.aerogelAmountAchivTwo.label'),
+            description: this.$t('message.space.achievements.aerogelAmountAchivTwo.description'),
             conquest: false,
             conquestRevel: false
           },
           cosmicDustAchiv: {
             id: 4,
-            label: '1m de Poeira não é o bastante!',
-            description: 'Conquistado após conseguir 1M de poeira cósmica.',
+            label: this.$t('message.space.achievements.cosmicDustAchiv.label'),
+            description: this.$t('message.space.achievements.cosmicDustAchiv.description'),
             conquest: false,
             conquestRevel: false
           },
           cosmicDustAchivTwo: {
             id: 4,
-            label: '1b Uau Tudo isso?!',
-            description: 'Conquistado após conseguir 1b de poeira cósmica.',
+            label: this.$t('message.space.achievements.cosmicDustAchivTwo.label'),
+            description: this.$t('message.space.achievements.cosmicDustAchivTwo.description'),
             conquest: false,
             conquestRevel: false
           },
           cosmicDustPerSecond: {
             id: 5,
-            label: 'Vamos automatizar Tudo!',
-            description: 'Chegou a 1k de Poeira cósmica por segundo',
+            label: this.$t('message.space.achievements.cosmicDustPerSecond.label'),
+            description: this.$t('message.space.achievements.cosmicDustPerSecond.description'),
             conquest: false,
             conquestRevel: false
           },
           droneAchiv: {
             id: 6,
-            label: 'Enfim comprei um Drone!',
-            description: 'Conquistado após comprar um Drone.',
+            label: this.$t('message.space.achievements.droneAchiv.label'),
+            description: this.$t('message.space.achievements.droneAchiv.description'),
             conquest: false,
             conquestRevel: false
           },
           droneAchivTwo: {
             id: 6,
-            label: 'Melhorei meu Drone!',
-            description: 'Conquistado após comprar um Drone.',
+            label: this.$t('message.space.achievements.droneAchivTwo.label'),
+            description: this.$t('message.space.achievements.droneAchivTwo.description'),
             conquest: false,
             conquestRevel: false
           },
           droneAchivThree: {
             id: 6,
-            label: 'Um Exército de Drones!',
-            description: 'Conquistado após comprar um Drone.',
+            label: this.$t('message.space.achievements.droneAchivThree.label'),
+            description: this.$t('message.space.achievements.droneAchivThree.description'),
             conquest: false,
             conquestRevel: false
           },
           convertAchiev: {
             id: 7,
-            label: 'Foi uma necessidade!',
-            description: 'Conquistado após processar 2 vezes.',
+            label: this.$t('message.space.achievements.convertAchiev.label'),
+            description: this.$t('message.space.achievements.convertAchiev.description'),
             conquest: false,
             conquestRevel: false
           },
           convertAchievTwo: {
             id: 7,
-            label: 'Vamos Melhorar isso!',
-            description: 'Conquistado após Melhorar o Conversor.',
+            label: this.$t('message.space.achievements.convertAchievTwo.label'),
+            description: this.$t('message.space.achievements.convertAchievTwo.description'),
             conquest: false,
             conquestRevel: false
           },
           unobtainiumAmount: {
             id: 7,
-            label: 'Colecionador de unobtainium!',
-            description: 'Conquistado após conseguir 100 unidades de unobtainium',
+            label: this.$t('message.space.achievements.unobtainiumAmount.label'),
+            description: this.$t('message.space.achievements.unobtainiumAmount.description'),
             conquest: false,
             conquestRevel: false
           },
           shipAchiv: {
             id: 1,
-            label: 'Equipei uma Nave Nova!',
-            description: 'Conquistado após Equipar a primeira nave!',
+            label: this.$t('message.space.achievements.shipAchiv.label'),
+            description: this.$t('message.space.achievements.shipAchiv.description'),
             conquest: false,
             conquestRevel: false
           },
           shipAchivTwo: {
             id: 1,
-            label: 'Equipei a Reliant',
-            description: 'Conquistado após Equipar Reliant!',
+            label: this.$t('message.space.achievements.shipAchivTwo.label'),
+            description: this.$t('message.space.achievements.shipAchivTwo.description'),
             conquest: false,
             conquestRevel: false
           },
           missionAchiv: {
             id: 1,
-            label: 'Missão Iniciada!',
-            description: 'Conquistado após iniciar uma Missão!',
+            label: this.$t('message.space.achievements.missionAchiv.label'),
+            description: this.$t('message.space.achievements.missionAchiv.description'),
             conquest: false,
             conquestRevel: false
           }
@@ -863,7 +872,7 @@ export default {
         droneFunction: {
           droneTimer: 0,
           droneMaxTime: 0,
-          labelDrone: 'Enviar Drone',
+          labelDrone: this.$t('message.space.drone.actionOne'),
           colorDrone: 'bg-green',
           droneSend: false
         },
@@ -878,9 +887,9 @@ export default {
             id: 1,
             page: 1,
             type: 'item',
-            label: 'garra',
+            label: this.$t('message.space.items.garra.label'),
             img: 'garra.png',
-            description: 'Ferramenta para ajudar na coleta de detritos.',
+            description: this.$t('message.space.items.garra.description'),
             price: 50,
             value: 0.5,
             amount: 0,
@@ -892,9 +901,9 @@ export default {
             id: 2,
             page: 1,
             type: 'item',
-            label: 'aerogel',
+            label: this.$t('message.space.items.aerogel.label'),
             img: 'nanocristal.png',
-            description: 'Material usado para ajudar na coleta de poeira cosmica.',
+            description: this.$t('message.space.items.aerogel.description'),
             price: 75,
             value: 2,
             amount: 0,
@@ -906,9 +915,9 @@ export default {
             id: 3,
             page: 2,
             type: 'item',
-            label: 'Processador',
+            label: this.$t('message.space.items.Processador.label'),
             img: 'cpu.png',
-            description: 'Material usado para aumentar a capacidade de processamento de dados.',
+            description: this.$t('message.space.items.Processador.description'),
             price: 1150,
             value: 5,
             amount: 0,
@@ -920,9 +929,9 @@ export default {
             id: 4,
             page: 2,
             type: 'item',
-            label: 'escâner',
+            label: this.$t('message.space.items.escâner.label'),
             img: 'scanner.png',
-            description: 'Material usado para escanear asteroides.',
+            description: this.$t('message.space.items.escâner.description'),
             price: 1300,
             value: 8,
             amount: 0,
@@ -933,9 +942,9 @@ export default {
           drone: {
             id: 5,
             type: 'equipament',
-            label: 'drone',
+            label: this.$t('message.space.items.drone.label'),
             img: 'drone.png',
-            description: 'Drone pode ser lançado para coletar poeira cósmica.',
+            description: this.$t('message.space.items.drone.description'),
             price: 2000,
             value: 10,
             timeLaunch: 10,
@@ -951,9 +960,9 @@ export default {
             id: 6,
             page: 3,
             type: 'item',
-            label: 'estação',
+            label: this.$t('message.space.items.estação.label'),
             img: 'station.png',
-            description: 'Melhora a comunicação da Nave.',
+            description: this.$t('message.space.items.estação.description'),
             price: 1300,
             value: 8,
             amount: 0,
@@ -964,9 +973,9 @@ export default {
           conversor: {
             id: 7,
             type: 'equipament',
-            label: 'conversor',
+            label: this.$t('message.space.items.conversor.label'),
             img: 'converter.png',
-            description: 'Converte uno (unobtainium) em PC (Poeira Cósmica). No seu estado "standby" ele consegue retirar PC de fragmentos de asteroids.',
+            description: this.$t('message.space.items.conversor.description'),
             price: 5000,
             value: 10,
             timeLaunch: 0, // tempo de funcionamento
@@ -977,7 +986,7 @@ export default {
             ups: 0,
             multiply: 10000,
             totalEfficiency: 0,
-            status: 'Pronto' // status do equipamento
+            status: this.$t('message.space.items.conversor.status')
           }
         },
         ship: {
@@ -987,28 +996,28 @@ export default {
             label: 'Tundra',
             img: 'Ship1/Ship1.png',
             shipLocked: false,
-            description: 'nave desenvolvida para mineração.',
+            description: this.$t('message.space.ship.ship1.description'),
             parts: {
               body: {
-                label: 'Corpo',
+                label: this.$t('message.space.ship.ship1.body.label'),
                 price: 30000,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_body.png'
               },
               nose: {
-                label: 'Ponta',
+                label: this.$t('message.space.ship.ship1.nose.label'),
                 price: 30000,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_nose.png'
               },
               turbine: {
-                label: 'turbina',
+                label: this.$t('message.space.ship.ship1.turbine.label'),
                 price: 30000,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_turbine.png'
               },
               datail: {
-                label: 'datalhes',
+                label: this.$t('message.space.ship.ship1.datail.label'),
                 price: 30000,
                 buyed: false,
                 img: 'Ship1/Parts/ship1_detail.png'
@@ -1021,34 +1030,34 @@ export default {
             label: 'Sharter',
             shipLocked: false,
             img: 'Ship2/Ship2.png',
-            description: 'nave desenvolvida para transporte de Mercadorias.',
+            description: this.$t('message.space.ship.ship2.description'),
             parts: {
               body: {
-                label: 'Corpo',
+                label: this.$t('message.space.ship.ship2.body.label'),
                 price: 60,
                 buyed: false,
                 img: 'Ship2/Parts/ship2_body.png'
               },
               nose: {
-                label: 'Corpo 2',
+                label: this.$t('message.space.ship.ship2.nose.label'),
                 price: 60,
                 buyed: false,
                 img: 'Ship2/Parts/ship2_body2.png'
               },
               turbine: {
-                label: 'Turbina',
+                label: this.$t('message.space.ship.ship2.turbine.label'),
                 price: 60,
                 buyed: false,
                 img: 'Ship2/Parts/ship2_turbines.png'
               },
               datail: {
-                label: 'datalhes',
+                label: this.$t('message.space.ship.ship2.detail.label'),
                 price: 60,
                 buyed: false,
                 img: 'Ship2/Parts/ship2_detail.png'
               },
               datail2: {
-                label: 'datalhes 2',
+                label: this.$t('message.space.ship.ship2.detail2.label'),
                 price: 60,
                 buyed: false,
                 img: 'Ship2/Parts/ship2_detail2.png'
@@ -1061,40 +1070,40 @@ export default {
             label: 'Equinox',
             shipLocked: false,
             img: 'Ship3/Ship3.png',
-            description: 'nave desenvolvida para extrair energia.',
+            description: this.$t('message.space.ship.ship3.description'),
             parts: {
               body: {
-                label: 'Corpo',
+                label: this.$t('message.space.ship.ship3.body.label'),
                 price: 100,
                 buyed: false,
                 img: 'Ship3/Parts/ship3_body.png'
               },
               head: {
-                label: 'Cabeça',
+                label: this.$t('message.space.ship.ship3.head.label'),
                 price: 100,
                 buyed: false,
                 img: 'Ship3/Parts/ship3_head.png'
               },
               head2: {
-                label: 'Cabeça 2',
+                label: this.$t('message.space.ship.ship3.head2.label'),
                 price: 100,
                 buyed: false,
                 img: 'Ship3/Parts/ship3_head2.png'
               },
               turbine: {
-                label: 'Turbina',
+                label: this.$t('message.space.ship.ship3.turbine.label'),
                 price: 100,
                 buyed: false,
                 img: 'Ship3/Parts/ship3_turbine.png'
               },
               datail: {
-                label: 'Datalhes',
+                label: this.$t('message.space.ship.ship3.datail.label'),
                 price: 100,
                 buyed: false,
                 img: 'Ship3/Parts/ship3_detail.png'
               },
               tail: {
-                label: 'Traseira 2',
+                label: this.$t('message.space.ship.ship3.tail.label'),
                 price: 100,
                 buyed: false,
                 img: 'Ship3/Parts/ship3_tail.png'
@@ -1107,46 +1116,46 @@ export default {
             label: 'Reliant',
             shipLocked: false,
             img: 'Ship4/Ship4.png',
-            description: 'nave desenvolvida para trasporte de unobtainium.',
+            description: this.$t('message.space.ship.ship4.description'),
             parts: {
               body: {
-                label: 'Corpo',
+                label: this.$t('message.space.ship.ship4.body.label'),
                 price: 110,
                 buyed: false,
                 img: 'Ship4/Parts/ship4_body1.png'
               },
               body2: {
-                label: 'Corpo 2',
+                label: this.$t('message.space.ship.ship4.body2.label'),
                 price: 110,
                 buyed: false,
                 img: 'Ship4/Parts/ship4_body2.png'
               },
               bodyDetail: {
-                label: 'Corpo detalhe',
+                label: this.$t('message.space.ship.ship4.bodyDetail.label'),
                 price: 110,
                 buyed: false,
                 img: 'Ship4/Parts/ship4_body_detail.png'
               },
               tail: {
-                label: 'Traseira',
+                label: this.$t('message.space.ship.ship4.tail.label'),
                 price: 110,
                 buyed: false,
                 img: 'Ship4/Parts/ship4_tail.png'
               },
               tubes: {
-                label: 'Tubulação',
+                label: this.$t('message.space.ship.ship4.tubes.label'),
                 price: 110,
                 buyed: false,
                 img: 'Ship4/Parts/ship4_tubes.png'
               },
               datail: {
-                label: 'datalhes',
+                label: this.$t('message.space.ship.ship4.datail.label'),
                 price: 110,
                 buyed: false,
                 img: 'Ship4/Parts/ship4_detail.png'
               },
               window: {
-                label: 'Janela',
+                label: this.$t('message.space.ship.ship4.window.label'),
                 price: 110,
                 buyed: false,
                 img: 'Ship4/Parts/ship4_windows.png'
@@ -1288,9 +1297,9 @@ export default {
         quest: {
           moon: {
             qId: 1,
-            title: '#1 - Mineração na lua',
+            title: this.$t('message.space.quest.moon.title'),
             img: 'moon.gif',
-            description: 'Existem diversos minérios na Lua, mas dentro deles há um muito raro chamado unobtainium.Crie uma base e comece a minerar para encontrá-los!',
+            description: this.$t('message.space.quest.moon.description'),
             dust: 200000,
             cost: {
               garra: 90,
@@ -1314,9 +1323,9 @@ export default {
           },
           market: {
             qId: 2,
-            title: '#2 - Mercado espacial',
+            title: this.$t('message.space.quest.market.title'),
             img: 'Market.gif',
-            description: 'O Mercado espacial irá vender todo lixo e sucata espacial que você armazena ao longo da jornada. Abra um mercado espacial e ganhe vendendo sucatas!',
+            description: this.$t('message.space.quest.market.description'),
             dust: 500000,
             cost: {
               garra: 110,
@@ -1340,9 +1349,9 @@ export default {
           },
           warp: {
             qId: 3,
-            title: '#3 - Portal Quebrado',
+            title: this.$t('message.space.quest.warp.title'),
             img: 'warp.gif',
-            description: 'Foi encontrado um portal quebrado porém a energia usada para abri-lo ainda está disponível para coleta.',
+            description: this.$t('message.space.quest.warp.description'),
             dust: 800000,
             cost: {
               garra: 150,
@@ -1367,9 +1376,9 @@ export default {
           },
           base: {
             qId: 4,
-            title: '#4 - Base Mineradora',
+            title: this.$t('message.space.quest.base.title'),
             img: 'base.gif',
-            description: 'Uma base orbital de mineração de unobtainium está disponível.',
+            description: this.$t('message.space.quest.base.description'),
             dust: 1000000,
             cost: {
               garra: 200,
@@ -1892,7 +1901,7 @@ export default {
     },
 
     recovery () {
-      if (this.game.droneFunction.droneSend || !this.game.droneFunction.labelDrone === 'Enviar Drone') { this.droneWorking() }
+      if (this.game.droneFunction.droneSend || !this.game.droneFunction.labelDrone === this.$t('message.space.drone.actionOne')) { this.droneWorking() }
     },
 
     isQuestRecovery () {
@@ -1957,7 +1966,7 @@ export default {
     achievementNotify (text) {
       this.$gtag.event('achievement', { event_category: 'achivement', event_label: 'amount', value: 1 })
       this.$q.notify({
-        message: `Conquista<br><strong>${text}</strong>`,
+        message: `<strong>${text}</strong>`,
         multiLine: true,
         html: true,
         timeout: 6000,
@@ -1985,7 +1994,7 @@ export default {
             this.game.cosmicDust += convertValue
             this.$refs.MissionComplete.play()
             this.$q.notify({
-              message: `Conversão Completa<br><strong>Foi convertido ${convertValue}</strong>`,
+              message: `<strong>${this.$t('message.inventory.convert.msgComplete')}: ${convertValue}</strong>`,
               multiLine: true,
               html: true,
               timeout: 6000,
@@ -1998,10 +2007,10 @@ export default {
       } else if (this.convertAmount === 0) {
         this.$refs.error.play()
         this.$q.notify({
-          message: 'Atenção<br><strong>Informe uma quantidade a ser convertida</strong>',
+          message: `<strong>${this.$t('message.inventory.convert.msgQtdErrorInfo')}</strong>`,
           multiLine: true,
           html: true,
-          timeout: 6000,
+          timeout: 4000,
           progress: true,
           avatar: require('../assets/converter.png'),
           color: 'negative'
@@ -2009,10 +2018,10 @@ export default {
       } else {
         this.$refs.error.play()
         this.$q.notify({
-          message: 'Atenção<br><strong>Não posssui recursos suficientes</strong>',
+          message: `<strong>${this.$t('message.inventory.convert.msgQtdError')}</strong>`,
           multiLine: true,
           html: true,
-          timeout: 6000,
+          timeout: 4000,
           progress: true,
           avatar: require('../assets/converter.png'),
           color: 'negative'
@@ -2021,7 +2030,7 @@ export default {
     },
 
     drone () {
-      this.game.droneFunction.labelDrone = 'Coletando Poeira'
+      this.game.droneFunction.labelDrone = this.$t('message.space.drone.work')
       this.game.droneFunction.colorDrone = 'bg-blue'
       this.game.droneFunction.droneSend = true
       this.game.cosmicDustPerSecond += this.game.items.drone.launchValue
@@ -2045,7 +2054,7 @@ export default {
             this.game.cosmicDustPerSecond -= this.game.items.drone.launchValue
             this.game.items.drone.status = 'recharging'
             // RECARREGANDO
-            this.game.droneFunction.labelDrone = 'Recarregando'
+            this.game.droneFunction.labelDrone = this.$t('message.space.drone.reloading')
             this.game.droneFunction.colorDrone = 'bg-orange text-bold'
             this.game.droneFunction.droneTimer = this.game.items.drone.bateryRecover
             this.game.droneFunction.droneMaxTime = this.game.items.drone.bateryRecover
@@ -2055,7 +2064,7 @@ export default {
               // DISPONIVEL
               if (this.game.droneFunction.droneTimer === 0) {
                 clearInterval(timerRecharger)
-                this.game.droneFunction.labelDrone = 'Enviar Drone'
+                this.game.droneFunction.labelDrone = this.$t('message.space.drone.actionOne')
                 this.game.droneFunction.colorDrone = 'bg-green'
                 this.game.droneFunction.droneSend = false
               }
@@ -2071,7 +2080,7 @@ export default {
           // DISPONIVEL
           if (this.game.droneFunction.droneTimer === 0) {
             clearInterval(timerRecharger)
-            this.game.droneFunction.labelDrone = 'Enviar Drone'
+            this.game.droneFunction.labelDrone = this.$t('message.space.drone.actionOne')
             this.game.droneFunction.colorDrone = 'bg-green'
             this.game.droneFunction.droneSend = false
           }
@@ -2089,7 +2098,7 @@ export default {
         // garra
         case 1:
           if (this.game.cosmicDust >= model.price) {
-            if (model.label === 'Click Pro') {
+            if (model.label === this.$t('message.space.upgrade.click.label')) {
               this.game.cosmicDust -= model.price
               this.game.click += model.value
 
@@ -2099,7 +2108,7 @@ export default {
 
               this.addInstallCountItem(model)
             }
-            if (model.label === 'Garra Pro') {
+            if (model.label === this.$t('message.space.upgrade.claw.label')) {
               this.game.cosmicDust -= model.price
               this.game.items[model.uplink].value += model.value
 
@@ -2163,18 +2172,18 @@ export default {
         case 5:
           if (this.game.cosmicDust >= model.price) {
             this.game.cosmicDust -= model.price
-            if (model.label === 'Drone Pro') {
+            if (model.label === this.$t('message.space.upgrade.drone.label')) {
               this.game.items[model.uplink].value += model.value
               model.price += model.price * 0.2
               model.value += 0.2
               model.totalSpent += model.price
             }
-            if (model.label === 'Drone Sentinela') {
+            if (model.label === this.$t('message.space.upgrade.droneSentry.label')) {
               this.game.items.drone.launchValue += model.value
               model.price += model.price * 0.2
               model.value += 0.5
             }
-            if (model.label === 'Bateria de Drone') {
+            if (model.label === this.$t('message.space.upgrade.droneBattery.label')) {
               this.game.items.drone.timeLaunch += model.value
               this.game.items.drone.bateryRecover += 1
               model.price += model.price * 0.2
@@ -2199,7 +2208,7 @@ export default {
         case 7:
           if (this.game.cosmicDust >= model.price) {
             this.game.cosmicDust -= model.price
-            if (model.label === 'Conversor Pro') {
+            if (model.label === this.$t('message.space.upgrade.converter.label')) {
               this.game.items[model.uplink].value += model.value
 
               model.value += 0.2
@@ -2207,7 +2216,7 @@ export default {
               model.price += model.price * 0.2
             }
 
-            if (model.label === 'Conversor Diamante') {
+            if (model.label === this.$t('message.space.upgrade.diamondConverter.label')) {
               this.game.items.conversor.multiply += 5000
               this.game.items.conversor.launchValue += 20
               model.totalSpent += model.price // total Gasto
@@ -2259,10 +2268,10 @@ export default {
 
         model.amount += 1 // adiciona quanditdade de items comprados
         this.game.openShop += +1
-        if (model.label === 'drone') {
+        if (model.label === this.$t('message.space.items.drone.label')) {
           this.game.installDrone = true
         }
-        if (model.label === 'conversor') {
+        if (model.label === this.$t('message.space.items.conversor.label')) {
           this.game.installConversor = true
         }
       }
@@ -2390,6 +2399,28 @@ export default {
       //     }
       //   }
       // }, 60000)
+    },
+
+    enter () {
+      const card = document.querySelector('.card')
+      const img = document.querySelector('#ship')
+
+      card.style.transition = 'none'
+      img.style.transform = 'translateZ(50px)'
+    },
+
+    move (e) {
+      const card = document.querySelector('.card')
+
+      const xAxis = (window.innerWidth / 2 - e.pageX) / 30
+      const yAxis = (window.innerHeight / 2 - e.pageY) / 30
+      card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`
+    },
+
+    leave () {
+      const card = document.querySelector('.card')
+      card.style.transition = 'all 0.5s ease'
+      card.style.transform = 'rotateY(0deg) rotateX(0deg)'
     }
   }
 }
@@ -2397,6 +2428,22 @@ export default {
 
 <style lang="scss">
 @import "node_modules/pixel-borders/src/styles/pixel-borders.scss";
+body {
+  perspective: 1000px;
+}
+
+.card {
+  transform-style: preserve-3d;
+}
+
+.effect {
+  // background-color: red;
+}
+
+.progress {
+  border-radius: 16rem;
+  box-shadow: 0px 0px 50px $warning;
+}
 
 .glass {
   opacity: 0.8;
@@ -2519,6 +2566,13 @@ export default {
 .starship {
   background-color:rgba(0, 0, 0, 0.1);
   width: 400px;
+  height: 80vh;
+  overflow-y: hidden;
+
+  &__ship {
+    height: 60vh;
+    align-items: center;
+  }
 
   &__mobile {
     width: 100%;
