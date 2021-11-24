@@ -64,7 +64,7 @@
             </div>
 
             <!-- SHIP/ AÇÃO PEGAR POEIRA  -->
-            <div v-if="modeMobile" class="justify-center flex starship__ship effect"  v-touch:start="touchMoving" v-touch:moving="touchMoving" >
+            <div v-if="modeMobile" class="justify-center flex starship__ship effect"  v-touch:moving="touchMoving" >
               <span class="card">
               <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
               <div v-if="game.cosmicDust === 0" class="text-black q-px-sm information shadow-3 text-center" style="z-index: 10;" >{{ $t('message.space.tuto.tipOne') }}</div>
@@ -2448,9 +2448,9 @@ export default {
       const card = document.querySelector('.card')
       img.style.transform = 'translateZ(50px)'
 
-      const xAxis = (window.screen.width / 2 - event.touches[0].pageX) / 25
-      const yAxis = (window.screen.height / 2 - event.touches[0].pageY) / 25
-      card.style.transform = `rotateY(${-xAxis}deg) rotateX(${-yAxis}deg)`
+      const xAxis = (window.screen.width - event.touches[0].pageX) / 25
+      const yAxis = (window.screen.height - event.touches[0].pageY) / 25
+      card.style.transform = `rotateY(${-xAxis}deg) rotateX(${yAxis}deg)`
     }
 
   }
