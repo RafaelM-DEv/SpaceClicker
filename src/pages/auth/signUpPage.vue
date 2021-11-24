@@ -77,9 +77,16 @@ export default {
             message: 'Bem-vindo ao Space Clicker!',
             color: 'positive'
           })
-          return this.animate()
+          return this.animate('login')
         },
         (error) => {
+          if (error.code === 'auth/email-already-in-use') {
+            this.asErrorPass = true
+            this.$q.notify({
+              message: error.message,
+              color: 'negative'
+            })
+          }
           if (error.code === 'auth/weak-password') {
             this.asErrorPass = true
             this.error = this.password.length === 0 ? this.$t('message.forgotPassword.error') : this.$t('message.signUp.char')

@@ -51,6 +51,7 @@
               </div>
 
             </div>
+
               <div class="items-buyed flex justify-center">
               <span v-for="(item, index) in game.itemsBuyed" :key='index' class="items-buyed__list">
                 <q-img :src="require(`../assets/${item.img}`)" class="items-buyed__img"/>
@@ -63,7 +64,7 @@
             </div>
 
             <!-- SHIP/ AÇÃO PEGAR POEIRA  -->
-            <div v-if="mobile" class="justify-center flex starship__ship effect"  v-touch:start="enter" v-touch:moving="touchMoving" >
+            <div v-if="modeMobile" class="justify-center flex starship__ship effect"  v-touch:start="enter" v-touch:moving="touchMoving" >
               <span class="card">
               <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
               <div v-if="game.cosmicDust === 0" class="text-black q-px-sm information shadow-3 text-center" style="z-index: 10;" >{{ $t('message.space.tuto.tipOne') }}</div>
@@ -77,7 +78,7 @@
               </span>
             </div>
 
-            <div v-if="!mobile" class="justify-center flex starship__ship effect"  @mousemove="move" @mouseleave="leave" @mouseenter="enter">
+            <div v-if="!modeMobile" class="justify-center flex starship__ship effect"  @mousemove="move" @mouseleave="leave" @mouseenter="enter">
               <span class="card">
               <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
 
