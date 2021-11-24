@@ -15,7 +15,7 @@
 
     <!-- STARDUST -->
     <q-tab-panels v-model="headerToolbar" animated class="fit starship">
-      <q-tab-panel name="space" class="flex justify-center" :class="spaceClicker">
+      <q-tab-panel name="space" class="flex justify-center" :class="spaceClicker" style="overflow-y: hidden;">
         <div :class="spaceClicker">
           <div class="starship--bg">
             <div class="flex justify-center">
@@ -49,9 +49,21 @@
                 <q-badge class="font--10 q-mt-sm" color="negative">level: {{ game.level }}</q-badge>
                 <q-badge class="font--10 q-mt-sm" color="warning">XP:{{ game.levelUp }}/{{ game.maxlevelUp }}</q-badge>
               </div>
+
             </div>
+              <div class="items-buyed flex justify-center">
+              <span v-for="(item, index) in game.itemsBuyed" :key='index' class="items-buyed__list">
+                <q-img :src="require(`../assets/${item.img}`)" class="items-buyed__img"/>
+                <!-- TODO resolver erro de ups -->
+                <!-- <q-tooltip content-class="bg-purple font font--8" anchor="top middle" self="center middle">
+                  <div>{{ $t('message.space.itens.upgrade') }}: +{{ game.items[item.label].ups }}</div>
+                  <div>{{ $t('message.space.itens.efficiency') }}: {{ game.items[item.label].totalEfficiency | formatNumber}}/s</div>
+                </q-tooltip> -->
+              </span>
+            </div>
+
             <!-- SHIP/ AÇÃO PEGAR POEIRA  -->
-            <div class="justify-center flex starship__ship effect"  @mousemove="move" @mouseleave="leave" @mouseenter="enter">
+            <div v-if="mobile" class="justify-center flex starship__ship effect"  v-touch:start="enter" v-touch:moving="touchMoving" >
               <span class="card">
               <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
               <div v-if="game.cosmicDust === 0" class="text-black q-px-sm information shadow-3 text-center" style="z-index: 10;" >{{ $t('message.space.tuto.tipOne') }}</div>
@@ -64,28 +76,29 @@
               </q-circular-progress>
               </span>
             </div>
-            <!-- LISTA DE ITENS COMPRADOS -->
-            <div class="items-buyed">
-              <span v-for="(item, index) in game.itemsBuyed" :key='index' class="items-buyed__list">
-                <q-img :src="require(`../assets/${item.img}`)" class="items-buyed__img"/>
-                <!-- TODO resolver erro de ups -->
-                <!-- <q-tooltip content-class="bg-purple font font--8" anchor="top middle" self="center middle">
-                  <div>{{ $t('message.space.itens.upgrade') }}: +{{ game.items[item.label].ups }}</div>
-                  <div>{{ $t('message.space.itens.efficiency') }}: {{ game.items[item.label].totalEfficiency | formatNumber}}/s</div>
-                </q-tooltip> -->
+
+            <div v-if="!mobile" class="justify-center flex starship__ship effect"  @mousemove="move" @mouseleave="leave" @mouseenter="enter">
+              <span class="card">
+              <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
+
+              <div v-if="game.cosmicDust === 0" class="text-black q-px-sm information shadow-3 text-center" style="z-index: 10;" >{{ $t('message.space.tuto.tipOne') }}</div>
+              <q-circular-progress show-value instant-feedback :value="game.levelUp" size="280px" :thickness="0.1" color="warning" track-color="white" :max="game.maxlevelUp" class="q-mb-md progress">
+                <q-btn id="ship" flat round @click="getDust()" size="90px">
+                  <q-img :src="require(`../assets/ships/${game.shipEquiped.img}`)" />
+                </q-btn>
+                  <span id="levelUpEfect" />
+                  <span id="float" />
+              </q-circular-progress>
               </span>
             </div>
+            <!-- LISTA DE ITENS COMPRADOS -->
           </div>
 
         </div>
-        <!-- LISTA DE UPGRADES -->
-
-        <!-- ITENS -->
-
       </q-tab-panel>
 
-      <q-tab-panel name="inventory" >
-        <div class="border--5" :class="bg" style="height: 80vh">
+      <q-tab-panel name="inventory" class="flex justify-center" :class="spaceClicker">
+        <div class="border--5" :class="spaceClicker">
           <div class="q-mt-sm flex justify-center text-uppercase font--10 shadow-5 border--5">
             <q-tabs v-model="equipamentBay" stretch inline-label active-color="white" no-caps dense class="text-white shadow-2 fit border--5" :class="bg">
               <q-tab name="inventory" :label="$t('message.space.bag')" @click="toggleBg('inventory')" >
@@ -238,11 +251,11 @@
         </div>
       </q-tab-panel>
 
-      <q-tab-panel name="store" >
-         <div class="starship__items" style="height: 100vh">
-          <q-separator v-if="game.openShop !== 0" color="green" size="4px" />
+      <q-tab-panel name="store" class="flex justify-center" :class="spaceClicker" >
+         <div class="starship__items" :class="spaceClicker" >
+
           <div v-if="game.openShop !== 0" class="q-my-md flex justify-center text-uppercase">
-            <div class="q-mb-sm">{{ $t('message.items.Shop') }}</div>
+            <!-- <div class="q-mb-sm">{{ $t('message.items.Shop') }}</div> -->
             <q-tabs v-model="shop" active-color="white" no-caps dense class="bg-green text-white shadow-2 fit"  style="border-radius: 5px;" >
               <q-tab name="itens" :label="$t('message.store.itens')">
                 <!-- <img src="../assets/gadget.png" style="width: 30px;"> -->
@@ -256,7 +269,7 @@
             </q-tabs>
           </div>
           <q-tab-panels v-if="game.openShop > 0" v-model="shop" animated class="starship__items">
-            <q-tab-panel name="itens" class="q-gutter-md " style="min-height: 500px;">
+            <q-tab-panel name="itens" class="q-gutter-md" style="min-height: 500px;">
             <q-pagination v-model="pageItems" :max="3"  push color="warning" class="flex justify-center" @click="changePage(pageItems)"/>
               <q-list v-for="(item, key) in gameItems" :key="key" class="text-white font--8">
                 <q-item-section ref="item" v-if="item.page === pageItems" class="row justify-center align-center q-ml-sm">
@@ -314,10 +327,10 @@
             </q-tab-panel>
             <!-- ships -->
             <q-tab-panel v-if="game.openShop > 0" name="ships">
-              <q-pagination v-model="pageShips" :max="4" push color="warning" class="flex justify-center" @click="changePage(pageShips)" />
-              <q-list v-for="(item, key) in game.ship" :key="key" bordered class="text-white font--8 starship__items">
+              <q-list v-for="(item, key) in game.ship" :key="key" bordered class="text-white font--8 starship__items parts">
                 <q-item-section v-if="item.page === pageShips" class="row starship__items">
                   <div class="column">
+                  <q-pagination v-model="pageShips" :max="4" push color="warning" class="flex justify-center" @click="changePage(pageShips)" />
                     <div class="flex justify-center bg-warning border--5 q-mt-sm q-px-sm shadow-2">
                       <div class="fit justify-center flex">
                         <q-img :src="require(`../assets/ships/${item.img}`)" style="width: 128px; height: 80px;" />
@@ -330,9 +343,10 @@
                       <div class="q-px-md bg-white border--5 text-black text-center q-py-xs q-mx-md q-my-sm shadow-1">{{ item.description }}</div>
                     </div>
                     <!-- PARTS -->
-                    <q-separator color="white" size="1px" class="q-my-sm" />
-                    <div class="text-center q-mb-xs">PARTES</div>
+                    <!-- <q-separator color="white" size="1px" class="q-my-sm" /> -->
+                    <div class="text-center q-mt-sm">PARTES</div>
                   </div>
+                  <div class="">
                     <q-item v-for="(parts, key) in game.ship[key].parts" :key="key" class="bg-blue border--5 q-mb-xs">
                       <div class="flex">
                         <q-img :src="require(`../assets/ships/${parts.img}`)" style="width: 50px; height: 50px; border-radius: 1rem; border-color: white; border-style: solid; border-width: 2px;" />
@@ -349,6 +363,7 @@
                         <q-btn :label="shipPartCheck(parts, 'label')" size="10px" push dense :color="shipPartCheck(parts, 'color')" :disable="parts.buyed" class="fit" @click="buyPart(parts, item)" />
                       </div>
                     </q-item>
+                  </div>
                 <q-separator color="black" size="1px" class="q-mt-md" />
                 </q-item-section>
               </q-list>
@@ -611,7 +626,7 @@ export default {
         starCompanyName: this.$t('message.company'),
         openShop: 0,
         cosmicDust: 100000,
-        unobtainium: 100,
+        unobtainium: 10000,
         cosmicDustPerSecond: 0,
         upgrades: [
           {
@@ -1444,6 +1459,10 @@ export default {
 
     modeMobile () {
       return this.$q.screen.lt.sm
+    },
+
+    mobile () {
+      return this.$q.platform.is.mobile
     },
 
     spaceClicker () {
@@ -2412,8 +2431,8 @@ export default {
     move (e) {
       const card = document.querySelector('.card')
 
-      const xAxis = (window.innerWidth / 2 - e.pageX) / 30
-      const yAxis = (window.innerHeight / 2 - e.pageY) / 30
+      const xAxis = (window.innerWidth / 2 - e.pageX) / 70
+      const yAxis = (window.innerHeight / 2 - e.pageY) / 70
       card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`
     },
 
@@ -2421,7 +2440,16 @@ export default {
       const card = document.querySelector('.card')
       card.style.transition = 'all 0.5s ease'
       card.style.transform = 'rotateY(0deg) rotateX(0deg)'
+    },
+
+    touchMoving (event) {
+      const card = document.querySelector('.card')
+
+      const xAxis = (window.innerWidth / 2 - event.touches[0].pageX) / 30
+      const yAxis = (window.innerHeight / 2 - event.touches[0].pageY) / 30
+      card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`
     }
+
   }
 }
 </script>
@@ -2430,6 +2458,7 @@ export default {
 @import "node_modules/pixel-borders/src/styles/pixel-borders.scss";
 body {
   perspective: 1000px;
+  // overflow-y: hidden;
 }
 
 .card {
@@ -2489,6 +2518,7 @@ body {
          opacity: 0;
        }
 }
+
 .closeBtn {
   position: absolute;
   bottom: 5px;
@@ -2567,7 +2597,7 @@ body {
   background-color:rgba(0, 0, 0, 0.1);
   width: 400px;
   height: 80vh;
-  overflow-y: hidden;
+  // overflow-y: hidden;
 
   &__ship {
     height: 60vh;
@@ -2584,11 +2614,13 @@ body {
 
   &__items {
     background-image: url(../assets/bg-stars.gif);
+
     img {
       width: 40px;
     }
+
     &__ships {
-    background-image: url(../assets/bay.jpg);
+      background-image: url(../assets/bay.jpg);
     }
   }
 }
