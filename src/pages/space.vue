@@ -19,7 +19,7 @@
         <div :class="spaceClicker">
           <div class="starship--bg">
             <div class="flex justify-center">
-              <q-btn push size="15px" :label="game.starCompanyName" @click="setCompanyName"/>
+              <q-btn push size="15px" :label="game.starCompanyName" @click="setCompanyName" />
             </div>
             <!-- MOEDAS -->
             <div class="column items-center q-mb-md">
@@ -27,11 +27,11 @@
                 <div class="text-center q-mb-md font--10">
                   <q-img src="../assets/cosmic.png" style="width: 65px;" class="q-mb-xs">
                      <q-tooltip content-class="bg-purple font" anchor="top middle" self="center middle" >
-                      {{ $t('message.space.dust')}}
+                      {{ $t('message.space.dust') }}
                     </q-tooltip>
                   </q-img>
                   <div>
-                    {{ cosmicDustCount | formatNumber}}
+                    {{ cosmicDustCount | formatNumber }}
                   </div>
                 </div>
                 <div class="text-center font--10">
@@ -47,37 +47,14 @@
               <div class="font--10 q-gutter-x-sm">{{ $t('message.space.getClick') }}: {{ game.click | formatNumber }}<q-badge class="font--10" color="info">{{game.levelBonus.toFixed(1) }}x</q-badge></div>
               <div class="flex q-gutter-x-sm">
                 <q-badge class="font--10 q-mt-sm" color="negative">level: {{ game.level }}</q-badge>
-                <q-badge class="font--10 q-mt-sm" color="warning">XP:{{ game.levelUp }}/{{ game.maxlevelUp }}</q-badge>
+                <q-badge class="font--10 q-mt-sm" color="warning">XP: {{ game.levelUp }}/{{ game.maxlevelUp }}</q-badge>
               </div>
-
             </div>
-
               <div class="items-buyed flex justify-center">
               <span v-for="(item, index) in game.itemsBuyed" :key='index' class="items-buyed__list">
-                <q-img :src="require(`../assets/${item.img}`)" class="items-buyed__img"/>
-                <!-- TODO resolver erro de ups -->
-                <!-- <q-tooltip content-class="bg-purple font font--8" anchor="top middle" self="center middle">
-                  <div>{{ $t('message.space.itens.upgrade') }}: +{{ game.items[item.label].ups }}</div>
-                  <div>{{ $t('message.space.itens.efficiency') }}: {{ game.items[item.label].totalEfficiency | formatNumber}}/s</div>
-                </q-tooltip> -->
+                <q-img :src="require(`../assets/${item.img}`)" class="items-buyed__img" />
               </span>
             </div>
-
-            <!-- SHIP/ AÇÃO PEGAR POEIRA  -->
-            <!-- <div v-if="modeMobile" class="justify-center flex starship__ship effect"  v-touch:moving="touchMoving" >
-              <span class="card">
-              <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
-              <div v-if="game.cosmicDust === 0" class="text-black q-px-sm information shadow-3 text-center" style="z-index: 10;" >{{ $t('message.space.tuto.tipOne') }}</div>
-              <q-circular-progress show-value instant-feedback :value="game.levelUp" size="280px" :thickness="0.1" color="warning" track-color="white" :max="game.maxlevelUp" class="q-mb-md progress">
-                <q-btn id="ship" flat round @click="getDust()" size="90px">
-                  <q-img :src="require(`../assets/ships/${game.shipEquiped.img}`)" />
-                </q-btn>
-                  <span id="levelUpEfect" />
-                  <span id="float" />
-              </q-circular-progress>
-              </span>
-            </div> -->
-
             <div class="justify-center flex starship__ship effect"  @mousemove="move" @mouseleave="leave" @mouseenter="enter">
               <span class="card">
               <q-icon v-if="game.droneFunction.droneSend" name="img:https://cdna.artstation.com/p/assets/images/images/025/411/868/original/tomas-sousa-drone1.gif?1585708550" size="50px" style="position: absolute;"/>
@@ -92,9 +69,7 @@
               </q-circular-progress>
               </span>
             </div>
-            <!-- LISTA DE ITENS COMPRADOS -->
           </div>
-
         </div>
       </q-tab-panel>
 
@@ -103,10 +78,8 @@
           <div class="q-mt-sm flex justify-center text-uppercase font--10 shadow-5 border--5">
             <q-tabs v-model="equipamentBay" stretch inline-label active-color="white" no-caps dense class="text-white shadow-2 fit border--5" :class="bg">
               <q-tab name="inventory" :label="$t('message.space.bag')" @click="toggleBg('inventory')" >
-                <!-- <img src="../assets/inventory.png" style="width: 45px;" class="q-ml-xs"> -->
               </q-tab>
               <q-tab name="missions" :label="$t('message.space.missions')" @click="toggleBg('mission')">
-                <!-- <img src="../assets/mission.png" style="width: 40px;" class="q-ml-xs"> -->
               </q-tab>
             </q-tabs>
           </div>
@@ -221,7 +194,7 @@
                       <div class="col text-capitalize q-pa-xs bg-white text-black border--5 shadow-1">
                         <div v-for="(item, index) in item.cost" :key="index">
                           <div class="flex justify-between q-mt-sm">
-                            <div>{{ index }}</div>
+                            <div>{{ game.items[index].label }}</div>
                             <div v-if="game.items[index].amount >= item">{{ item }}x</div>
                             <div v-else class="text-red" >{{ item }}x</div>
                           </div>
@@ -254,18 +227,13 @@
 
       <q-tab-panel name="store" class="flex justify-center" :class="spaceClicker" >
          <div class="starship__items" :class="spaceClicker" >
-
           <div v-if="game.openShop !== 0" class="q-my-md flex justify-center text-uppercase">
-            <!-- <div class="q-mb-sm">{{ $t('message.items.Shop') }}</div> -->
             <q-tabs v-model="shop" active-color="white" no-caps dense class="bg-green text-white shadow-2 fit"  style="border-radius: 5px;" >
               <q-tab name="itens" :label="$t('message.store.itens')">
-                <!-- <img src="../assets/gadget.png" style="width: 30px;"> -->
               </q-tab>
               <q-tab name="equipamentos" :label="$t('message.store.equipments')">
-                <!-- <img src="../assets/telescope.png" style="width: 30px;"> -->
               </q-tab>
               <q-tab name="ships" :label="$t('message.store.ships')">
-                <!-- <img src="../assets/ships/vehicle.gif" style="width: 55px;"> -->
               </q-tab>
             </q-tabs>
           </div>
@@ -281,7 +249,7 @@
                     </div>
                     <div class="column text-right q-mb-sm">
                       <div>
-                        {{ $t('message.items.Price') }}: {{ item.price | formatNumber }}
+                        {{ item.price | formatNumber }}
                         <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/>
                       </div>
                       <div>{{ $t('message.items.Efficiency') }}: {{ item.value | formatNumberDec }}/s</div>
@@ -309,7 +277,7 @@
                       </div>
                       <div class="column text-right">
                         <div>
-                          {{ $t('message.items.Price') }}: {{ item.price | formatNumber }}
+                           {{ item.price | formatNumber }}
                           <q-img src="../assets/cosmic.png" style="width: 14px" class="q-mb-xs"/>
                         </div>
                         <div>{{ $t('message.items.Efficiency') }}: {{ item.value | formatNumber }}/s</div>
@@ -343,11 +311,9 @@
                       </div>
                       <div class="q-px-md bg-white border--5 text-black text-center q-py-xs q-mx-md q-my-sm shadow-1">{{ item.description }}</div>
                     </div>
-                    <!-- PARTS -->
-                    <!-- <q-separator color="white" size="1px" class="q-my-sm" /> -->
                     <div class="text-center q-mt-sm">PARTES</div>
                   </div>
-                  <div class="">
+                  <div>
                     <q-item v-for="(parts, key) in game.ship[key].parts" :key="key" class="bg-blue border--5 q-mb-xs">
                       <div class="flex">
                         <q-img :src="require(`../assets/ships/${parts.img}`)" style="width: 50px; height: 50px; border-radius: 1rem; border-color: white; border-style: solid; border-width: 2px;" />
@@ -355,7 +321,7 @@
                       <div class="column text-center justify-center col text-capitalize">
                         <div>{{ parts.label }}</div>
                         <div>
-                          preço: {{ parts.price | formatNumber }}
+                          {{ parts.price | formatNumber }}
                           <q-img v-if="item.id === 1" src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs q-ml-xs"/>
                           <q-img v-else src="../assets/unobtainium.png" style="width: 18px" class="q-mb-xs q-ml-xs"/>
                         </div>
@@ -382,7 +348,7 @@
           <q-card class="upgradeDialog font text-center">
             <q-card-actions class="flex justify-center">
               <div class="fit">
-                  <q-btn v-close-popup color="warning" label="fechar" push class="fit font shadow-2" size="12px" />
+                  <q-btn v-close-popup color="warning" :label="$t('message.space.upgrade.close')" push class="fit font shadow-2" size="12px" />
               </div>
               <div class="text-white shadow-5 bg-purple q-py-xs text-center text-caption fit font" style="border-radius: 5px;"  >
                 {{ $t('message.space.dust') }}: {{ cosmicDustCount | formatNumber }}
@@ -399,7 +365,7 @@
                     </div>
                     <div class="column text-right q-mt-md">
                       <div>
-                        {{ $t('message.space.upgrade.price') }}: {{  upgrade.price | formatNumber }}
+                        {{  upgrade.price | formatNumber }}
                         <q-tooltip content-class="bg-purple font font--8" anchor="top middle" self="center middle" >
                           {{ $t('message.space.upgrade.TotalSpent') }}: {{ upgrade.totalSpent | formatNumber }}
                           <q-img src="../assets/cosmic.png" style="width: 15px" class="q-mb-xs"/>
@@ -434,9 +400,9 @@
         <div style="min-width: 100px;" class="flex justify-center font">
           <q-card-section class="column q-gutter-y-md">
             <!-- TODO criar um modal com uma msg e uma img dizendo que o jogo será resetado e sem tem certeza disso -->
-            <div><q-btn label="contato" class="bg-blue text-white" style="min-width: 250px;" @click="contactCard"/></div>
-            <div><q-btn label="Nota do Update" class="bg-green-6 fit" color="white"  style="max-width: 250px;" @click="toggleUpdate(true)"/></div>
-            <div><q-btn label="Musica" class="bg-orange-6 fit column" color="white" :icon="iconAudio" @click="audioToggle"/></div>
+            <div><q-btn :label="$t('message.options.contact')" class="bg-blue text-white" style="min-width: 250px;" @click="contactCard"/></div>
+            <div><q-btn :label="$t('message.options.UpdateNote')"  class="bg-green-6 fit" color="white"  style="max-width: 250px;" @click="toggleUpdate(true)"/></div>
+            <div><q-btn :label="$t('message.options.Song')"  class="bg-orange-6 fit column" color="white" :icon="iconAudio" @click="audioToggle"/></div>
             <div>
               <q-btn class="bg-orange-6 fit column" color="white" label="Volume">
                 <q-slider v-model="musicVolume" :min="0.0" :max="1" :step="0.1" @input="setVolume(musicVolume)" label :label-value="'volume ' + musicVolume" color="blue"/>
@@ -445,14 +411,14 @@
             <div><q-btn label="Reset" @click="resetGame" style="min-width: 250px;" color="negative" /></div>
             <div><q-btn label="Save Game" @click="saveGameForced" style="min-width: 250px;" color="positive" /></div>
             <div>
-              <q-btn label="Sair" @click="logOut" :loading="exit" style="min-width: 250px;" color="warning">
+              <q-btn :label="$t('message.options.logOut')" @click="logOut" :loading="exit" style="min-width: 250px;" color="warning">
                 <template v-slot:loading>
                   <q-spinner-facebook />
                 </template>
               </q-btn>
             </div>
             <q-badge color="black" class="text-white font--8" :label="'Version:'+ version" />
-            <q-badge color="black" class="text-white font--8" :label="'Salvo:'+saveStatus" />
+            <q-badge color="black" class="text-white font--8" :label="'Save in: '+saveStatus" />
           </q-card-section>
         </div>
       </q-tab-panel>
@@ -571,6 +537,37 @@
         <source src="../assets/Checking.mp3">
       </audio>
     </template>
+
+    <q-dialog v-model="game.privacy" position="bottom" persistent>
+      <q-card>
+        <q-card-section class="row items-center no-wrap">
+          <div class="text-justify">
+            {{ $t('message.terms.msg') }}
+          </div>
+        <q-space />
+        </q-card-section>
+        <q-card-actions align="right" class="bg-white text-blue">
+          <q-btn flat :to="{ name: 'privacy' }"> {{ $t('message.terms.termsPrivacy') }} </q-btn>
+          <q-btn flat :to="{ name: 'terms' }"> {{ $t('message.terms.termsUse') }} </q-btn>
+          <q-btn flat :label="$t('message.terms.accept')" v-close-popup @click="game.privacy = false"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="game.warning" position="top" persistent>
+      <q-card>
+        <q-card-section class="row items-center no-wrap">
+          <div class="text-justify">
+            {{ $t('message.warning') }}
+          </div>
+        <q-space />
+        </q-card-section>
+        <q-card-actions align="right" class="bg-white text-blue">
+          <q-btn flat :label="$t('message.terms.accept')" v-close-popup @click="game.warning = false"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 
@@ -617,6 +614,8 @@ export default {
       version: '1.2.6',
       volume: 1,
       game: {
+        warning: true,
+        privacy: true,
         shipEquiped: {
           id: 0,
           img: 'vehicle.gif'
@@ -626,8 +625,8 @@ export default {
         level: 1,
         starCompanyName: this.$t('message.company'),
         openShop: 0,
-        cosmicDust: 100000,
-        unobtainium: 10000,
+        cosmicDust: 0,
+        unobtainium: 0,
         cosmicDustPerSecond: 0,
         upgrades: [
           {
@@ -2466,10 +2465,6 @@ body {
 
 .card {
   transform-style: preserve-3d;
-}
-
-.effect {
-  // background-color: red;
 }
 
 .progress {

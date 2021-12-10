@@ -8,6 +8,21 @@ const message = {
   resetPassword: 'Esqueceu a senha?',
   tabStore: 'Loja',
   tabInventory: 'Inventário',
+  warning: 'Bem vindo ao SpaceClicker! Não esqueça de salvar seu progresso no menu de opções',
+
+  options: {
+    contact: 'Contato',
+    UpdateNote: 'Nota de Atualização',
+    Song: 'Música',
+    logOut: 'Sair'
+  },
+
+  terms: {
+    msg: 'Este site usa cookies, os cookies nos permitem oferecer nossos serviços. Ao utilizá-los, você aceita o uso que fazemos dos cookies. Ao acessar ao site SpaceClicker, concorda em cumprir estes termos de serviço, todas as leis e regulamentos aplicáveis e concorda que é responsável pelo cumprimento de todas as leis locais aplicáveis.',
+    termsPrivacy: 'Termos de privacidade',
+    termsUse: 'Termos de uso',
+    accept: 'Aceitar'
+  },
 
   loginPage: {
     wrongPass: 'Senha inválida',
@@ -124,6 +139,7 @@ const message = {
     },
 
     upgrade: {
+      close: 'fechar',
       price: 'Preço',
       TotalSpent: 'Total Gasto',
       amount: 'Qtd',

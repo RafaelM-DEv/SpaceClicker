@@ -8,6 +8,21 @@ const message = {
   resetPassword: 'forgot the password?',
   tabStore: 'store',
   tabInventory: 'inventory',
+  warning: 'Welcome to SpaceClicker! Don\'t forget to save your progress in the options menu.',
+
+  options: {
+    contact: 'Contact',
+    UpdateNote: 'Update Note',
+    Song: 'Song',
+    logOut: 'logOut'
+  },
+
+  terms: {
+    msg: 'This website uses cookies, cookies allow us to offer our services. By using them, you accept our use of cookies. By accessing the SpaceClicker website, you agree to comply with these terms of service, all applicable laws and regulations, and agree that you are responsible for compliance with all applicable local laws.',
+    termsPrivacy: 'Privacy terms',
+    termsUse: 'terms of use',
+    accept: 'accept'
+  },
 
   loginPage: {
     wrongPass: 'invalid password',
@@ -124,6 +139,7 @@ const message = {
     },
 
     upgrade: {
+      close: 'close',
       price: 'Price',
       TotalSpent: 'Total spent',
       amount: 'amount',
