@@ -339,7 +339,7 @@
           <!-- INVENTÁRIO INFO -->
           <div v-if="game.openShop === 0" class="flex fit">
             <q-btn label="" size="10px" color="positive" class="fit" @click="open">
-              <div v-if="!game.installDrone" class="text-black q-py-sm border--5 bg-white font--10 shadow-2">Clique aqui para liberar a loja! Custo 50 PC<img src="../assets/cosmic.png" style="width: 14px"></div>
+              <div v-if="!game.installDrone" class="text-black q-py-sm border--5 bg-white font--10 shadow-2">{{ $t('message.shopBtn') }}<img src="../assets/cosmic.png" style="width: 14px"></div>
             </q-btn>
           </div>
         </div>
@@ -2303,7 +2303,7 @@ export default {
         this.game.openShop = 1
       } else {
         this.$q.notify({
-          message: 'Atenção<br><strong>Quantidade de Poeira cosmica insuficiente</strong>',
+          message: `${this.$t('message.warningPopup')}`,
           multiLine: true,
           html: true,
           timeout: 6000,
