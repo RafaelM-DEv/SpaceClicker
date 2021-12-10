@@ -411,12 +411,13 @@
             <div><q-btn label="Reset" @click="resetGame" style="min-width: 250px;" color="negative" /></div>
             <div><q-btn label="Save Game" @click="saveGameForced" style="min-width: 250px;" color="positive" /></div>
             <div>
-              <q-btn :label="$t('message.options.logOut')" @click="logOut" :loading="exit" style="min-width: 250px;" color="warning">
+              <q-btn :label="$t('message.options.logOut')" @click="logOut" :loading="exit" style="min-width: 250px;" color="purple">
                 <template v-slot:loading>
                   <q-spinner-facebook />
                 </template>
               </q-btn>
             </div>
+            <div><q-btn :label="$t('message.terms.termsUse')"  class="bg-orange-6 fit column" color="white"  @click="game.privacy = true"/></div>
             <q-badge color="black" class="text-white font--8" :label="'Version:'+ version" />
             <q-badge color="black" class="text-white font--8" :label="'Save in: '+saveStatus" />
           </q-card-section>
@@ -2591,6 +2592,21 @@ body {
   border-radius: 3px;
 }
 
+// @media (min-width: 320px) {
+//   .progress {
+//     font-size: 150px;
+//   }
+
+//   .starship {
+//     overflow: hidden;
+//     &__ship {
+//       // width: 20px;
+//       height: 29vh;
+//       align-items: center;
+//     }
+//   }
+// }
+
 .starship {
   background-color:rgba(0, 0, 0, 0.1);
   width: 400px;
@@ -2598,7 +2614,7 @@ body {
   // overflow-y: hidden;
 
   &__ship {
-    height: 60vh;
+    height: 49vh;
     align-items: center;
   }
 
