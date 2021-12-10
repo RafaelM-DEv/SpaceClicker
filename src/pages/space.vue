@@ -2649,6 +2649,7 @@ body {
 }
 
 ::-webkit-scrollbar {
+  display: none;
   width: 5px;
 }
 
