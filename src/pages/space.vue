@@ -602,7 +602,8 @@ export default {
       headerToolbar: 'space',
       iconAudio: 'volume_up',
       musicVolume: 0.2,
-      oldVersion: '1.2.5',
+      oldVersion: '1.2.6',
+      version: '1.3.0',
       pageItems: 1,
       pageQuest: 1,
       pageShips: 1,
@@ -612,7 +613,6 @@ export default {
       toReveal: false,
       upgradeDialog: false,
       upgradesList: [],
-      version: '1.2.6',
       volume: 1,
       game: {
         warning: true,
