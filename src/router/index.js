@@ -1,9 +1,22 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import firebase from 'firebase'
 
 import routes from './routes'
 
 Vue.use(VueRouter)
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: 'AIzaSyBMzrTl2dXjff3kER_H9xuufuKZFI7iBhk',
+  authDomain: 'space-clicker-oficial.firebaseapp.com',
+  projectId: 'space-clicker-oficial',
+  storageBucket: 'space-clicker-oficial.appspot.com',
+  messagingSenderId: '381995615047',
+  appId: '1:381995615047:web:713a8fae1d9928de8a8262'
+}
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig)
 
 /*
  * If not building with SSR mode, you can

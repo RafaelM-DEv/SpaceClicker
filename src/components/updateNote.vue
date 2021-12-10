@@ -1,6 +1,6 @@
 <template>
-  <q-dialog v-model="showDialog" :value="value" persistent>
-    <q-card style="min-width: 100px;" class="flex justify-center pixel-borders--1">
+  <q-dialog v-model="showDialog" :value="value" persistent :maximized="isMobileMaximized">
+    <q-card style="min-width: 100px; background-color: rgba(255, 255, 255, .5);  backdrop-filter: blur(5px)" class="flex justify-center pixel-borders--1">
       <q-card-section class="column q-gutter-y-sm">
           <q-icon name="img:https://i.pinimg.com/originals/45/1a/27/451a27df78f84c8f671ec1e502a4fe97.gif" class="flex self-center robot"/>
           <div class="font devDialog pixel-borders--1">
@@ -34,7 +34,6 @@
 <script>
 
 export default {
-
   props: {
     value: {
       type: Boolean
@@ -42,6 +41,12 @@ export default {
   },
 
   data () { return { showDialog: this.value } },
+
+  computed: {
+    isMobileMaximized () {
+      return this.$q.screen.lt.sm
+    }
+  },
 
   watch: {
     value (value) {
@@ -57,3 +62,10 @@ export default {
 
 }
 </script>
+
+<style>
+.robot {
+  width: 100px;
+  height: 130px;
+}
+</style>
