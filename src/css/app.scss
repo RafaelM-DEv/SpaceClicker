@@ -6,11 +6,11 @@
   font-family: 'Press Start 2P', cursive;
 
   &--8 {
-   font-size: 8px;
+   font-size: 9px;
   }
 
   &--10 {
-   font-size: 10px;
+   font-size: 12px;
   }
 }
 
@@ -30,11 +30,13 @@
 }
 
 .page {
-  background-image: url(https://i.pinimg.com/564x/b1/bd/c1/b1bdc1ae539dcbd1a7c33cef3e5f2d9a.jpg);
-  background-size: unset;
+  // background-image: url(https://i.gifer.com/LoBd.gif);
+  // background-image: url(https://i.pinimg.com/originals/31/ad/52/31ad5246cf608b1be1de302a6b40145e.gif);
+  background-image: url(https://pixeljoint.com/files/icons/full/space__r1437994661.gif);
+  background-size: cover;
   background-attachment: fixed;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
   // overflow-y: hidden;
 }
