@@ -10,6 +10,9 @@ const message = {
   tabInventory: 'inventory',
   tabMissions: 'Quests',
   warning: 'Welcome to SpaceClicker! Don\'t forget to save your progress in the options menu.',
+  waningDialogDonation: 'If you liked this Game, consider supporting the development, it helps a lot in the Dev\'s motivation and also helps to keep the server always online',
+  DonationLabel: 'Donation of BRL 5.00',
+  donationBtnInfo: 'This button can be seen in options>contact',
   shopBtn: 'Contact Space Trade - Cost 50 PC',
   warningPopup: 'Insufficient amount of cosmetic dust',
 

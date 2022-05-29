@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh LpR lFr">
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -7,5 +7,11 @@
 </template>
 
 <script>
-export default {}
+export default {
+  data () {
+    return {
+      menuToolbar: 'home'
+    }
+  }
+}
 </script>
