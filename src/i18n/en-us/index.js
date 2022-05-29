@@ -8,6 +8,7 @@ const message = {
   resetPassword: 'forgot the password?',
   tabStore: 'store',
   tabInventory: 'inventory',
+  tabMissions: 'Quests',
   warning: 'Welcome to SpaceClicker! Don\'t forget to save your progress in the options menu.',
   shopBtn: 'Contact Space Trade - Cost 50 PC',
   warningPopup: 'Insufficient amount of cosmetic dust',

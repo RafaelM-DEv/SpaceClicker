@@ -8,6 +8,7 @@ const message = {
   resetPassword: 'Esqueceu a senha?',
   tabStore: 'Loja',
   tabInventory: 'Inventário',
+  tabMissions: 'Missões',
   warning: 'Bem vindo ao SpaceClicker! Não esqueça de salvar seu progresso no menu de opções',
   shopBtn: 'Contactar Comercio Espacial - Custo 50 PC',
   warningPopup: 'Quantidade de Poeira cósmica insuficiente',

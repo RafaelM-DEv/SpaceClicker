@@ -5,16 +5,18 @@
 
     <component :is="menuElementType" elevated >
       <q-tabs v-model="headerToolbar" active-color="white" no-caps dense class="text-white shadow-2">
-        <q-tab name="space" :label="$t('message.space.navBar.home')" style="width: 100px;"></q-tab>
-        <q-tab name="inventory" :label="$t('message.tabInventory')"></q-tab>
-        <q-tab name="store" :label="$t('message.tabStore')"></q-tab>
-        <q-tab name="options" :label="$t('message.space.navBar.options')" style="width: 100px;"></q-tab>
-        <q-tab name="achivements" :label="$t('message.space.navBar.achieve')"></q-tab>
+        <q-tab name="space" class="text-uppercase" :label="$t('message.space.navBar.home')" />
+        <q-tab name="inventory" class="text-uppercase" :label="$t('message.tabInventory')" />
+        <q-tab name="" class="text-uppercase" :label="$t('message.tabMissions')" />
+        <q-tab name="store" class="text-uppercase" :label="$t('message.tabStore')" />
+        <q-tab name="options" class="text-uppercase" :label="$t('message.space.navBar.options')" />
+        <q-tab name="achievements" class="text-uppercase" :label="$t('message.space.navBar.achieve')"/>
       </q-tabs>
     </component>
 
     <!-- STARDUST -->
-    <q-tab-panels v-model="headerToolbar" animated class="fit starship">
+    <q-tab-panels v-model="headerToolbar" class="fit starship" animated>
+      <!-- SPACE -->
       <q-tab-panel name="space" class="flex justify-center" :class="spaceClicker" style="overflow-y: hidden;">
         <div :class="spaceClicker">
           <div class="starship--bg">
@@ -71,8 +73,177 @@
             </div>
           </div>
         </div>
-      </q-tab-panel>
 
+        <div class="starship__items" :class="spaceClicker" >
+          <div v-if="game.openShop !== 0" class="q-my-md flex justify-center text-uppercase">
+            <q-tabs v-model="shop" active-color="white" no-caps dense class="bg-green text-white shadow-2 fit"  style="border-radius: 5px;" >
+              <q-tab name="itens" :label="$t('message.store.itens')">
+              </q-tab>
+              <q-tab name="equipamentos" :label="$t('message.store.equipments')">
+              </q-tab>
+              <q-tab name="ships" :label="$t('message.store.ships')">
+              </q-tab>
+            </q-tabs>
+          </div>
+
+          <q-tab-panels v-if="game.openShop > 0" v-model="shop" animated class="starship__items">
+            <q-tab-panel name="itens" class="q-gutter-md" style="min-height: 500px;">
+            <q-pagination v-model="pageItems" :max="3"  push color="warning" class="flex justify-center" @click="changePage(pageItems)"/>
+              <q-list v-for="(item, key) in gameItems" :key="key" class="text-white font--8">
+                <q-item-section ref="item" v-if="item.page === pageItems" class="row justify-center align-center q-ml-sm">
+                  <div class="flex justify-between">
+                    <div class="row items-center">
+                      <q-img :src="require(`../assets/${item.img}`)" style="width: 40px; height: 40px;" />
+                      <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
+                    </div>
+                    <div class="column text-right q-mb-sm">
+                      <div>
+                        {{ item.price | formatNumber }}
+                        <q-img src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs"/>
+                      </div>
+                      <div>{{ $t('message.items.Efficiency') }}: {{ item.value | formatNumberDec }}/s</div>
+                      <div>{{ $t('message.items.Total') }}: {{ item.totalEfficiency.toFixed(1) }}/s</div>
+                      <div class="self-end q-mb-xs">{{ item.amount | formatNumber }} {{ $t('message.items.units') }}</div>
+                    </div>
+                  </div>
+                  <div class="q-px-md bg-white border--5 text-black text-center q-py-xs">{{ item.description }}</div>
+                  <div v-if="game.openShop <= item.unlocked" class="q-px-md bg-warning border--5 text-black text-center q-py-xs q-mt-sm">{{ $t('message.items.unlock') }}: {{ item.unlocked }} items </div>
+                  <q-btn v-if="game.openShop >= item.unlocked" :label="$t('message.items.buy')" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
+                  <q-btn v-if="game.openShop >= item.unlocked" :label="$t('message.items.upgrade')" size="13px" push color="blue" :disable="item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
+                <q-separator color="green" size="1px" class="q-mt-md" />
+                </q-item-section>
+              </q-list>
+            </q-tab-panel>
+            <!-- Equipamentos -->
+            <q-tab-panel name="equipamentos">
+              <q-list v-if="game.openShop > 0" bordered class="text-white font--8 starship__items">
+                <q-item v-for="(item, key) in gameEquipaments" :key="key">
+                  <q-item-section class="row">
+                    <div class="flex justify-between">
+                      <div class="row">
+                        <q-img :src="require(`../assets/${item.img}`)" style="width: 40px; height: 40px;" />
+                        <div class="self-center q-ml-sm text-capitalize">{{ item.label }}</div>
+                      </div>
+                      <div class="column text-right">
+                        <div>
+                           {{ item.price | formatNumber }}
+                          <q-img src="../assets/cosmic.png" style="width: 14px" class="q-mb-xs"/>
+                        </div>
+                        <div>{{ $t('message.items.Efficiency') }}: {{ item.value | formatNumber }}/s</div>
+                        <div>Total: {{ item.totalEfficiency | formatNumber }}/s</div>
+                      </div>
+                    </div>
+                    <div class="self-end q-mb-xs">{{ item.amount | formatNumber }} {{ $t('message.items.units') }}</div>
+                    <div class="q-px-md bg-white border--5 text-black text-center q-py-xs">{{ item.description }}</div>
+                    <div v-if="game.openShop <= item.unlocked" class="q-px-md bg-warning border--5 text-black text-center q-py-xs q-mt-sm">{{ $t('message.items.unlock') }}: {{ item.unlocked }} items </div>
+                    <q-btn v-if="game.openShop >= item.unlocked" :label="$t('message.items.buy')" size="13px" push color="green" :disable="game.cosmicDust < item.price" class="q-mt-md" @click="buyItem(item)" />
+                    <q-btn v-if="game.openShop >= item.unlocked" :label="$t('message.items.upgrade')" size="13px" push color="blue" :disable="item.amount === 0" class="q-mt-md" @click="upgrade(item)" />
+                  <q-separator color="black" size="1px" class="q-mt-md" />
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-tab-panel>
+            <!-- ships -->
+            <q-tab-panel v-if="game.openShop > 0" name="ships">
+              <q-list v-for="(item, key) in game.ship" :key="key" bordered class="text-white font--8 starship__items parts">
+                <q-item-section v-if="item.page === pageShips" class="row starship__items">
+                  <div class="column">
+                  <q-pagination v-model="pageShips" :max="4" push color="warning" class="flex justify-center" @click="changePage(pageShips)" />
+                    <div class="flex justify-center bg-warning border--5 q-mt-sm q-px-sm shadow-2">
+                      <div class="fit justify-center flex">
+                        <q-img :src="require(`../assets/ships/${item.img}`)" style="width: 128px; height: 80px;" />
+                      </div>
+                      <div class="fit justify-center flex q-mb-sm text-capitalize">{{ item.label }}</div>
+                      <div class="fit justify-center flex">
+                        <q-btn label="Equipar Nave" size="13px" push color="blue" :disable="checkParts(item)" @click="equipShip(item)" />
+                          <q-btn icon="close" size="13px" push color="red" class="q-ml-xs" :disable="checkParts(item)" @click="unquipShip(item)" />
+                      </div>
+                      <div class="q-px-md bg-white border--5 text-black text-center q-py-xs q-mx-md q-my-sm shadow-1">{{ item.description }}</div>
+                    </div>
+                    <div class="text-center q-mt-sm">PARTES</div>
+                  </div>
+                  <div>
+                    <q-item v-for="(parts, key) in game.ship[key].parts" :key="key" class="bg-blue border--5 q-mb-xs">
+                      <div class="flex">
+                        <q-img :src="require(`../assets/ships/${parts.img}`)" style="width: 50px; height: 50px; border-radius: 1rem; border-color: white; border-style: solid; border-width: 2px;" />
+                      </div>
+                      <div class="column text-center justify-center col text-capitalize">
+                        <div>{{ parts.label }}</div>
+                        <div>
+                          {{ parts.price | formatNumber }}
+                          <q-img v-if="item.id === 1" src="../assets/cosmic.png" style="width: 18px" class="q-mb-xs q-ml-xs"/>
+                          <q-img v-else src="../assets/unobtainium.png" style="width: 18px" class="q-mb-xs q-ml-xs"/>
+                        </div>
+                      </div>
+                      <div>
+                        <q-btn :label="shipPartCheck(parts, 'label')" size="10px" push dense :color="shipPartCheck(parts, 'color')" :disable="parts.buyed" class="fit" @click="buyPart(parts, item)" />
+                      </div>
+                    </q-item>
+                  </div>
+                <q-separator color="black" size="1px" class="q-mt-md" />
+                </q-item-section>
+              </q-list>
+            </q-tab-panel>
+          </q-tab-panels>
+          <!-- INVENTÁRIO INFO -->
+          <div v-if="game.openShop === 0" class="flex fit">
+            <q-btn label="" size="10px" color="positive" class="fit" @click="open">
+              <div v-if="!game.installDrone" class="text-black q-py-sm border--5 bg-white font--10 shadow-2">{{ $t('message.shopBtn') }}<img src="../assets/cosmic.png" style="width: 14px"></div>
+            </q-btn>
+          </div>
+        </div>
+
+        <q-dialog v-model="upgradeDialog" :maximized="modeMobile">
+          <q-card class="upgradeDialog font text-center">
+            <q-card-actions class="flex justify-center">
+              <div class="fit">
+                  <q-btn v-close-popup color="warning" :label="$t('message.space.upgrade.close')" push class="fit font shadow-2" size="12px" />
+              </div>
+              <div class="text-white shadow-5 bg-purple q-py-xs text-center text-caption fit font" style="border-radius: 5px;"  >
+                {{ $t('message.space.dust') }}: {{ cosmicDustCount | formatNumber }}
+              </div>
+            </q-card-actions>
+            <!-- Upgrades -->
+            <q-card-section class="q-ma-none q-pa-sm" >
+              <q-list v-for="(upgrade, index) in upgradesList" :key="index">
+                <div class="font--8 q-my-xs q-pa-sm upgradeDialog__item border--5 shadow-3">
+                  <div class="flex justify-between no-wrap">
+                    <div class="column q-mb-sm q-ml-sm" style="max-width: 80px ">
+                      <div><q-img :src="require(`../assets/${upgrade.img}`)" style="width: 30px; height: 30px;" /></div>
+                      <div class="text-capitalize" style="font-size: 8px;">{{ upgrade.label }}</div>
+                    </div>
+                    <div class="column text-right q-mt-md">
+                      <div>
+                        {{  upgrade.price | formatNumber }}
+                        <q-tooltip content-class="bg-purple font font--8" anchor="top middle" self="center middle" >
+                          {{ $t('message.space.upgrade.TotalSpent') }}: {{ upgrade.totalSpent | formatNumber }}
+                          <q-img src="../assets/cosmic.png" style="width: 15px" class="q-mb-xs"/>
+                          <div>{{ $t('message.space.upgrade.price') }} * 0.2</div>
+                          <div>{{ $t('message.space.upgrade.amount') }}.: +{{game.items[upgrade.uplink].ups}}</div>
+                        </q-tooltip>
+                        <q-img src="../assets/cosmic.png" style="width: 15px" class="q-mb-xs"/>
+                      </div>
+                      <!-- TODO Remover lógica da view -->
+                      <div>
+                        <div v-if="upgrade.idu !== 5 && upgrade.value !== 0">{{ $t('message.space.upgrade.efficiency') }}: +{{ upgrade.value | formatNumberDec }}</div>
+                        <div v-if="upgrade.label === 'Drone Pro'">{{ $t('message.space.upgrade.efficiency') }}: +{{ upgrade.value | formatNumber }}</div>
+                        <div v-if="upgrade.label === 'Drone Pro' || upgrade.idu !== 5 && upgrade.value !== 0">(+0.2 {{ $t('message.space.upgrade.per') }})</div>
+                      </div>
+                      <!-- DRONE -->
+                      <div v-if="upgrade.label === 'Drone Sentinela'" >{{ $t('message.space.upgrade.getDust') }}: +{{ upgrade.value | formatNumber }}</div>
+                      <div v-if="upgrade.label === 'Bateria de Drone'" >{{ $t('message.space.upgrade.get') }}: +2s</div>
+                      <div v-if="upgrade.label === 'Bateria de Drone'" >{{ $t('message.space.upgrade.recharge') }}: +1s</div>
+                    </div>
+                  </div>
+                  <div class="q-px-md q-mt-sm bg-white border--5 font--8">{{ upgrade.description }}</div>
+                  <q-btn :label="$t('message.items.buy')" size="15px" push color="blue" :disable="game.cosmicDust < upgrade.price" class="q-mt-md fit" @click="buyUpgrade(upgrade)" />
+                </div>
+              </q-list>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
+      </q-tab-panel>
+      <!-- INVENTORY -->
       <q-tab-panel name="inventory" class="flex justify-center" :class="spaceClicker">
         <div class="border--5" :class="spaceClicker">
           <div class="q-mt-sm flex justify-center text-uppercase font--10 shadow-5 border--5">
@@ -224,7 +395,7 @@
           </q-tab-panels>
         </div>
       </q-tab-panel>
-
+      <!-- STORE -->
       <q-tab-panel name="store" class="flex justify-center" :class="spaceClicker" >
          <div class="starship__items" :class="spaceClicker" >
           <div v-if="game.openShop !== 0" class="q-my-md flex justify-center text-uppercase">
@@ -394,7 +565,6 @@
           </q-card>
         </q-dialog>
       </q-tab-panel>
-
       <!-- MENU DE OPÇÕES -->
       <q-tab-panel name="options" >
         <div style="min-width: 100px;" class="flex justify-center font">
@@ -502,6 +672,36 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog v-model="game.privacy" position="bottom" persistent>
+      <q-card>
+        <q-card-section class="row items-center no-wrap">
+          <div class="text-justify">
+            {{ $t('message.terms.msg') }}
+          </div>
+        <q-space />
+        </q-card-section>
+        <q-card-actions align="right" class="bg-white text-blue">
+          <q-btn flat :to="{ name: 'privacy' }"> {{ $t('message.terms.termsPrivacy') }} </q-btn>
+          <q-btn flat :to="{ name: 'terms' }"> {{ $t('message.terms.termsUse') }} </q-btn>
+          <q-btn flat :label="$t('message.terms.accept')" v-close-popup @click="game.privacy = false"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="game.warning" position="top" persistent>
+      <q-card>
+        <q-card-section class="row items-center no-wrap">
+          <div class="text-justify">
+            {{ $t('message.warning') }}
+          </div>
+        <q-space />
+        </q-card-section>
+        <q-card-actions align="right" class="bg-white text-blue">
+          <q-btn flat :label="$t('message.terms.accept')" v-close-popup @click="game.warning = false"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
       <!-- SFX / MUSIC  -->
     <template class="text-center q-mt-sm">
       <audio ref="convert">
@@ -539,36 +739,6 @@
       </audio>
     </template>
 
-    <q-dialog v-model="game.privacy" position="bottom" persistent>
-      <q-card>
-        <q-card-section class="row items-center no-wrap">
-          <div class="text-justify">
-            {{ $t('message.terms.msg') }}
-          </div>
-        <q-space />
-        </q-card-section>
-        <q-card-actions align="right" class="bg-white text-blue">
-          <q-btn flat :to="{ name: 'privacy' }"> {{ $t('message.terms.termsPrivacy') }} </q-btn>
-          <q-btn flat :to="{ name: 'terms' }"> {{ $t('message.terms.termsUse') }} </q-btn>
-          <q-btn flat :label="$t('message.terms.accept')" v-close-popup @click="game.privacy = false"/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <q-dialog v-model="game.warning" position="top" persistent>
-      <q-card>
-        <q-card-section class="row items-center no-wrap">
-          <div class="text-justify">
-            {{ $t('message.warning') }}
-          </div>
-        <q-space />
-        </q-card-section>
-        <q-card-actions align="right" class="bg-white text-blue">
-          <q-btn flat :label="$t('message.terms.accept')" v-close-popup @click="game.warning = false"/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
   </q-page>
 </template>
 
@@ -576,8 +746,6 @@
 import updateNote from '../components/updateNote.vue'
 import { date, copyToClipboard } from 'quasar'
 import gsap from 'gsap'
-
-import { mapActions } from 'vuex'
 
 export default {
   components: { updateNote },
@@ -626,8 +794,8 @@ export default {
         level: 1,
         starCompanyName: this.$t('message.company'),
         openShop: 0,
-        cosmicDust: 0,
-        unobtainium: 0,
+        cosmicDust: 10000000,
+        unobtainium: 10000000,
         cosmicDustPerSecond: 0,
         upgrades: [
           {
@@ -1679,8 +1847,6 @@ export default {
   created () {
     this.getDustperSecond()
     // this.saveGame()
-    this.signIn()
-    this.authUser()
   },
 
   mounted () {
@@ -1701,11 +1867,6 @@ export default {
   },
 
   methods: {
-    ...mapActions([
-      'signIn',
-      'logOut'
-    ]),
-
     toRevealToggle () {
       this.toReveal = !this.toReveal
     },
