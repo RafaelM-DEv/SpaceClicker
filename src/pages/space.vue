@@ -582,8 +582,8 @@ export default {
       toReveal: false,
       upgradeDialog: false,
       upgradesList: [],
-      oldVersion: '1.2.6',
-      version: '1.3.0',
+      oldVersion: '1.3.0',
+      version: '1.3.1',
       volume: 1,
 
       game: {
@@ -1657,7 +1657,7 @@ export default {
     // setup
     this.recovery()
     this.isQuestRecovery()
-    this.setVolume(0.2)
+    this.setVolume(0.3)
   },
 
   methods: {
